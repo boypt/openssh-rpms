@@ -57,12 +57,9 @@ if [[ -f $SSHSRC ]]; then
   rm -f $reldir/SOURCES/$SSHSRC || true
   ln -s $__dir/$SSHSRC $reldir/SOURCES/
 fi
+
+pushd $reldir
+mkdir -p SOURCES SPECS BUILD SRPMS RPMS
+popd
 rpmbuild -ba $reldir/SPECS/openssh.spec --define "_topdir $__dir/$reldir" --define "openssl_dir $SSLDIR"
-
-
-
-
-
-
-
 
