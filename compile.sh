@@ -34,5 +34,5 @@ ln -s $__dir/downloads/$OPENSSHSRC $rpmtopdir/SOURCES/
 
 pushd $rpmtopdir
 mkdir -p SOURCES SPECS BUILD SRPMS RPMS
-rpmbuild -ba $rpmtopdir/SPECS/openssh.spec --target $(uname -m) --define "_topdir $PWD"
+rpmbuild -ba SPECS/openssh.spec --target $(uname -m) --define "_topdir $PWD"
 popd
