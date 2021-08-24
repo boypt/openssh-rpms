@@ -209,7 +209,7 @@ pushd openssl
 ./config shared zlib -fPIC
 make -j2
 popd
-%define openssl_dir openssl
+%define openssl_dir ./openssl
 
 %build
 %if %{rescue}
