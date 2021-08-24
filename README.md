@@ -15,3 +15,16 @@ This openssh package has OpenSSL statically linked.
 - CentOS 6
 - CentOS 7
 
+## Build Requirements:
+
+```
+yum groupinstall -y "Development Tools"
+yum install -y rpm-build pam-devel krb5-devel zlib-devel
+```
+
+### for CentOS5:
+
+- Perl 5.10+ is needed (just `./configure.gnu && make && make install`)
+- gcc44 is prefered
+
+
