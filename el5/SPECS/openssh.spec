@@ -4,6 +4,7 @@
 %define skip_gnome_askpass 1
 %define no_gtk2 1
 %define static_openssl 1
+%define dist .el5
 
 %global ver 8.7p1
 %global rel 1%{?dist}
