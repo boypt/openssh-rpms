@@ -22,16 +22,25 @@ rpmtopdir="${1:-}"
 
 
 if [[ ! -d $rpmtopdir ]]; then 
-	echo "only work in el5/el6/el7"
-	echo "eg: ${0} el7"
-	exit 1
+  echo "only work in el5/el6/el7"
+  echo "eg: ${0} el7"
+  exit 1
 fi
 
 source version.env
+
+CHECKEXISTS() {
+  if [[ ! -f $__dir/downloads/$1 ]];then
+    echo "$1 not found, run 'downloadsrc.sh', or manually put it in the downloads dir."
+    exit 1
+  fi
+}
+
+CHECKEXISTS $OPENSSHSRC
+CHECKEXISTS $OPENSSLSRC
 install -v -m666 $__dir/downloads/$OPENSSLSRC $rpmtopdir/SOURCES/
 install -v -m666 $__dir/downloads/$OPENSSHSRC $rpmtopdir/SOURCES/
 
 pushd $rpmtopdir
-mkdir -p SOURCES SPECS BUILD SRPMS RPMS
 rpmbuild -ba SPECS/openssh.spec --target $(uname -m) --define "_topdir $PWD"
 popd
