@@ -28,10 +28,10 @@ OPENSSLMIR=https://www.openssl.org/source/
 mkdir -p downloads
 pushd downloads
 if [[ ! -f $OPENSSLSRC ]]; then
-  wget $OPENSSHMIR/$OPENSSHSRC
+  wget $OPENSSLMIR/$OPENSSLSRC
 fi
 
 if [[ ! -f $OPENSSHSRC  ]]; then
-  wget $OPENSSLMIR/$OPENSSLSRC
+  wget $OPENSSHMIR/$OPENSSHSRC
 fi
 
