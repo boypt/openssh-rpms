@@ -28,9 +28,8 @@ if [[ ! -d $rpmtopdir ]]; then
 fi
 
 source version.env
-rm -f $rpmtopdir/SOURCES/$OPENSSHSRC $rpmtopdir/SOURCES/$OPENSSLSRC || true
-ln -s $__dir/downloads/$OPENSSLSRC $rpmtopdir/SOURCES/
-ln -s $__dir/downloads/$OPENSSHSRC $rpmtopdir/SOURCES/
+install -v -m666 $__dir/downloads/$OPENSSLSRC $rpmtopdir/SOURCES/
+install -v -m666 $__dir/downloads/$OPENSSHSRC $rpmtopdir/SOURCES/
 
 pushd $rpmtopdir
 mkdir -p SOURCES SPECS BUILD SRPMS RPMS
