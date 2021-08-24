@@ -27,4 +27,16 @@ yum install -y rpm-build pam-devel krb5-devel zlib-devel
 - Perl 5.10+ is needed (just `./configure.gnu && make && make install`)
 - gcc44 is prefered
 
+## Security
 
+As OLD system still on production, the reasons are not for TOP security, but for compatibility.
+
+Thus this package provede the following options in `sshd_config` to act like the triditional version sshd.
+
+```
+UsePAM yes
+PermitRootLogin yes
+UseDNS no
+```
+
+If this is not what you want, change them in `/etc/ssh/sshd_config`
