@@ -106,12 +106,12 @@ PreReq: initscripts >= 5.00
 Requires: initscripts >= 5.20
 %endif
 BuildRequires: perl
-%if %{compat_openssl}
-BuildRequires: compat-openssl10-devel
-%else
+#%if %{compat_openssl}
+#BuildRequires: compat-openssl10-devel
+#%else
 #BuildRequires: openssl-devel >= 1.0.1
 #BuildRequires: openssl-devel < 1.1
-%endif
+#%endif
 BuildRequires: /bin/login
 %if ! %{build6x}
 BuildRequires: glibc-devel, pam
@@ -211,17 +211,18 @@ environment.
 
 mkdir -p openssl
 tar xfz %{SOURCE3} --strip-components=1 -C openssl
-pushd openssl
-./config shared zlib -fPIC
-make -j2
-popd
-%define openssl_dir ./openssl
 
 %build
 %if %{rescue}
 CFLAGS="$RPM_OPT_FLAGS -Os"; export CFLAGS
 %endif
 
+pushd openssl
+./config shared zlib -fPIC
+make -j
+popd
+
+%define openssl_dir %{_builddir}/%{name}-%{version}/openssl
 export LD_LIBRARY_PATH="%{openssl_dir}"
 %configure \
 	--sysconfdir=%{_sysconfdir}/ssh \
@@ -253,13 +254,13 @@ export LD_LIBRARY_PATH="%{openssl_dir}"
 perl -pi -e "s|-lcrypto|%{openssl_dir}/libcrypto.a -lpthread|g" Makefile
 %endif
 
-make
+make -j
 
 %if ! %{no_x11_askpass}
 pushd x11-ssh-askpass-%{aversion}
 %configure --libexecdir=%{_libexecdir}/openssh
 xmkmf -a
-make
+make -j
 popd
 %endif
 
