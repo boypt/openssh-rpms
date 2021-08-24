@@ -22,13 +22,16 @@ arg1="${1:-}"
 
 source version.env	
 
+OPENSSHMIR=https://cloudflare.cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/
+OPENSSLMIR=https://www.openssl.org/source/
+
 mkdir -p downloads
 pushd downloads
 if [[ ! -f $OPENSSLSRC ]]; then
-  wget https://www.openssl.org/source/openssl-${OPENSSLVER}.tar.gz
+  wget $OPENSSHMIR/$OPENSSHSRC
 fi
 
 if [[ ! -f $OPENSSHSRC  ]]; then
-  wget https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-${OPENSSHVER}.tar.gz
+  wget $OPENSSLMIR/$OPENSSLSRC
 fi
 
