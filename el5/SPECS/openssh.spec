@@ -1,5 +1,4 @@
-# Define a openssl_dir for static linked
-
+%define opensslver 1.1.1k
 %define ver 8.7p1
 %define rel 1%{?dist}
 
@@ -90,6 +89,7 @@ URL: https://www.openssh.com/portable.html
 Source0: https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-%{version}.tar.gz
 #Source1: http://www.jmknoble.net/software/x11-ssh-askpass/x11-ssh-askpass-%{aversion}.tar.gz
 Source2: sshd.pam.el5
+Source3: openssl-%{opensslver}.tar.gz
 License: BSD
 Group: Applications/Internet
 BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
@@ -202,6 +202,14 @@ environment.
 %else
 %setup -q
 %endif
+
+mkdir -p openssl
+tar xfz %{SOURCE3} --strip-components=1 -C openssl
+pushd openssl
+./config shared zlib -fPIC
+make -j2
+popd
+%define openssl_dir ./openssl
 
 %build
 %if %{rescue}

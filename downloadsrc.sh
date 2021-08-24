@@ -20,15 +20,15 @@ arg1="${1:-}"
 # allow command fail:
 # fail_command || true
 
-OPENSSLVER="1.1.1k"
-OPENSSHVER="8.7p1"
 source version.env	
 
-if [[ ! -f openssl-${OPENSSLVER}.tar.gz ]]; then
+mkdir -p downloads
+pushd downloads
+if [[ ! -f $OPENSSLSRC ]]; then
   wget https://www.openssl.org/source/openssl-${OPENSSLVER}.tar.gz
 fi
 
-if [[ ! -f openssh-${OPENSSHVER}.tar.gz ]]; then
+if [[ ! -f $OPENSSHSRC  ]]; then
   wget https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-${OPENSSHVER}.tar.gz
 fi
 
