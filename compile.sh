@@ -46,6 +46,11 @@ for fn in ${SOURCES[@]}; do
   install -v -m666 $__dir/downloads/$fn $rpmtopdir/SOURCES/
 done
 
+# on centos5, it's prefered to use gcc44
+if yum --disablerepo=* list installed gcc44; then 
+  export CC=gcc44
+fi
+
 pushd $rpmtopdir
 rpmbuild -ba SPECS/openssh.spec --target $(uname -m) --define "_topdir $PWD"
 popd
