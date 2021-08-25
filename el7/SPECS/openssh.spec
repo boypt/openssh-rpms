@@ -1,8 +1,8 @@
 %define opensslver 1.1.1l
 
 # %%define skip_x11_askpass 1
-%define skip_gnome_askpass 1
-%define no_gtk2 1
+# %%define skip_gnome_askpass 1
+# %%define no_gtk2 1
 %define static_openssl 1
 
 # wheather to build openssl
