@@ -9,6 +9,9 @@
 # wheather to build openssl
 %global no_build_openssl 0
 
+#if defined openssl_dir, don't build it
+%{?openssl_dir:%global no_build_openssl 1}
+
 %global ver 8.7p1
 %global rel 2%{?dist}
 
@@ -50,9 +53,6 @@
 
 # Do we want kerberos5 support (1=yes 0=no)
 %global kerberos5 1
-
-#if defined openssl_dir, don't build it
-%{?openssl_dir:%global no_build_openssl 1}
 
 # Reserve options to override askpass settings with:
 # rpm -ba|--rebuild --define 'skip_xxx 1'
