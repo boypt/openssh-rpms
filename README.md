@@ -7,7 +7,7 @@ This openssh package has OpenSSL statically linked.
 ## Current Version:
 
 - OpenSSH 8.7p1
-- OpenSSL 1.1.1k
+- OpenSSL 1.1.1l
 
 ## Supported CentOS:
 
