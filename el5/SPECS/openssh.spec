@@ -6,6 +6,9 @@
 %define static_openssl 1
 %define dist .el5
 
+#%define openssl_dir /home/build/openssl-1.1.1l
+%global no_build_openssl 0
+
 %global ver 8.7p1
 %global rel 2%{?dist}
 
@@ -95,7 +98,9 @@ URL: https://www.openssh.com/portable.html
 Source0: https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-%{version}.tar.gz
 #Source1: http://www.jmknoble.net/software/x11-ssh-askpass/x11-ssh-askpass-%{aversion}.tar.gz
 Source2: sshd.pam.el5
+%if ! %{no_build_openssl}
 Source3: https://www.openssl.org/source/openssl-%{opensslver}.tar.gz
+%endif
 License: BSD
 Group: Applications/Internet
 BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
@@ -209,20 +214,21 @@ environment.
 %setup -q
 %endif
 
+%if ! %{no_build_openssl}
+%define openssl_dir %{_builddir}/%{name}-%{version}/openssl
 mkdir -p openssl
 tar xfz %{SOURCE3} --strip-components=1 -C openssl
+pushd openssl
+./config shared zlib -fPIC
+make -j
+popd
+%endif
 
 %build
 %if %{rescue}
 CFLAGS="$RPM_OPT_FLAGS -Os"; export CFLAGS
 %endif
 
-pushd openssl
-./config shared zlib -fPIC
-make -j
-popd
-
-%define openssl_dir %{_builddir}/%{name}-%{version}/openssl
 export LD_LIBRARY_PATH="%{openssl_dir}"
 %configure \
 	--sysconfdir=%{_sysconfdir}/ssh \
