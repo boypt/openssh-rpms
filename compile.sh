@@ -28,7 +28,6 @@ if [[ ! -d $rpmtopdir ]]; then
 fi
 
 source version.env
-
 CHECKEXISTS() {
   if [[ ! -f $__dir/downloads/$1 ]];then
     echo "$1 not found, run 'downloadsrc.sh', or manually put it in the downloads dir."
@@ -36,21 +35,21 @@ CHECKEXISTS() {
   fi
 }
 
-SOURCES=( $OPENSSHSRC \
-          $OPENSSLSRC \
-          "x11-ssh-askpass-1.2.4.1.tar.gz" \
-)
-
-for fn in ${SOURCES[@]}; do
-  CHECKEXISTS $fn
-  install -v -m666 $__dir/downloads/$fn $rpmtopdir/SOURCES/
-done
-
 # on centos5, it's prefered to use gcc44
 if yum --disablerepo=* list installed gcc44; then 
   export CC=gcc44
 fi
 
+SOURCES=( $OPENSSHSRC \
+          $OPENSSLSRC \
+          $ASKPASSSRC \
+)
+
 pushd $rpmtopdir
+for fn in ${SOURCES[@]}; do
+  CHECKEXISTS $fn
+  install -v -m666 $__dir/downloads/$fn ./SOURCES/
+done
+
 rpmbuild -ba SPECS/openssh.spec --target $(uname -m) --define "_topdir $PWD"
 popd
