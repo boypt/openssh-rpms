@@ -1,12 +1,12 @@
 %define opensslver 1.1.1l
 
-%define skip_x11_askpass 1
+# %%define skip_x11_askpass 1
 %define skip_gnome_askpass 1
 %define no_gtk2 1
 %define static_openssl 1
 %define dist .el5
 
-#%define openssl_dir /home/build/openssl-1.1.1l
+# wheather to build openssl
 %global no_build_openssl 0
 
 %global ver 8.7p1
@@ -50,6 +50,9 @@
 
 # Do we want kerberos5 support (1=yes 0=no)
 %global kerberos5 1
+
+#if defined openssl_dir, don't build it
+%{?openssl_dir:%global no_build_openssl 1}
 
 # Reserve options to override askpass settings with:
 # rpm -ba|--rebuild --define 'skip_xxx 1'
@@ -96,7 +99,7 @@ Release: %{rel}
 %endif
 URL: https://www.openssh.com/portable.html
 Source0: https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-%{version}.tar.gz
-#Source1: http://www.jmknoble.net/software/x11-ssh-askpass/x11-ssh-askpass-%{aversion}.tar.gz
+Source1: http://www.jmknoble.net/software/x11-ssh-askpass/x11-ssh-askpass-%{aversion}.tar.gz
 Source2: sshd.pam.el5
 %if ! %{no_build_openssl}
 Source3: https://www.openssl.org/source/openssl-%{opensslver}.tar.gz
@@ -130,7 +133,9 @@ BuildRequires: libXt-devel
 # Provides xmkmf
 BuildRequires: imake
 # Rely on relatively recent gtk
+%if ! %{no_gtk2}
 BuildRequires: gtk2-devel
+%endif
 %endif
 %if ! %{no_gnome_askpass}
 BuildRequires: pkgconfig
