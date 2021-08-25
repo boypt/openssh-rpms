@@ -1,10 +1,15 @@
 %define opensslver 1.1.1l
 
-# Define a openssl_dir for static linked
-%define skip_x11_askpass 1
+# %%define skip_x11_askpass 1
 %define skip_gnome_askpass 1
 %define no_gtk2 1
 %define static_openssl 1
+
+# wheather to build openssl
+%global no_build_openssl 0
+
+#if defined openssl_dir, don't build it
+%{?openssl_dir:%global no_build_openssl 1}
 
 %global ver 8.7p1
 %global rel 2%{?dist}
@@ -93,9 +98,11 @@ Release: %{rel}
 %endif
 URL: https://www.openssh.com/portable.html
 Source0: https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-%{version}.tar.gz
-#Source1: http://www.jmknoble.net/software/x11-ssh-askpass/x11-ssh-askpass-%{aversion}.tar.gz
+Source1: http://www.jmknoble.net/software/x11-ssh-askpass/x11-ssh-askpass-%{aversion}.tar.gz
 Source2: sshd.pam.el7
+%if ! %{no_build_openssl}
 Source3: https://www.openssl.org/source/openssl-%{opensslver}.tar.gz
+%endif
 License: BSD
 Group: Applications/Internet
 BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
@@ -125,7 +132,9 @@ BuildRequires: libXt-devel
 # Provides xmkmf
 BuildRequires: imake
 # Rely on relatively recent gtk
+%if ! %{no_gtk2}
 BuildRequires: gtk2-devel
+%endif
 %endif
 %if ! %{no_gnome_askpass}
 BuildRequires: pkgconfig
@@ -209,20 +218,21 @@ environment.
 %setup -q
 %endif
 
+%if ! %{no_build_openssl}
+%define openssl_dir %{_builddir}/%{name}-%{version}/openssl
 mkdir -p openssl
 tar xfz %{SOURCE3} --strip-components=1 -C openssl
+pushd openssl
+./config shared zlib -fPIC
+make -j
+popd
+%endif
 
 %build
 %if %{rescue}
 CFLAGS="$RPM_OPT_FLAGS -Os"; export CFLAGS
 %endif
 
-pushd openssl
-./config shared zlib -fPIC
-make -j
-popd
-
-%define openssl_dir %{_builddir}/%{name}-%{version}/openssl
 export LD_LIBRARY_PATH="%{openssl_dir}"
 %configure \
 	--sysconfdir=%{_sysconfdir}/ssh \
@@ -292,12 +302,11 @@ mkdir -p -m755 $RPM_BUILD_ROOT%{_var}/empty/sshd
 
 make install DESTDIR=$RPM_BUILD_ROOT
 echo -e 'UsePAM yes\nPermitRootLogin yes\nUseDNS no' >> $RPM_BUILD_ROOT/etc/ssh/sshd_config
-
 install -d $RPM_BUILD_ROOT/etc/pam.d/
 install -d $RPM_BUILD_ROOT/etc/rc.d/init.d
 install -d $RPM_BUILD_ROOT%{_libexecdir}/openssh
-install -m 644 %{SOURCE2} $RPM_BUILD_ROOT/etc/pam.d/sshd
-install -m 755 contrib/redhat/sshd.init $RPM_BUILD_ROOT/etc/rc.d/init.d/sshd
+install -m644 %{SOURCE2}     $RPM_BUILD_ROOT/etc/pam.d/sshd
+install -m755 contrib/redhat/sshd.init $RPM_BUILD_ROOT/etc/rc.d/init.d/sshd
 
 %if ! %{no_x11_askpass}
 install x11-ssh-askpass-%{aversion}/x11-ssh-askpass $RPM_BUILD_ROOT%{_libexecdir}/openssh/x11-ssh-askpass
