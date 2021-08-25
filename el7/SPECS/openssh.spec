@@ -132,7 +132,7 @@ BuildRequires: libXt-devel
 # Provides xmkmf
 BuildRequires: imake
 # Rely on relatively recent gtk
-%if ! %{no_gtk2}
+%if %{gtk2}
 BuildRequires: gtk2-devel
 %endif
 %endif

@@ -19,7 +19,7 @@ This openssh package has OpenSSL statically linked.
 
 ```
 yum groupinstall -y "Development Tools"
-yum install -y rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel
+yum install -y imake rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel gtk2-devel
 ```
 
 ### for CentOS5:

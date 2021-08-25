@@ -36,10 +36,15 @@ CHECKEXISTS() {
   fi
 }
 
-CHECKEXISTS $OPENSSHSRC
-CHECKEXISTS $OPENSSLSRC
-install -v -m666 $__dir/downloads/$OPENSSLSRC $rpmtopdir/SOURCES/
-install -v -m666 $__dir/downloads/$OPENSSHSRC $rpmtopdir/SOURCES/
+SOURCES=( $OPENSSHSRC \
+          $OPENSSLSRC \
+          "x11-ssh-askpass-1.2.4.1.tar.gz" \
+)
+
+for fn in ${SOURCES[@]}; do
+  CHECKEXISTS $fn
+  install -v -m666 $__dir/downloads/$fn $rpmtopdir/SOURCES/
+done
 
 pushd $rpmtopdir
 rpmbuild -ba SPECS/openssh.spec --target $(uname -m) --define "_topdir $PWD"
