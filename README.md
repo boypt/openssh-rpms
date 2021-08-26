@@ -1,6 +1,6 @@
 # OpenSSH RPMs for old CentOS
 
-For some reasons I have to maintain OpenSSH up to date packages for CentOS versions that are no longer have supports.
+For some reasons I have to maintain OpenSSH up to date for CentOSs that are no longer have supports.
 
 This openssh package has OpenSSL statically linked.
 
@@ -25,13 +25,13 @@ yum install -y imake rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX1
 ### for CentOS5:
 
 - Perl 5.10+ is needed (just `./configure.gnu && make && make install`)
-- gcc44 is prefered
+- `gcc44` is prefered
 
 ## Security
 
-As OLD system still on production, the reasons are not for TOP security, but for compatibility.
+As OLD systems that are still on production, TOP security is hardly the first concern, while compatibility is.
 
-Thus this package provede the following options in `sshd_config` to act like the triditional version sshd.
+This package provede the following options in `/etc/ssh/sshd_config` to act like the triditional version sshd.
 
 ```
 UsePAM yes
@@ -39,4 +39,3 @@ PermitRootLogin yes
 UseDNS no
 ```
 
-If this is not what you want, change them in `/etc/ssh/sshd_config`
