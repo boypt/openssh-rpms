@@ -225,7 +225,7 @@ mkdir -p openssl
 tar xfz %{SOURCE3} --strip-components=1 -C openssl
 pushd openssl
 ./config shared zlib -fPIC
-make -j
+make %{?_smp_mflags}
 popd
 %endif
 
@@ -265,7 +265,7 @@ export LD_LIBRARY_PATH="%{openssl_dir}"
 perl -pi -e "s|-lcrypto|%{openssl_dir}/libcrypto.a -lpthread|g" Makefile
 %endif
 
-make -j
+make %{?_smp_mflags}
 
 %if ! %{no_x11_askpass}
 pushd x11-ssh-askpass-%{aversion}
