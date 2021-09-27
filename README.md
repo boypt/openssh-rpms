@@ -6,7 +6,7 @@ This openssh package has OpenSSL statically linked.
 
 ## Current Version:
 
-- OpenSSH 8.7p1
+- OpenSSH 8.8p1
 - OpenSSL 1.1.1l
 
 ## Supported CentOS:
@@ -34,6 +34,7 @@ As OLD systems that are still on production, TOP security is hardly the first co
 This package provede the following options in `/etc/ssh/sshd_config` to act like the triditional version sshd.
 
 ```
+PubkeyAcceptedAlgorithms +ssh-rsa
 UsePAM yes
 PermitRootLogin yes
 UseDNS no
