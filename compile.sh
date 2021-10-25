@@ -20,6 +20,25 @@ rpmtopdir="${1:-}"
 # allow command fail:
 # fail_command || true
 
+if [[ -z $rpmtopdir ]]; then
+    VAREL=$(rpm --eval '%{?dist}')
+    case $VAREL in
+        .el7)
+            rpmtopdir=el7
+            ;;
+        .el6)
+            rpmtopdir=el6
+            ;;
+        .el5)
+            rpmtopdir=el5
+            ;;
+        *)
+            echo "rpm dist undefined, please specify: el5 el6 el7"
+            exit 1
+            ;;
+    esac
+fi
+
 
 if [[ ! -d $rpmtopdir ]]; then 
   echo "only work in el5/el6/el7"
