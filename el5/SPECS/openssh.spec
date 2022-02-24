@@ -1,4 +1,4 @@
-%define opensslver 1.1.1l
+%define opensslver 1.1.1m
 
 # %%define skip_x11_askpass 1
 %define skip_gnome_askpass 1
