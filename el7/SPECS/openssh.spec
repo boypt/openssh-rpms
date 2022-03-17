@@ -1,4 +1,4 @@
-%define opensslver 1.1.1m
+%define opensslver 1.1.1n
 
 # %%define skip_x11_askpass 1
 # %%define skip_gnome_askpass 1
@@ -12,7 +12,7 @@
 %{?openssl_dir:%global no_build_openssl 1}
 
 %global ver 8.9p1
-%global rel 1%{?dist}
+%global rel 2%{?dist}
 
 # OpenSSH privilege separation requires a user & group ID
 %global sshd_uid    74
