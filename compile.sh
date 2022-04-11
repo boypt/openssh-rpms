@@ -31,6 +31,10 @@ if [[ -z $rpmtopdir ]]; then
             ;;
         .el5)
             rpmtopdir=el5
+            # on centos5, it's prefered to use gcc44
+            if yum --disablerepo=* list installed gcc44; then 
+              export CC=gcc44
+            fi
             ;;
         *)
             echo "rpm dist undefined, please specify: el5 el6 el7"
@@ -54,10 +58,6 @@ CHECKEXISTS() {
   fi
 }
 
-# on centos5, it's prefered to use gcc44
-if yum --disablerepo=* list installed gcc44; then 
-  export CC=gcc44
-fi
 
 SOURCES=( $OPENSSHSRC \
           $OPENSSLSRC \
