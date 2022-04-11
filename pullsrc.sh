@@ -22,7 +22,7 @@ arg1="${1:-}"
 
 source version.env	
 
-OPENSSHMIR=https://cloudflare.cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/
+OPENSSHMIR=https://mirrors.aliyun.com/pub/OpenBSD/OpenSSH/portable/
 OPENSSLMIR=https://www.openssl.org/source/
 ASKPASSMIR=https://src.fedoraproject.org/repo/pkgs/openssh/x11-ssh-askpass-1.2.4.1.tar.gz/8f2e41f3f7eaa8543a2440454637f3c3
 
