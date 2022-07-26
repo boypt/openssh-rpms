@@ -13,7 +13,7 @@
 %{?openssl_dir:%global no_build_openssl 1}
 
 %global ver 9.0p1
-%global rel 1%{?dist}
+%global rel 2%{?dist}
 
 # OpenSSH privilege separation requires a user & group ID
 %global sshd_uid    74
