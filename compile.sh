@@ -71,4 +71,11 @@ for fn in ${SOURCES[@]}; do
 done
 
 rpmbuild -ba SPECS/openssh.spec --target $(uname -m) --define "_topdir $PWD"
+rpmbuild -ba SPECS/openssh.spec --target $(uname -m) \
+	--define "_topdir $PWD" \
+	--define 'no_gtk2 1' \
+	--define 'skip_gnome_askpass 1' \
+	--define 'skip_x11_askpass 1' \
+	;
 popd
+
