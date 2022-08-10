@@ -1,8 +1,5 @@
 %define opensslver 1.1.1q
 
-# %%define skip_x11_askpass 1
-# %%define skip_gnome_askpass 1
-# %%define no_gtk2 1
 %define static_openssl 1
 
 # wheather to build openssl
@@ -11,8 +8,8 @@
 #if defined openssl_dir, don't build it
 %{?openssl_dir:%global no_build_openssl 1}
 
-%global ver 9.0p1
-%global rel 2%{?dist}
+%global ver %{?opensshver}
+%global rel %{?opensshpkgrel}%{?dist}
 
 # OpenSSH privilege separation requires a user & group ID
 %global sshd_uid    74

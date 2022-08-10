@@ -70,9 +70,9 @@ for fn in ${SOURCES[@]}; do
   install -v -m666 $__dir/downloads/$fn ./SOURCES/
 done
 
-rpmbuild -ba SPECS/openssh.spec --target $(uname -m) --define "_topdir $PWD"
-rpmbuild -ba SPECS/openssh.spec --target $(uname -m) \
-	--define "_topdir $PWD" \
+rpmbuild -ba SPECS/openssh.spec --target $(uname -m) --define "_topdir $PWD" \
+	--define "opensshver ${OPENSSHVER}" \
+	--define "opensshpkgrel ${PKGREL}" \
 	--define 'no_gtk2 1' \
 	--define 'skip_gnome_askpass 1' \
 	--define 'skip_x11_askpass 1' \
