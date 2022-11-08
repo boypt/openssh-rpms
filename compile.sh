@@ -71,6 +71,7 @@ for fn in ${SOURCES[@]}; do
 done
 
 rpmbuild -ba SPECS/openssh.spec --target $(uname -m) --define "_topdir $PWD" \
+	--define "opensslver ${OPENSSLVER}" \
 	--define "opensshver ${OPENSSHVER}" \
 	--define "opensshpkgrel ${PKGREL}" \
 	--define 'no_gtk2 1' \

@@ -1,4 +1,5 @@
-%define opensslver 1.1.1s
+%{?!opensslver: %global opensslver 1.1.1s}
+%{?!opensshver: %global opensshver 9.1p1}
 %define static_openssl 1
 
 # wheather to build openssl
