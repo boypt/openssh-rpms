@@ -1,4 +1,4 @@
-%define opensslver 1.1.1q
+%define opensslver 1.1.1s
 %define static_openssl 1
 
 # wheather to build openssl
