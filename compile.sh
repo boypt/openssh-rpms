@@ -53,7 +53,7 @@ fi
 source version.env
 CHECKEXISTS() {
   if [[ ! -f $__dir/downloads/$1 ]];then
-    echo "$1 not found, run 'downloadsrc.sh', or manually put it in the downloads dir."
+    echo "$1 not found, run 'pullsrc.sh', or manually put it in the downloads dir."
     exit 1
   fi
 }
