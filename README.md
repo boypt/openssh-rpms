@@ -9,6 +9,8 @@ This openssh package has OpenSSL statically linked.
 - OpenSSH 9.3p1
 - OpenSSL 1.1.1t
 
+The script reads file `version.env` for actual verion definitions.
+
 ## Supported CentOS:
 
 - CentOS 5
@@ -21,7 +23,7 @@ This openssh package has OpenSSL statically linked.
 yum groupinstall -y "Development Tools"
 yum install -y imake rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel gtk2-devel
 ```
-### for CentOS5:
+### Note for CentOS 5:
 
 - Perl 5.10+ is needed (just `./configure.gnu && make && make install`)
 - `gcc44` is prefered
