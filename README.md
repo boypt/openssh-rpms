@@ -6,8 +6,8 @@ This openssh package has OpenSSL statically linked.
 
 ## Current Version:
 
-- OpenSSH 9.3p2
-- OpenSSL 1.1.1u
+- OpenSSH 9.4p1
+- OpenSSL 1.1.1v
 
 The script reads file `version.env` for actual verion definitions.
 
