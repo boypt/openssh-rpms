@@ -6,10 +6,10 @@ This openssh package has OpenSSL statically linked.
 
 ## Current Version:
 
-- OpenSSH 9.4p1
+- OpenSSH 9.5p1
 - OpenSSL 3.0.11
 
-The script reads file `version.env` for actual verion definitions.
+The script reads `version.env` for actual verion definitions.
 
 ## Supported CentOS:
 
@@ -25,7 +25,7 @@ yum install -y imake rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX1
 ```
 ### Note for CentOS 5:
 
-- Perl 5.10+ is needed (just `./configure.gnu && make && make install`)
+- Perl 5.10+ is needed (`./configure.gnu && make && make install`)
 - `gcc44` is prefered
 
 ## Usage
@@ -33,20 +33,20 @@ yum install -y imake rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX1
 ```
 # Edit version.env file if you want a specific version of openssh/openssl combination (or maybe I havn't updated to the latest).
 
-# this script try to download source packages.
-# if any error come up, just manally put the source tar file into the `downloads` dir.
+# Download source packages.
+# if any error comes up, just manally download the source tar files into the `downloads` dir.
 ./pullsrc.sh
 
-# just run the script to build RPMs. 
-# For CentOS 5, the rpmbuild didn't set the variable of `.el`, you may need to run the script by `./compile.sh el5`
+# Run the script to build RPMs. 
+# For CentOS 5, the default rpmbuild didn't set the variable of `${dist}`, manually run the script with argument `./compile.sh el5`
 ./compile.sh
 ```
 
 ## Security
 
-As OLD systems that are still on production, TOP security is hardly the first concern, while compatibility is.
+For **OLD** systems that are still on production, TOP security is hardly the first concern, while compatibility is.
 
-This package provede the following options in `/etc/ssh/sshd_config` to act like the triditional version sshd.
+This package provede the following options in `/etc/ssh/sshd_config` to work like the triditional sshd.
 
 ```
 PubkeyAcceptedAlgorithms +ssh-rsa
