@@ -1,21 +1,17 @@
-# OpenSSH RPMs for old CentOS
+# Latest OpenSSH RPM / SRPM for old CentOS
 
-For some reasons I have to maintain OpenSSH up to date for CentOSs that are no longer have supports.
-
-This openssh package has OpenSSL statically linked.
-
-## Current Version:
-
-- OpenSSH 9.5p1
-- OpenSSL 3.0.11
-
-The script reads `version.env` for actual verion definitions.
-
-## Supported CentOS:
+For some reasons I have to maintain OpenSSH up to date for CentOS which no longer have offical supports.
 
 - CentOS 5
 - CentOS 6
 - CentOS 7
+
+## Current Version:
+
+- OpenSSH 9.5p1
+- OpenSSL 3.0.11 (static linked)
+
+The build script reads `version.env` for actual version definitions.
 
 ## Build Requirements:
 
@@ -25,26 +21,27 @@ yum install -y imake rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX1
 ```
 ### Note for CentOS 5:
 
-- Perl 5.10+ is needed (`./configure.gnu && make && make install`)
-- `gcc44` is prefered
+- [Perl 5.10+](http://www.cpan.org/src/) is needed during build (`./configure.gnu && make && make install`)
+- `gcc44` is prefered (`yum install gcc44`)
 
 ## Usage
 
 ```
-# Edit version.env file if you want a specific version of openssh/openssl combination (or maybe I havn't updated to the latest).
+# 1. Install build requirements as listed above.
+# 2. Edit version.env file if you want a specific version of openssh/openssl combination (or maybe I havn't updated to the latest).
 
-# Download source packages.
+# 3. Download source packages.
 # if any error comes up, just manally download the source tar files into the `downloads` dir.
 ./pullsrc.sh
 
-# Run the script to build RPMs. 
-# For CentOS 5, the default rpmbuild didn't set the variable of `${dist}`, manually run the script with argument `./compile.sh el5`
+# 4. Run the script to build RPMs. 
 ./compile.sh
+# For CentOS 5, the default rpmbuild didn't set the variable of `${dist}`, manually run the script with argument `./compile.sh el5`
 ```
 
 ## Security
 
-For **OLD** systems that are still on production, TOP security is hardly the first concern, while compatibility is.
+For **OLD** systems that are still on production, TOP security is hardly our first concern, while compatibility is.
 
 This package provede the following options in `/etc/ssh/sshd_config` to work like the triditional sshd.
 
