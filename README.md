@@ -21,7 +21,7 @@ The script reads `version.env` for actual verion definitions.
 
 ```
 yum groupinstall -y "Development Tools"
-yum install -y imake rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel gtk2-devel
+yum install -y imake rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel gtk2-devel perl-IPC-Cmd
 ```
 ### Note for CentOS 5:
 
