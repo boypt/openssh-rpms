@@ -28,19 +28,19 @@ OPENSSLMIR=https://www.openssl.org/source/
 ASKPASSMIR=https://src.fedoraproject.org/repo/pkgs/openssh/x11-ssh-askpass-1.2.4.1.tar.gz/8f2e41f3f7eaa8543a2440454637f3c3
 
 mkdir -p downloads
-pushd downloads
+    pushd downloads  
 if [[ ! -f $OPENSSLSRC ]]; then
   echo "Get:" $OPENSSLMIR/$OPENSSLSRC
-  wget $OPENSSLMIR/$OPENSSLSRC
+  wget $OPENSSLMIR/$OPENSSLSRC --no-check-certificate
 fi
 
 if [[ ! -f $OPENSSHSRC  ]]; then
   echo Get: $OPENSSHMIR/$OPENSSHSRC
-  wget $OPENSSHMIR/$OPENSSHSRC
+  wget $OPENSSHMIR/$OPENSSHSRC --no-check-certificate
 fi
 
 if [[ ! -f $ASKPASSSRC  ]]; then
   echo Get: $ASKPASSMIR/$ASKPASSSRC
-  wget $ASKPASSMIR/$ASKPASSSRC
+  wget $ASKPASSMIR/$ASKPASSSRC --no-check-certificate
 fi
 
