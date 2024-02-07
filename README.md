@@ -22,6 +22,7 @@ The build script reads `version.env` for actual version definitions.
 yum groupinstall -y "Development Tools"
 yum install -y imake rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel gtk2-devel perl-IPC-Cmd
 ```
+
 ### Note for CentOS 5:
 
 - [Perl 5.10+](http://www.cpan.org/src/) is needed during build (`./configure.gnu && make && make install`)
@@ -236,4 +237,3 @@ do
          $COMPONENT:$IMAGE_TAG
 done
 ```
-
