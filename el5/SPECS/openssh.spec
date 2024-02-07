@@ -1,5 +1,6 @@
-%{?!opensslver: %global opensslver 1.1.1s}
-%{?!opensshver: %global opensshver 9.1p1}
+%{?!opensslver: %global opensslver 3.0.8}
+%{?!opensshver: %global opensshver 9.6p1}
+%{?!perlver: %global perlver 5.38.2}
 %define dist .el5
 %define static_openssl 1
 
@@ -42,11 +43,15 @@
 %global build6x 1
 %endif
 
-%if 0%{?fedora} >= 26
-%global compat_openssl 1
-%else
-%global compat_openssl 0
-%endif
+# Annotate content below to ENFORCE using SSL
+#%global without_openssl 0
+## build without openssl where 1.1.1 is not available
+#%if 0%{?fedora} <= 28
+#%global without_openssl 1
+#%endif
+#%if 0%{?rhel} <= 7
+#%global without_openssl 1
+#%endif
 
 # Do we want kerberos5 support (1=yes 0=no)
 %global kerberos5 1
@@ -77,7 +82,7 @@
 # rpm -ba|--rebuild --define "smartcard 1"
 %{?smartcard:%global scard 1}
 
-# Is this a build for the rescue CD (without PAM, with MD5)? (1=yes 0=no)
+# Is this a build for the rescue CD (without PAM)? (1=yes 0=no)
 %global rescue 0
 %{?build_rescue:%global rescue 1}
 
@@ -101,6 +106,7 @@ Source2: sshd.pam.el5
 %if ! %{no_build_openssl}
 Source3: https://www.openssl.org/source/openssl-%{opensslver}.tar.gz
 %endif
+Source4: https://www.cpan.org/src/5.0/perl-%{perlver}.tar.gz
 License: BSD
 Group: Applications/Internet
 BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
@@ -111,11 +117,8 @@ PreReq: initscripts >= 5.00
 Requires: initscripts >= 5.20
 %endif
 BuildRequires: perl
-#%if %{compat_openssl}
-#BuildRequires: compat-openssl10-devel
-#%else
-#BuildRequires: openssl-devel >= 1.0.1
-#BuildRequires: openssl-devel < 1.1
+#%if ! %{without_openssl}
+#BuildRequires: openssl-devel >= 1.1.1
 #%endif
 BuildRequires: /bin/login
 %if ! %{build6x}
@@ -216,6 +219,17 @@ environment.
 %setup -q
 %endif
 
+# Add install perl to ensure OpenSSL can be used.
+%define perl_dir %{_builddir}/%{name}-%{version}/perl
+mkdir -p perl
+tar xfz %{SOURCE4} --strip-components=1 -C perl
+pushd perl
+./configure.gnu
+make %{?_smp_mflags}
+make install
+popd
+
+# Add content below to use source code of OpenSSL
 %if ! %{no_build_openssl}
 %define openssl_dir %{_builddir}/%{name}-%{version}/openssl
 mkdir -p openssl
@@ -231,6 +245,7 @@ popd
 CFLAGS="$RPM_OPT_FLAGS -Os"; export CFLAGS
 %endif
 
+# Add OpenSSL library
 export LD_LIBRARY_PATH="%{openssl_dir}"
 %configure \
 	--sysconfdir=%{_sysconfdir}/ssh \
@@ -244,6 +259,8 @@ export LD_LIBRARY_PATH="%{openssl_dir}"
 	--with-mantype=man \
 	--disable-strip \
 	--with-ssl-dir="%{openssl_dir}" \
+	--with-zlib \
+	--with-ssl-engine \
 %if %{scard}
 	--with-smartcard \
 %endif
@@ -259,6 +276,7 @@ export LD_LIBRARY_PATH="%{openssl_dir}"
 
 %if %{static_libcrypto}
 #perl -pi -e "s|-lcrypto|%{_libdir}/libcrypto.a|g" Makefile
+# Add OpenSSL library
 perl -pi -e "s|-lcrypto|%{openssl_dir}/libcrypto.a -lpthread|g" Makefile
 %endif
 
@@ -299,10 +317,21 @@ mkdir -p -m755 $RPM_BUILD_ROOT%{_libexecdir}/openssh
 mkdir -p -m755 $RPM_BUILD_ROOT%{_var}/empty/sshd
 
 make install DESTDIR=$RPM_BUILD_ROOT
-echo -e 'PubkeyAcceptedAlgorithms +ssh-rsa\nUsePAM yes\nPermitRootLogin yes\nUseDNS no' >> $RPM_BUILD_ROOT/etc/ssh/sshd_config
+# Modify sshd config file.
+cat << EOF >> $RPM_BUILD_ROOT/etc/ssh/sshd_config
+PubkeyAcceptedAlgorithms +ssh-rsa
+PermitRootLogin yes
+PasswordAuthentication yes
+UseDNS no
+UsePAM yes
+KexAlgorithms -diffie-hellman-group1-sha1,diffie-hellman-group1-sha256,diffie-hellman-group14-sha1,diffie-hellman-group14-sha256,diffie-hellman-group15-sha256,diffie-hellman-group15-sha512,diffie-hellman-group16-sha256,diffie-hellman-group16-sha512,diffie-hellman-group17-sha512,diffie-hellman-group18-sha512,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256,diffie-hellman-group-exchange-sha512
+EOF
+#echo -e 'PubkeyAcceptedAlgorithms +ssh-rsa\nUsePAM yes\nPermitRootLogin yes\nUseDNS no' >> $RPM_BUILD_ROOT/etc/ssh/sshd_config
+
 install -d $RPM_BUILD_ROOT/etc/pam.d/
 install -d $RPM_BUILD_ROOT/etc/rc.d/init.d
 install -d $RPM_BUILD_ROOT%{_libexecdir}/openssh
+# Using custom PAM file
 install -m644 %{SOURCE2}     $RPM_BUILD_ROOT/etc/pam.d/sshd
 install -m755 contrib/redhat/sshd.init $RPM_BUILD_ROOT/etc/rc.d/init.d/sshd
 
@@ -450,7 +479,15 @@ fi
 %endif
 
 %changelog
-* Mon Jul 20 2020 Damien Miller <djm@mindrto.org>
+* Mon Oct 16 2023 Fabio Pedretti <pedretti.fabio@gmail.com>
+- Remove reference of dropped sshd.pam.old file
+- Update openssl-devel dependency to require >= 1.1.1
+- Build with --without-openssl elsewhere
+
+* Thu Oct 28 2021 Damien Miller <djm@mindrot.org>
+- Remove remaining traces of --with-md5-passwords
+
+* Mon Jul 20 2020 Damien Miller <djm@mindrot.org>
 - Add ssh-sk-helper and corresponding manual page.
 
 * Sat Feb 10 2018 Darren Tucker <dtucker@dtucker.net>
