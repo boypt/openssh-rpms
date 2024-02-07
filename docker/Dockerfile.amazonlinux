@@ -1,0 +1,27 @@
+ARG VERSION_NUM="2023"
+FROM amazonlinux:$VERSION_NUM
+ARG VERSION_NUM
+ARG CHINA_MIRROR=0
+LABEL Author="Rex Zhou <zrx879582094@gmail.com>"
+
+WORKDIR /data
+
+# Copy all files
+COPY . /data
+
+RUN if [ "$CHINA_MIRROR" != "0" ]; then \
+        bash ./docker/modify_yum_source.sh; \
+    fi && \
+    if [ "$VERSION_NUM" = "2023" ]; then \
+        yum makecache timer && yum install -y libnsl; \
+    elif [ "$VERSION_NUM" = "2" ]; then \
+        yum makecache fast && yum install -y gtk2-devel imake; \
+    elif [ "$VERSION_NUM" = "1" ]; then \
+        yum makecache fast && yum install -y imake; \
+    fi && \
+    yum groupinstall -y "Development Tools" && \
+    yum install -y rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel perl perl-IPC-Cmd && \
+    find . -type f -name '.keep' -delete && \
+    bash ./pullsrc.sh
+
+CMD ["bash", "/data/compile.sh"]
