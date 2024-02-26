@@ -83,8 +83,6 @@ See file `docker.README.md`
 
 ## Security Notes
 
-For **OLD** systems that are still in production, TOP security is hardly our first concern, while compatibility is.
-
 This package provide following options in `/etc/ssh/sshd_config` to work like triditional sshd.
 
 ```
