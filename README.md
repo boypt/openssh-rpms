@@ -19,11 +19,10 @@ The build script reads `version.env` for actual version definitions.
 ```bash
 yum groupinstall -y "Development Tools"
 yum install -y imake rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel gtk2-devel perl-IPC-Cmd
+
+# For CentOS5:
+yum install gcc44
 ```
-
-### Note for CentOS 5:
-
-- `gcc44` is prefered (`yum install gcc44`)
 
 ## Usage
 
@@ -94,4 +93,4 @@ KexAlgorithms -diffie-hellman-group1-sha1,diffie-hellman-group1-sha256,diffie-he
 
 ## Use Docker
 
-See file `README.docker.md`
+See file `docker.README.md`
