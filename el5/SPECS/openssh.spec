@@ -223,11 +223,13 @@ environment.
 %define perl_dir %{_builddir}/%{name}-%{version}/perl
 mkdir -p perl
 tar xfz %{SOURCE4} --strip-components=1 -C perl
-pushd perl
-./configure.gnu
-make %{?_smp_mflags}
 # perl is only needed during this build process.
-export PATH=$PWD:$PATH
+pushd perl
+mkdir -p perlbin
+./configure.gnu --prefix=$PWD/perlbin
+make %{?_smp_mflags}
+make install
+export PATH=$PWD/perlbin/bin:$PATH
 popd
 
 # Add content below to use source code of OpenSSL
