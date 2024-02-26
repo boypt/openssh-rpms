@@ -226,7 +226,8 @@ tar xfz %{SOURCE4} --strip-components=1 -C perl
 pushd perl
 ./configure.gnu
 make %{?_smp_mflags}
-make install
+# perl is only needed during this build process.
+export PATH=$PWD:$PATH
 popd
 
 # Add content below to use source code of OpenSSL
