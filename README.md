@@ -63,8 +63,8 @@ yum --disablerepo=* localinstall $BASE_PATH/openssh-*.rpm
 # in case host key files got permissions too open.
 chmod -v 600 /etc/ssh/ssh_host_*_key
 
-# For OSs CentOS7:
-# sometimes the previous installed systemd unit file is left on disk,
+# For CentOS7:
+# in some cases the previously installed systemd unit file is left on disk,
 # which causes systemd mixing unit files and initscripts units provided by this package.
 if [[ -d /run/systemd/system ]]; then
     mv /usr/lib/systemd/system/sshd.service /usr/lib/systemd/system/sshd.service.$(date +%Y%m%d)
@@ -75,6 +75,10 @@ fi
 # Restart service
 service sshd restart
 ```
+
+## Use Docker
+
+See file `docker.README.md`
 
 ## Security Notes
 
@@ -90,7 +94,3 @@ UseDNS no
 UsePAM yes
 KexAlgorithms -diffie-hellman-group1-sha1,diffie-hellman-group1-sha256,diffie-hellman-group14-sha1,diffie-hellman-group14-sha256,diffie-hellman-group15-sha256,diffie-hellman-group15-sha512,diffie-hellman-group16-sha256,diffie-hellman-group16-sha512,diffie-hellman-group17-sha512,diffie-hellman-group18-sha512,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256,diffie-hellman-group-exchange-sha512
 ```
-
-## Use Docker
-
-See file `docker.README.md`
