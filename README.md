@@ -10,7 +10,7 @@
 ## Current Version:
 
 - OpenSSH 9.6p1
-- OpenSSL 3.0.13 / 3.0.9 (FIPS validated, see: [[OpenSSL Official](https://www.openssl.org/source/))
+- OpenSSL 3.0.13 / 3.0.9 (FIPS validated, see: [OpenSSL Official](https://www.openssl.org/source/))
 
 The build script reads `version.env` for actual version definitions.
 
