@@ -30,17 +30,18 @@ yum install gcc44
 
 ```bash
 # 1. Install build requirements as listed above.
-# 2. Edit version.env file if you want a specific version of openssh/openssl combination (or maybe I havn't updated to the latest).
+# 2. Edit version.env file if necessary.
 
 # 3. Download source packages.
-# if any error comes up, manally download the source files into the `downloads` dir.
 ./pullsrc.sh
+# if any error comes up, manally download the source files into the `downloads` dir.
 
 # 4. Run the script to build RPMs. 
 ./compile.sh
+
 # For CentOS 5 
-# ./compile.sh el5
-# CentOS5 didn't set the variable of `${dist}`, manually run the script with argument 
+./compile.sh el5
+# CentOS5 didn't set the variable of `${dist}`, manually run the script with argument.
 ```
 
 
