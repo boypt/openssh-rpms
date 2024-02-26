@@ -26,21 +26,31 @@ source version.env
 OPENSSHMIR=https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable
 OPENSSLMIR=https://www.openssl.org/source/
 ASKPASSMIR=https://src.fedoraproject.org/repo/pkgs/openssh/x11-ssh-askpass-1.2.4.1.tar.gz/8f2e41f3f7eaa8543a2440454637f3c3
+PERLMIR=https://www.cpan.org/src/5.0
 
+rpm -q wget || yum install -y wget
 mkdir -p downloads
 pushd downloads
 if [[ ! -f $OPENSSLSRC ]]; then
   echo "Get:" $OPENSSLMIR/$OPENSSLSRC
-  wget $OPENSSLMIR/$OPENSSLSRC
+  wget --no-check-certificate $OPENSSLMIR/$OPENSSLSRC || \
+	  echo "!!! Please download $OPENSSLSRC in $PWD by yourself."
 fi
 
 if [[ ! -f $OPENSSHSRC  ]]; then
   echo Get: $OPENSSHMIR/$OPENSSHSRC
-  wget $OPENSSHMIR/$OPENSSHSRC
+  wget --no-check-certificate $OPENSSHMIR/$OPENSSHSRC || \
+	  echo "!!! Please download $OPENSSHSRC in $PWD by yourself."
 fi
 
 if [[ ! -f $ASKPASSSRC  ]]; then
   echo Get: $ASKPASSMIR/$ASKPASSSRC
-  wget $ASKPASSMIR/$ASKPASSSRC
+  wget --no-check-certificate $ASKPASSMIR/$ASKPASSSRC || \
+	  echo "!!! Please download $ASKPASSSRC in $PWD by yourself."
 fi
 
+if ! perl -v | grep 'perl 5' && [[ ! -f $PERLSRC  ]]; then
+  echo Get: $PERLMIR/$PERLSRC
+  wget --no-check-certificate $PERLMIR/$PERLSRC || \
+	  echo "!!! Please download $PERLSRC in $PWD by yourself."
+fi

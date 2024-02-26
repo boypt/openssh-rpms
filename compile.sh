@@ -22,7 +22,17 @@ rpmtopdir="${1:-}"
 
 if [[ -z $rpmtopdir ]]; then
     VAREL=$(rpm --eval '%{?dist}')
+    [ -z "$VAREL" ] && VAREL=".el5"
     case $VAREL in
+        .amzn1)
+            rpmtopdir=amzn1
+            ;;
+        .amzn2)
+            rpmtopdir=amzn2
+            ;;
+        .amzn2023)
+            rpmtopdir=amzn2023
+            ;;
         .el7)
             rpmtopdir=el7
             ;;
@@ -37,7 +47,7 @@ if [[ -z $rpmtopdir ]]; then
             fi
             ;;
         *)
-            echo "rpm dist undefined, please specify: el5 el6 el7"
+            echo "rpm dist undefined, please specify: el5 el6 el7 amzn1 amzn2 amzn2023"
             exit 1
             ;;
     esac
@@ -45,7 +55,7 @@ fi
 
 
 if [[ ! -d $rpmtopdir ]]; then 
-  echo "only work in el5/el6/el7"
+  echo "only work in el5/el6/el7/amzn1/amzn2/amzn2023"
   echo "eg: ${0} el7"
   exit 1
 fi
@@ -64,6 +74,9 @@ SOURCES=( $OPENSSHSRC \
           $ASKPASSSRC \
 )
 
+# only on RHEL 5 perl source is needed.
+[[ $rpmtopdir == "el5" ]] && SOURCES+=($PERLSRC)
+
 pushd $rpmtopdir
 for fn in ${SOURCES[@]}; do
   CHECKEXISTS $fn
@@ -74,6 +87,7 @@ rpmbuild -ba SPECS/openssh.spec --target $(uname -m) --define "_topdir $PWD" \
 	--define "opensslver ${OPENSSLVER}" \
 	--define "opensshver ${OPENSSHVER}" \
 	--define "opensshpkgrel ${PKGREL}" \
+	--define "perlver ${PERLVER}" \
 	--define 'no_gtk2 1' \
 	--define 'skip_gnome_askpass 1' \
 	--define 'skip_x11_askpass 1' \
