@@ -21,8 +21,9 @@ rpmtopdir="${1:-}"
 # fail_command || true
 
 if [[ -z $rpmtopdir ]]; then
+    VENDOR=$(rpm --eval '%{?_vendor}')
     VAREL=$(rpm --eval '%{?dist}')
-    [ -z "$VAREL" ] && VAREL=".el5"
+    #[[ $VENDOR == "redhat" && -z "$VAREL" ]] && VAREL=".el5"
     case $VAREL in
         .amzn1)
             rpmtopdir=amzn1
@@ -47,7 +48,11 @@ if [[ -z $rpmtopdir ]]; then
             fi
             ;;
         *)
-            echo "rpm dist undefined, please specify: el5 el6 el7 amzn1 amzn2 amzn2023"
+            echo "rpm dist undefined, please specify manualy: el5 el6 el7 amzn1 amzn2 amzn2023"
+	    echo "Current OS vendor: $VENDOR"
+	    [[ -f /etc/os-release ]] && cat /etc/os-release
+	    [[ -f /etc/redhat-release ]] && cat /etc/redhat-release 
+	    [[ -f /etc/system-release ]] && cat /etc/system-release
             exit 1
             ;;
     esac
