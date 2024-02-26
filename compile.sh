@@ -72,8 +72,10 @@ CHECKEXISTS() {
 SOURCES=( $OPENSSHSRC \
           $OPENSSLSRC \
           $ASKPASSSRC \
-          $PERLSRC \
 )
+
+# only on RHEL 5 perl source is needed.
+[[ $rpmtopdir == "el5" ]] && SOURCES+=($PERLSRC)
 
 pushd $rpmtopdir
 for fn in ${SOURCES[@]}; do
