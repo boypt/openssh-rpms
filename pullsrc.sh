@@ -33,20 +33,24 @@ mkdir -p downloads
 pushd downloads
 if [[ ! -f $OPENSSLSRC ]]; then
   echo "Get:" $OPENSSLMIR/$OPENSSLSRC
-  wget --no-check-certificate $OPENSSLMIR/$OPENSSLSRC
+  wget --no-check-certificate $OPENSSLMIR/$OPENSSLSRC || \
+	  echo "!!! Please download $OPENSSLSRC in $PWD by yourself."
 fi
 
 if [[ ! -f $OPENSSHSRC  ]]; then
   echo Get: $OPENSSHMIR/$OPENSSHSRC
-  wget --no-check-certificate $OPENSSHMIR/$OPENSSHSRC
+  wget --no-check-certificate $OPENSSHMIR/$OPENSSHSRC || \
+	  echo "!!! Please download $OPENSSHSRC in $PWD by yourself."
 fi
 
 if [[ ! -f $ASKPASSSRC  ]]; then
   echo Get: $ASKPASSMIR/$ASKPASSSRC
-  wget --no-check-certificate $ASKPASSMIR/$ASKPASSSRC
+  wget --no-check-certificate $ASKPASSMIR/$ASKPASSSRC || \
+	  echo "!!! Please download $ASKPASSSRC in $PWD by yourself."
 fi
 
 if ! perl -v | grep 'perl 5' && [[ ! -f $PERLSRC  ]]; then
   echo Get: $PERLMIR/$PERLSRC
-  wget --no-check-certificate $PERLMIR/$PERLSRC
+  wget --no-check-certificate $PERLMIR/$PERLSRC || \
+	  echo "!!! Please download $PERLSRC in $PWD by yourself."
 fi
