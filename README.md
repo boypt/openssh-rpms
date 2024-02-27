@@ -73,9 +73,14 @@ if [[ -d /run/systemd/system && -f /usr/lib/systemd/system/sshd.service ]]; then
     systemctl daemon-reload
 fi
 
+# Check Installed version:
+ssh -V && /usr/sbin/sshd -V
+
 # Restart service
 service sshd restart
 ```
+
+** DO NOT DISCONNECET ** current ssh shell yet, open a ** NEW ** shell and login to you machine to verify that sshd is working properly.
 
 ## Use Docker
 
