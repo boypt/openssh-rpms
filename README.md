@@ -3,9 +3,15 @@
 - CentOS 5
 - CentOS 6
 - CentOS 7
+- CentOS 8 (Stream 8)
 - Amazon Linux 1
 - Amazon Linux 2
 - Amazon Linux 2023
+
+Also tested in CentOS-like distros:
+
+- UnionTech OS Server 20
+- openEuler 22.03 (LTS-SP1)
 
 ## Current Version:
 
@@ -18,7 +24,7 @@ The build script reads `version.env` for actual version definitions.
 
 ```bash
 yum groupinstall -y "Development Tools"
-yum install -y imake rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel gtk2-devel perl-IPC-Cmd
+yum install -y imake rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel gtk2-devel perl perl-IPC-Cmd
 
 # For CentOS5 only:
 yum install -y gcc44
@@ -44,22 +50,18 @@ yum install -y gcc44
 
 ```bash
 # Backup current SSH config
-if test -e /etc/ssh/sshd_config; then
-  mv /etc/ssh/sshd_config /etc/ssh/sshd_config.$(date +%Y%m%d)
-fi
+[[ -f /etc/ssh/sshd_config ]] && mv /etc/ssh/sshd_config /etc/ssh/sshd_config.$(date +%Y%m%d)
 
-# Force install compiled packages.
-OS_DIST="$(./compile GETEL | tr -d '.')"
-BASE_PATH="$PWD/$OS_DIST/RPMS/$(uname -m)"
-
-yum --disablerepo=* localinstall $BASE_PATH/openssh-*.rpm
+# Install compiled packages.
+RPM_PATH="$PWD/$(./compile.sh GETEL)/RPMS/$(uname -m)"
+find $BASE_PATH -type f ! -name '*debug*' | xargs sudo yum --disablerepo=* localinstall -y
 
 # in case host key files got permissions too open.
 chmod -v 600 /etc/ssh/ssh_host_*_key
 
-# For CentOS7:
-# in some cases the previously installed systemd unit file is left on disk,
-# which causes systemd mixing unit files and initscripts units provided by this package.
+# For CentOS7+:
+# in some cases previously installed systemd unit file is left on disk after upgrade.
+# causes systemd mixing unit files and initscripts units provided by this package.
 if [[ -d /run/systemd/system && -f /usr/lib/systemd/system/sshd.service ]]; then
     mv /usr/lib/systemd/system/sshd.service /usr/lib/systemd/system/sshd.service.$(date +%Y%m%d)
     systemctl daemon-reload
