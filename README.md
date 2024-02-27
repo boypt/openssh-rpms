@@ -35,7 +35,7 @@ yum install -y gcc44
 ### Build RPMs
 
 1. Install build requirements listed above.
-2. Edit version.env file if necessary.
+2. Edit `version.env` file if necessary.
 3. Download source packages.
 ```bash
 ./pullsrc.sh

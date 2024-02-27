@@ -89,17 +89,30 @@ BUILD_RPM() {
 	popd
 }
 
-LIST_RPMS() {
+LIST_RPMDIR(){
     local DISTVER=$(GUESS_DIST)
     local RPMDIR=$__dir/$(GUESS_DIST)/RPMS/$(uname -m)
-    if [[ -d $RPMDIR ]]; then
-	find $RPMDIR -type f -name '*.rpm' ! -name '*debug*'
-    fi
+    [[ -d $RPMDIR ]] && echo $RPMDIR
+}
+
+LIST_RPMS() {
+    local RPMDIR=$(LIST_RPMDIR)
+    [[ -d $RPMDIR ]] && find $RPMDIR -type f -name '*.rpm' ! -name '*debug*'
 }
 
 # sub cmds
-[[ $arg1 == "GETEL" ]] && GUESS_DIST && exit 0
-[[ $arg1 == "GETRPM" ]] && LIST_RPMS && exit 0
+case $arg1 in
+	GETEL)
+		GUESS_DIST && exit 0
+		;;
+	GETRPM)
+		LIST_RPMS && exit 0
+		;;
+	RPMDIR)
+		LIST_RPMDIR && exit 0
+		;;
+esac
+
 
 # manual specified dist
 [[ -n $arg1 && -d $__dir/$arg1 ]] && rpmtopdir=$arg1 && BUILD_RPM && exit 0
