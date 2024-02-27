@@ -34,32 +34,33 @@ yum install -y gcc44
 
 ### Build RPMs
 
+1. Install build requirements listed above.
+2. Edit version.env file if necessary.
+3. Download source packages.
 ```bash
-# 1. Install build requirements listed above.
-# 2. Edit version.env file if necessary.
-# 3. Download source packages.
 ./pullsrc.sh
-# if any error comes up, manally download the source files into the `downloads` dir.
-
-# 4. Run the script to build RPMs. 
+```
+if any error comes up, manally download the source files into the `downloads` dir.
+4. Run the script to build RPMs. 
+```bash
 ./compile.sh
 ```
-
-
-### Install RPMs
-
-You may copy built RPMs to other machines to install.
+5. Lists all generated RPMs, you may copy these RPMs to other machines to install.
 ```bash
 ./compile.sh GETRPM 
 ```
 
-Or install in the current machine.
+### Install RPMs
+
 ```bash
 # Backup current SSH config
 [[ -f /etc/ssh/sshd_config ]] && mv /etc/ssh/sshd_config /etc/ssh/sshd_config.$(date +%Y%m%d)
 
 # Install compiled packages.
 ./compile.sh GETRPM | xargs sudo yum --disablerepo=* localinstall -y
+
+# Or install copied RPMs in the current dir:
+sudo yum --disablerepo=* localinstall -y ./openssh*.rpm
 
 # in case host key files got permissions too open.
 chmod -v 600 /etc/ssh/ssh_host_*_key
