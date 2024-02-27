@@ -45,22 +45,22 @@ if any error comes up, manally download the source files into the `downloads` di
 ```bash
 ./compile.sh
 ```
-5. Lists all generated RPMs, you may copy these RPMs to other machines to install.
-```bash
-./compile.sh GETRPM 
-```
 
 ### Install RPMs
 
 ```bash
+# Go go the generated RPMS directory.
+cd $(./compile.sh RPMDIR)
+pwd
+ls
+# you will find multiple RPM files in this directory.
+# you may copy them to other machines, and continue following steps there.
+
 # Backup current SSH config
 [[ -f /etc/ssh/sshd_config ]] && mv /etc/ssh/sshd_config /etc/ssh/sshd_config.$(date +%Y%m%d)
 
-# Install compiled packages.
-./compile.sh GETRPM | xargs sudo yum --disablerepo=* localinstall -y
-
-# Or install copied RPMs in the current dir:
-sudo yum --disablerepo=* localinstall -y ./openssh*.rpm
+# Install rpm packages. Exclude all debug packages.
+find . ! -name '*debug*' -name '*.rpm' | xargs sudo yum --disablerepo=* localinstall -y
 
 # in case host key files got permissions too open.
 chmod -v 600 /etc/ssh/ssh_host_*_key
