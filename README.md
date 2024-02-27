@@ -67,10 +67,9 @@ chmod -v 600 /etc/ssh/ssh_host_*_key
 # For CentOS7:
 # in some cases the previously installed systemd unit file is left on disk,
 # which causes systemd mixing unit files and initscripts units provided by this package.
-if [[ -d /run/systemd/system ]]; then
+if [[ -d /run/systemd/system && -f /usr/lib/systemd/system/sshd.service ]]; then
     mv /usr/lib/systemd/system/sshd.service /usr/lib/systemd/system/sshd.service.$(date +%Y%m%d)
     systemctl daemon-reload
-    cp /run/systemd/generator.late/sshd.service /usr/lib/systemd/system/sshd.service 
 fi
 
 # Restart service
