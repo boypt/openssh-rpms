@@ -20,8 +20,8 @@ The build script reads `version.env` for actual version definitions.
 yum groupinstall -y "Development Tools"
 yum install -y imake rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel gtk2-devel perl-IPC-Cmd
 
-# For CentOS5:
-yum install gcc44
+# For CentOS5 only:
+yum install -y gcc44
 ```
 
 ## Usage
@@ -29,19 +29,14 @@ yum install gcc44
 ### Build RPMs
 
 ```bash
-# 1. Install build requirements as listed above.
+# 1. Install build requirements listed above.
 # 2. Edit version.env file if necessary.
-
 # 3. Download source packages.
 ./pullsrc.sh
 # if any error comes up, manally download the source files into the `downloads` dir.
 
 # 4. Run the script to build RPMs. 
 ./compile.sh
-
-# For CentOS 5 
-./compile.sh el5
-# CentOS5 didn't set the variable of `${dist}`, manually run the script with argument.
 ```
 
 
@@ -54,9 +49,7 @@ if test -e /etc/ssh/sshd_config; then
 fi
 
 # Force install compiled packages.
-yum install -y coreutils
-OS_DIST="$(rpm --eval '%{?dist}'|tr -d '.')"
-[ -z "$OS_DIST" ] && OS_DIST="el5"
+OS_DIST="$(./compile GETEL | tr -d '.')"
 BASE_PATH="$PWD/$OS_DIST/RPMS/$(uname -m)"
 
 yum --disablerepo=* localinstall $BASE_PATH/openssh-*.rpm

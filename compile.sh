@@ -29,8 +29,12 @@ CHECKEXISTS() {
 }
 
 
-GUESS_DIST_BY_GLIBC() {
+GUESS_DIST() {
+        local dist=$(rpm --eval '%{?dist}' | tr -d '.')
+        [[ -n $dist ]] && echo $dist && return 0
+
 	local glibcver=$(ldd --version | head -n1 | grep -Eo '[0-9]+' | tr -d '\n')
+
 	# centos 5 uses glibc 2.5
 	[[ $glibcver -eq 25 ]] && echo 'el5' && return 0
 
@@ -40,7 +44,7 @@ GUESS_DIST_BY_GLIBC() {
 	# centos 7 uses glibc 2.17
 	[[ $glibcver -eq 217 ]] && echo 'el7' && return 0
 
-	# centos 8 uses glibc 2.28, not yet to be in a seprate dir yet
+	# centos 8 uses glibc 2.28, not yet to be in a seprate dir
 	#[[ $glibcver -eq 228 ]] && echo 'el8' && return 0
 
 	# some centos-like dists ships higher version of glibc, fallback to el7
@@ -48,33 +52,31 @@ GUESS_DIST_BY_GLIBC() {
 }
 
 if [[ -z $rpmtopdir ]]; then
-    VENDOR=$(rpm --eval '%{?_vendor}')
-    VAREL=$(rpm --eval '%{?dist}')
-    [[ -z $VAREL ]] && VAREL=".$(GUESS_DIST_BY_GLIBC)"
-
-    case $VAREL in
-        .amzn1)
+    DISTVER=$(GUESS_DIST)
+    case $DISTVER in
+        amzn1)
             rpmtopdir=amzn1
             ;;
-        .amzn2)
+        amzn2)
             rpmtopdir=amzn2
             ;;
-        .amzn2023)
+        amzn2023)
             rpmtopdir=amzn2023
             ;;
-        .el7)
+        el7)
             rpmtopdir=el7
             ;;
-        .el6)
+        el6)
             rpmtopdir=el6
             ;;
-        .el5)
+        el5)
             rpmtopdir=el5
             # on centos5, it's prefered to use gcc44
 	    rpm -q gcc44 && export CC=gcc44
             ;;
         *)
             echo "dist undefined, please specify manualy: el5 el6 el7 amzn1 amzn2 amzn2023"
+	    VENDOR=$(rpm --eval '%{?_vendor}')
 	    echo -e "Current OS vendor: $VENDOR \n"
 	    [[ -f /etc/os-release ]] && cat /etc/os-release
 	    [[ -f /etc/redhat-release ]] && cat /etc/redhat-release 
@@ -84,6 +86,7 @@ if [[ -z $rpmtopdir ]]; then
     esac
 fi
 
+[[ $rpmtopdir == "GETEL" ]] && GUESS_DIST && exit 0
 
 if [[ ! -d $rpmtopdir ]]; then 
   echo "only work in el5/el6/el7/amzn1/amzn2/amzn2023"
