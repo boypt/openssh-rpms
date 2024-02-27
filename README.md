@@ -48,6 +48,12 @@ yum install -y gcc44
 
 ### Install RPMs
 
+You may copy built RPMs to other machines to install.
+```bash
+./compile.sh GETRPM 
+```
+
+Or install in the current machine.
 ```bash
 # Backup current SSH config
 [[ -f /etc/ssh/sshd_config ]] && mv /etc/ssh/sshd_config /etc/ssh/sshd_config.$(date +%Y%m%d)
