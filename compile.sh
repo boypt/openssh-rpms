@@ -31,6 +31,10 @@ CHECKEXISTS() {
 
 GUESS_DIST() {
         local dist=$(rpm --eval '%{?dist}' | tr -d '.')
+	
+	# el8 fallback to el7
+	[[ $dist == "el8" ]] && dist="el7"
+
         [[ -n $dist ]] && echo $dist && return 0
 
 	local glibcver=$(ldd --version | head -n1 | grep -Eo '[0-9]+' | tr -d '\n')
