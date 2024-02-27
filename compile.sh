@@ -14,7 +14,8 @@ __file="${__dir}/$(basename "${BASH_SOURCE[0]}")"
 __base="$(basename ${__file} .sh)"
 __root="$(cd "$(dirname "${__dir}")" && pwd)" # <-- change this as it depends on your app
 
-rpmtopdir="${1:-}"
+arg1="${1:-}"
+rpmtopdir=
 
 # trap 'echo Signal caught, cleaning up >&2; cd /tmp; /bin/rm -rfv "$TMP"; exit 15' 1 2 3 15
 # allow command fail:
@@ -30,6 +31,11 @@ CHECKEXISTS() {
 
 
 GUESS_DIST() {
+	# will not work if rpm cmd not exists
+	if ! type -p rpm > /dev/null;then
+	  echo 'unknown' && return 0
+	fi
+
         local dist=$(rpm --eval '%{?dist}' | tr -d '.')
 	
 	# el8 fallback to el7
@@ -55,7 +61,51 @@ GUESS_DIST() {
 	[[ $glibcver -gt 217 ]] && echo 'el7' && return 0
 }
 
-if [[ -z $rpmtopdir ]]; then
+BUILD_RPM() {
+
+	source version.env
+	SOURCES=( $OPENSSHSRC \
+		  $OPENSSLSRC \
+		  $ASKPASSSRC \
+		)
+	# only on EL5, perl source is needed.
+	[[ $rpmtopdir == "el5" ]] && SOURCES+=($PERLSRC)
+
+	pushd $rpmtopdir
+	for fn in ${SOURCES[@]}; do
+	  CHECKEXISTS $fn && \
+	    install -v -m666 $__dir/downloads/$fn ./SOURCES/
+	done
+
+	rpmbuild -ba SPECS/openssh.spec --target $(uname -m) --define "_topdir $PWD" \
+		--define "opensslver ${OPENSSLVER}" \
+		--define "opensshver ${OPENSSHVER}" \
+		--define "opensshpkgrel ${PKGREL}" \
+		--define "perlver ${PERLVER}" \
+		--define 'no_gtk2 1' \
+		--define 'skip_gnome_askpass 1' \
+		--define 'skip_x11_askpass 1' \
+		;
+	popd
+}
+
+LIST_RPMS() {
+    local DISTVER=$(GUESS_DIST)
+    local RPMDIR=$__dir/$(GUESS_DIST)/RPMS/$(uname -m)
+    if [[ -d $RPMDIR ]]; then
+	find $RPMDIR -type f -name '*.rpm' ! -name '*debug*'
+    fi
+}
+
+# sub cmds
+[[ $arg1 == "GETEL" ]] && GUESS_DIST && exit 0
+[[ $arg1 == "GETRPM" ]] && LIST_RPMS && exit 0
+
+# manual specified dist
+[[ -n $arg1 && -d $__dir/$arg1 ]] && rpmtopdir=$arg1 && BUILD_RPM && exit 0
+
+# auto detect distro
+if [[ -z $arg1 ]]; then
     DISTVER=$(GUESS_DIST)
     case $DISTVER in
         amzn1)
@@ -79,47 +129,23 @@ if [[ -z $rpmtopdir ]]; then
 	    rpm -q gcc44 && export CC=gcc44
             ;;
         *)
-            echo "dist undefined, please specify manualy: el5 el6 el7 amzn1 amzn2 amzn2023"
-	    VENDOR=$(rpm --eval '%{?_vendor}')
-	    echo -e "Current OS vendor: $VENDOR \n"
+            echo "Distro undefined, please specify manualy: el5 el6 el7 amzn1 amzn2 amzn2023"
+	    #VENDOR=$(rpm --eval '%{?_vendor}')
+	    #echo -e "Current OS vendor: $VENDOR \n"
+	    echo -e "\nCurrent OS:"
 	    [[ -f /etc/os-release ]] && cat /etc/os-release
 	    [[ -f /etc/redhat-release ]] && cat /etc/redhat-release 
 	    [[ -f /etc/system-release ]] && cat /etc/system-release
-            exit 1
+	    echo
             ;;
     esac
 fi
 
-[[ $rpmtopdir == "GETEL" ]] && GUESS_DIST && exit 0
-
 if [[ ! -d $rpmtopdir ]]; then 
-  echo "only work in el5/el6/el7/amzn1/amzn2/amzn2023"
+  echo "This script works only in el5/el6/el7/amzn1/amzn2/amzn2023"
   echo "eg: ${0} el7"
   exit 1
 fi
 
-source version.env
-SOURCES=( $OPENSSHSRC \
-          $OPENSSLSRC \
-          $ASKPASSSRC \
-)
-# only on EL5, perl source is needed.
-[[ $rpmtopdir == "el5" ]] && SOURCES+=($PERLSRC)
-
-pushd $rpmtopdir
-for fn in ${SOURCES[@]}; do
-  CHECKEXISTS $fn && \
-    install -v -m666 $__dir/downloads/$fn ./SOURCES/
-done
-
-rpmbuild -ba SPECS/openssh.spec --target $(uname -m) --define "_topdir $PWD" \
-	--define "opensslver ${OPENSSLVER}" \
-	--define "opensshver ${OPENSSHVER}" \
-	--define "opensshpkgrel ${PKGREL}" \
-	--define "perlver ${PERLVER}" \
-	--define 'no_gtk2 1' \
-	--define 'skip_gnome_askpass 1' \
-	--define 'skip_x11_askpass 1' \
-	;
-popd
+[[ -d $rpmtopdir ]] && BUILD_RPM
 

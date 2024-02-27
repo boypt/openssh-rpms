@@ -8,7 +8,7 @@
 - Amazon Linux 2
 - Amazon Linux 2023
 
-Also tested in CentOS-like distros:
+Also tested on CentOS-like distros:
 
 - UnionTech OS Server 20
 - openEuler 22.03 (LTS-SP1)
@@ -53,8 +53,7 @@ yum install -y gcc44
 [[ -f /etc/ssh/sshd_config ]] && mv /etc/ssh/sshd_config /etc/ssh/sshd_config.$(date +%Y%m%d)
 
 # Install compiled packages.
-RPMDIR="$PWD/$(./compile.sh GETEL)/RPMS/$(uname -m)"
-find $RPMDIR -type f ! -name '*debug*' | xargs sudo yum --disablerepo=* localinstall -y
+./compile.sh GETRPM | xargs sudo yum --disablerepo=* localinstall -y
 
 # in case host key files got permissions too open.
 chmod -v 600 /etc/ssh/ssh_host_*_key
