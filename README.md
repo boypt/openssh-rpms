@@ -80,7 +80,7 @@ ssh -V && /usr/sbin/sshd -V
 service sshd restart
 ```
 
-** DO NOT DISCONNECET ** current ssh shell yet, open a ** NEW ** shell and login to you machine to verify that sshd is working properly.
+**DO NOT DISCONNECET** current ssh shell yet, open a **NEW** shell and login to you machine to verify that sshd is working properly.
 
 ## Use Docker
 
