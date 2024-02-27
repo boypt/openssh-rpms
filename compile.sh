@@ -143,13 +143,11 @@ if [[ -z $arg1 ]]; then
             ;;
         *)
             echo "Distro undefined, please specify manualy: el5 el6 el7 amzn1 amzn2 amzn2023"
-	    #VENDOR=$(rpm --eval '%{?_vendor}')
-	    #echo -e "Current OS vendor: $VENDOR \n"
 	    echo -e "\nCurrent OS:"
 	    [[ -f /etc/os-release ]] && cat /etc/os-release
 	    [[ -f /etc/redhat-release ]] && cat /etc/redhat-release 
 	    [[ -f /etc/system-release ]] && cat /etc/system-release
-	    echo
+	    echo -e "Current OS vendor: $(rpm --eval '%{?_vendor}') \n"
             ;;
     esac
 fi
