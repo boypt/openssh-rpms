@@ -53,8 +53,8 @@ yum install -y gcc44
 [[ -f /etc/ssh/sshd_config ]] && mv /etc/ssh/sshd_config /etc/ssh/sshd_config.$(date +%Y%m%d)
 
 # Install compiled packages.
-RPM_PATH="$PWD/$(./compile.sh GETEL)/RPMS/$(uname -m)"
-find $BASE_PATH -type f ! -name '*debug*' | xargs sudo yum --disablerepo=* localinstall -y
+RPMDIR="$PWD/$(./compile.sh GETEL)/RPMS/$(uname -m)"
+find $RPMDIR -type f ! -name '*debug*' | xargs sudo yum --disablerepo=* localinstall -y
 
 # in case host key files got permissions too open.
 chmod -v 600 /etc/ssh/ssh_host_*_key
