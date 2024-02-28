@@ -84,12 +84,12 @@ service sshd restart
 
 #### Trouble shoot
 
-You may get complains from yum during the `yum localinstall` process. It's mostly because many distros have different subpackages depends on the main openssh package, upgrading only the openssh won't fit in the dependencies.
+You may get complains during the `yum localinstall` process. It's mostly because some subpackages depend on the main openssh package, upgrading only the main package won't fit in their dependencies.
 
-Commonly these packages are needed to be erased before installing build RPMs.
+Commonly these packages are needed to be erased before installing built RPMs.
 
 ```
-openssh-askpass openssh-keycat openssh-cavs openssh-askpass openssh-askpass-gnome openssh-debuginfo
+yum erase openssh-askpass openssh-keycat openssh-cavs openssh-askpass openssh-askpass-gnome openssh-debuginfo
 ```
 
 If still not satisfied, you may try the final wepon: FORCED INSTALL.
