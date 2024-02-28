@@ -82,6 +82,23 @@ service sshd restart
 
 **DO NOT DISCONNECET** current ssh shell yet, open a **NEW** shell and login to you machine to verify that sshd is working properly.
 
+#### Trouble shoot
+
+You may get complains from yum during the `yum localinstall` process. It's mostly because many distros have different subpackages depends on the main openssh package, upgrading only the openssh won't fit in the dependencies.
+
+Commonly these packages are needed to be erased before installing build RPMs.
+
+```
+openssh-askpass openssh-keycat openssh-cavs openssh-askpass openssh-askpass-gnome openssh-debuginfo
+```
+
+If still not satisfied, you may try the final wepon: FORCED INSTALL.
+
+```bash
+rpm -ivh --force --nodeps --replacepkgs --replacefiles openssh-*.rpm
+```
+
+
 ## Use Docker
 
 See file `docker.README.md`
