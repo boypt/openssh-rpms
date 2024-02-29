@@ -329,8 +329,9 @@ UseDNS no
 UsePAM yes
 KexAlgorithms -diffie-hellman-group1-sha1,diffie-hellman-group1-sha256,diffie-hellman-group14-sha1,diffie-hellman-group14-sha256,diffie-hellman-group15-sha256,diffie-hellman-group15-sha512,diffie-hellman-group16-sha256,diffie-hellman-group16-sha512,diffie-hellman-group17-sha512,diffie-hellman-group18-sha512,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256,diffie-hellman-group-exchange-sha512
 EOF
-#echo -e 'PubkeyAcceptedAlgorithms +ssh-rsa\nUsePAM yes\nPermitRootLogin yes\nUseDNS no' >> $RPM_BUILD_ROOT/etc/ssh/sshd_config
 
+install -m755 contrib/ssh-copy-id $RPM_BUILD_ROOT%{_bindir}/
+install -m644 contrib/ssh-copy-id.1 $RPM_BUILD_ROOT%{_mandir}/man1/
 install -d $RPM_BUILD_ROOT/etc/pam.d/
 install -d $RPM_BUILD_ROOT/etc/rc.d/init.d
 install -d $RPM_BUILD_ROOT%{_libexecdir}/openssh
@@ -442,10 +443,12 @@ fi
 %attr(0755,root,root) %{_bindir}/ssh-add
 %attr(0755,root,root) %{_bindir}/ssh-keyscan
 %attr(0755,root,root) %{_bindir}/sftp
+%attr(0755,root,root) %{_bindir}/ssh-copy-id
 %attr(0644,root,root) %{_mandir}/man1/ssh-agent.1*
 %attr(0644,root,root) %{_mandir}/man1/ssh-add.1*
 %attr(0644,root,root) %{_mandir}/man1/ssh-keyscan.1*
 %attr(0644,root,root) %{_mandir}/man1/sftp.1*
+%attr(0644,root,root) %{_mandir}/man1/ssh-copy-id.1*
 %endif
 
 %if ! %{rescue}
