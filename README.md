@@ -1,5 +1,11 @@
 # Latest OpenSSH RPM / SRPM for old CentOS
 
+A simple script to build latest upstream OpenSSH RPMs for older CentOS/RHEL distros.
+
+Similar Project: [Latest OpenSSH for Debian / Ubuntu distros](https://github.com/boypt/openssh-deb)
+
+## Tested OSs
+
 - CentOS 5
 - CentOS 6
 - CentOS 7
@@ -8,7 +14,7 @@
 - Amazon Linux 2
 - Amazon Linux 2023
 
-Also tested on CentOS-like distros:
+Also tested on some CentOS-like distros:
 
 - UnionTech OS Server 20
 - openEuler 22.03 (LTS-SP1)
