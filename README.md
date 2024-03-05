@@ -4,7 +4,7 @@ A simple script to build latest upstream OpenSSH RPMs for older CentOS/RHEL dist
 
 Similar Project: [Latest OpenSSH for Debian / Ubuntu distros](https://github.com/boypt/openssh-deb)
 
-## Tested OSs
+## Supported (tested) Distro:
 
 - CentOS 5
 - CentOS 6
@@ -13,9 +13,6 @@ Similar Project: [Latest OpenSSH for Debian / Ubuntu distros](https://github.com
 - Amazon Linux 1
 - Amazon Linux 2
 - Amazon Linux 2023
-
-Also tested on some CentOS-like distros:
-
 - UnionTech OS Server 20
 - openEuler 22.03 (LTS-SP1)
 
