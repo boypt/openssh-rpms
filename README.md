@@ -6,15 +6,11 @@ Similar Project: [Backport OpenSSH for Debian / Ubuntu distros](https://github.c
 
 ## Supported (tested) Distro:
 
-- CentOS 5
-- CentOS 6
-- CentOS 7
-- CentOS 8 (Stream 8)
-- Amazon Linux 1
-- Amazon Linux 2
-- Amazon Linux 2023
+- CentOS 5/6/7/8/Stream 8
+- Amazon Linux 1/2/2023
 - UnionTech OS Server 20
 - openEuler 22.03 (LTS-SP1)
+- AnolisOS 7.9/8.6
 
 ## Current Version:
 
