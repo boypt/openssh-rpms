@@ -23,9 +23,9 @@ COMPONENT="$SERVER/cloudteam/openssh-rpm-builder"
 
 ```shell
 # Specify build versions
-VERSIONS=("7" "6" "5")
+VERSIONS=("8" "7" "6" "5")
 # Define whether to enable Tsinghua University mirror source. (Very useful for Chinese users)
-CHINA_MIRROR=0  # Setting this variable to non-zero means enabling
+CHINA_MIRROR=1  # Setting this variable to non-zero means enabling
 
 for VERSION in "${VERSIONS[@]}"
 do
@@ -45,7 +45,7 @@ echo 'The building has been completed!'
 
 ```shell
   # Specify build versions
-  VERSIONS=("7" "6" "5")
+  VERSIONS=("8" "7" "6" "5")
 
   for VERSION in "${VERSIONS[@]}"
   do
@@ -71,7 +71,7 @@ echo 'The building has been completed!'
 # Specify build versions
 VERSIONS=("2023" "2" "1")
 # Define whether to enable China mirror source. (Very useful for Chinese users)
-CHINA_MIRROR=0  # Setting this variable to non-zero means enabling
+CHINA_MIRROR=1  # Setting this variable to non-zero means enabling
 
 for VERSION in "${VERSIONS[@]}"
 do
@@ -135,7 +135,7 @@ docker run -it --rm \
 OUT_PATH="$PWD"
 
 # Specify the name of tags.
-IMAGE_TAGS=("amzn2023" "amzn2" "amzn1" "el7" "el6" "el5")
+IMAGE_TAGS=("amzn2023" "amzn2" "amzn1" "el8" "el7" "el6" "el5")
 
 for IMAGE_TAG in "${IMAGE_TAGS[@]}"
 do

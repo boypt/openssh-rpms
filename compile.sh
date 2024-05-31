@@ -145,7 +145,7 @@ if [[ -z $arg1 ]]; then
 	    rpm -q gcc44 && export CC=gcc44
             ;;
         *)
-            echo "Distro undefined, please specify manualy: el5 el6 el7 amzn1 amzn2 amzn2023"
+            echo "Distro undefined, please specify manually: el5 el6 el7 amzn1 amzn2 amzn2023"
 	    echo -e "\nCurrent OS:"
 	    [[ -f /etc/os-release ]] && cat /etc/os-release
 	    [[ -f /etc/redhat-release ]] && cat /etc/redhat-release 

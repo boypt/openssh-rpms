@@ -9,16 +9,31 @@ WORKDIR /data
 # Copy all files
 COPY . /data
 
-RUN if [ "$CHINA_MIRROR" != "0" ]; then \
+RUN if [ "$VERSION_NUM" = "8" ]; then \
+        MIRROR_URL="https://vault.centos.org" && \
+        sed -e "s|^mirrorlist=|#mirrorlist=|g" \
+            -e "s|^#baseurl=http://mirror.centos.org/centos/\$releasever|baseurl=${MIRROR_URL}/8.4.2105|g" \
+            -e "s|^#baseurl=http://mirror.centos.org/\$contentdir/\$releasever|baseurl=${MIRROR_URL}/8.4.2105|g" \
+            -i /etc/yum.repos.d/CentOS-*.repo; \
+    elif [ "$VERSION_NUM" = "5" ]; then \
+        MIRROR_URL="http://archive.kernel.org" && \
+        sed -e "s|^mirrorlist=|#mirrorlist=|g" \
+            -e "s|^#baseurl=http://mirror.centos.org/centos/\$releasever|baseurl=${MIRROR_URL}/centos-vault/5.11|g" \
+            -e "s|^#baseurl=http://mirror.centos.org/\$contentdir/\$releasever|baseurl=${MIRROR_URL}/centos-vault/5.11|g" \
+            -i.bak /etc/yum.repos.d/*.repo; \
+    fi && \
+    if [ "$CHINA_MIRROR" != "0" ]; then \
         bash ./docker/modify_yum_source.sh; \
     fi && \
-    if [ "$VERSION_NUM" = "7" ] || [ "$VERSION_NUM" = "6" ]; then \
-        yum install -y perl-IPC-Cmd; \
+    if [ "$VERSION_NUM" = "8" ]; then \
+        yum install -y perl perl-IPC-Cmd; \
+    elif [ "$VERSION_NUM" = "7" ] || [ "$VERSION_NUM" = "6" ]; then \
+        yum install -y perl-IPC-Cmd imake; \
     elif [ "$VERSION_NUM" = "5" ]; then \
-        yum install -y gcc44; \
+        yum install -y gcc44 imake; \
     fi && \
     yum groupinstall -y "Development Tools" && \
-    yum install -y imake rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel gtk2-devel && \
+    yum install -y rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel gtk2-devel && \
     find . -type f -name '.keep' -delete && \
     LINE_NO=$(grep -n -- "--define 'skip_x11_askpass 1'" /data/compile.sh | cut -d: -f1) && \
     sed -i "$LINE_NO a\--define \"debug_package %{nil}\" \\\\" ./compile.sh && \
