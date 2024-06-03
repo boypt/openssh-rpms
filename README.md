@@ -6,7 +6,7 @@ Similar Project: [Backport OpenSSH for Debian / Ubuntu distros](https://github.c
 
 ## Supported (tested) Distro:
 
-- CentOS 5/6/7/8/Stream 8
+- CentOS 5/6/7/8/Stream 8/9
 - Amazon Linux 1/2/2023
 - UnionTech OS Server 20
 - openEuler 22.03 (LTS-SP1)
@@ -36,14 +36,14 @@ yum install -y gcc44
 1. Install build requirements listed above.
 2. Edit `version.env` file if necessary.
 3. Download source packages.
-```bash
-./pullsrc.sh
-```
-if any error comes up, manally download the source files into the `downloads` dir.
+    ```bash
+    ./pullsrc.sh
+    ```
+    if any error comes up, manually download the source files into the `downloads` dir.
 4. Run the script to build RPMs. 
-```bash
-./compile.sh
-```
+    ```bash
+    ./compile.sh
+    ```
 
 ### Install RPMs
 

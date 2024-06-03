@@ -63,6 +63,52 @@ echo 'The building has been completed!'
   echo 'Push has been completed!'
 ```
 
+#### CentOS Stream
+
+##### Build images
+
+```shell
+# Specify build versions
+VERSIONS=("9" "8")
+# Define whether to enable Tsinghua University mirror source. (Very useful for Chinese users)
+CHINA_MIRROR=1  # Setting this variable to non-zero means enabling
+
+for VERSION in "${VERSIONS[@]}"
+do
+  echo "Building version: ${VERSION}"
+  # Build docker image
+  docker build \
+         -t $COMPONENT:centos-stream$VERSION \
+         --build-arg VERSION_NUM=$VERSION \
+         --build-arg CHINA_MIRROR=$CHINA_MIRROR \
+         -f docker/Dockerfile.centos-stream .
+done
+
+echo 'The building has been completed!'
+```
+
+##### Push images
+
+```shell
+  # Specify build versions
+  VERSIONS=("9" "8")
+
+  for VERSION in "${VERSIONS[@]}"
+  do
+    echo "Pushing version: ${VERSION}"
+    # Tag image
+    docker tag $COMPONENT:centos-stream$VERSION $COMPONENT:centos-stream.$VERSION
+    docker tag $COMPONENT:centos-stream$VERSION $COMPONENT:centos-stream.$VERSION.$(date +%Y%m%d)
+    docker tag $COMPONENT:centos-stream$VERSION $COMPONENT:el$VERSION
+    # Push image
+    docker push $COMPONENT:centos-stream$VERSION
+    docker push $COMPONENT:centos-stream.$VERSION
+    docker push $COMPONENT:centos-stream.$VERSION.$(date +%Y%m%d)
+    docker push $COMPONENT:el$VERSION
+  done
+  echo 'Push has been completed!'
+```
+
 #### Amazon Linux
 
 ##### Build images
@@ -135,7 +181,7 @@ docker run -it --rm \
 OUT_PATH="$PWD"
 
 # Specify the name of tags.
-IMAGE_TAGS=("amzn2023" "amzn2" "amzn1" "el8" "el7" "el6" "el5")
+IMAGE_TAGS=("amzn2023" "amzn2" "amzn1" "el9" "el8" "el7" "el6" "el5")
 
 for IMAGE_TAG in "${IMAGE_TAGS[@]}"
 do

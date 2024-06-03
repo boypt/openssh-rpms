@@ -37,8 +37,9 @@ GUESS_DIST() {
 	fi
 
         local dist=$(rpm --eval '%{?dist}' | tr -d '.')
-	
+
 	# fallback to el7
+	[[ $dist == "el9" ]] && dist="el7"
 	[[ $dist == "el8" ]] && dist="el7"
 	[[ $dist == "an7" ]] && dist="el7"
 	[[ $dist == "an8" ]] && dist="el7"
