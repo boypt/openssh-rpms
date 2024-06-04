@@ -1,0 +1,25 @@
+# Official: https://quay.io/repository/centos/centos?tab=tags
+ARG VERSION_NUM="9"
+FROM quay.io/centos/centos:stream$VERSION_NUM
+ARG CHINA_MIRROR=0
+LABEL Author="Rex Zhou <zrx879582094@gmail.com>"
+
+WORKDIR /data
+
+# Copy all files
+COPY . /data
+
+RUN if [ "$CHINA_MIRROR" != "0" ]; then \
+        yum install -y perl && \
+        perl /data/docker/modify_dnf_source.pl /etc/yum.repos.d/*.repo; \
+    fi && \
+    yum clean all && yum makecache && \
+    yum groupinstall -y "Development Tools" && \
+    yum install -y rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel gtk2-devel && \
+    yum clean all && \
+    find . -type f -name '.keep' -delete && \
+    LINE_NO=$(grep -n -- "--define 'skip_x11_askpass 1'" /data/compile.sh | cut -d: -f1) && \
+    sed -i "$LINE_NO a\--define \"debug_package %{nil}\" \\\\" ./compile.sh && \
+    bash ./pullsrc.sh
+
+CMD ["bash", "/data/compile.sh"]
