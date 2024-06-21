@@ -19,9 +19,16 @@ case $RELEASE_VER in
     yum makecache timer
     ;;
   .el7)
-    sed -e 's|^mirrorlist=|#mirrorlist=|g' \
-        -e "s|^#baseurl=http://mirror.centos.org/centos|baseurl=${MIRROR_URL}/centos|g" \
-        -i.bak /etc/yum.repos.d/CentOS-*.repo && \
+    if [ "$(uname -m)" = "aarch64" ]; then
+        sed -e 's|^mirrorlist=|#mirrorlist=|g' \
+            -e 's|^#baseurl=http://mirror.centos.org/altarch/|baseurl=https://mirrors.tuna.tsinghua.edu.cn/centos-altarch/|g' \
+            -e 's|^#baseurl=http://mirror.centos.org/$contentdir/|baseurl=https://mirrors.tuna.tsinghua.edu.cn/centos-altarch/|g' \
+            -i.bak /etc/yum.repos.d/CentOS-*.repo;
+    elif [ "$(uname -m)" = "x86_64" ]; then
+        sed -e 's|^mirrorlist=|#mirrorlist=|g' \
+            -e "s|^#baseurl=http://mirror.centos.org/centos|baseurl=${MIRROR_URL}/centos|g" \
+            -i.bak /etc/yum.repos.d/CentOS-*.repo;
+    fi && \
     rm -rf /var/cache/yum/ && \
     yum makecache fast
     ;;

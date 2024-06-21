@@ -1,6 +1,7 @@
 # Official: https://quay.io/repository/centos/centos?tab=tags
 ARG VERSION_NUM="9"
 FROM quay.io/centos/centos:stream$VERSION_NUM
+ARG VERSION_NUM
 ARG CHINA_MIRROR=0
 LABEL Author="Rex Zhou <zrx879582094@gmail.com>"
 
@@ -10,8 +11,16 @@ WORKDIR /data
 COPY . /data
 
 RUN if [ "$CHINA_MIRROR" != "0" ]; then \
-        yum install -y perl && \
-        perl /data/docker/modify_dnf_source.pl /etc/yum.repos.d/*.repo; \
+        if [ "$VERSION_NUM" = "9" ]; then \
+            yum install -y perl && \
+            perl /data/docker/modify_dnf_source.pl /etc/yum.repos.d/*.repo; \
+        elif [ "$VERSION_NUM" = "8" ]; then \
+            sed -e 's|^mirrorlist=|#mirrorlist=|g' \
+                -e 's|^#baseurl=http://mirror.centos.org/$contentdir|baseurl=https://mirrors.tuna.tsinghua.edu.cn/centos-vault|g' \
+                -i.bak \
+                /etc/yum.repos.d/CentOS-*.repo && \
+            yum install -y perl; \
+        fi \
     fi && \
     yum clean all && yum makecache && \
     yum groupinstall -y "Development Tools" && \
