@@ -316,6 +316,13 @@ UseDNS no
 UsePAM yes
 KexAlgorithms -diffie-hellman-group1-sha1,diffie-hellman-group1-sha256,diffie-hellman-group14-sha1,diffie-hellman-group14-sha256,diffie-hellman-group15-sha256,diffie-hellman-group15-sha512,diffie-hellman-group16-sha256,diffie-hellman-group16-sha512,diffie-hellman-group17-sha512,diffie-hellman-group18-sha512,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256,diffie-hellman-group-exchange-sha512
 EOF
+# Modify ssh config file, to ensure that traditional RSA-type key authentication is available to avoid git clone failures.
+# See: https://support.genymotion.com/hc/en-us/articles/9500420360093-I-get-the-error-no-matching-host-key-type-found-Their-offer-ssh-rsa-when-trying-to-connect-with-SSH
+cat << EOF >> $RPM_BUILD_ROOT/etc/ssh/ssh_config
+Host *
+    HostKeyAlgorithms = +ssh-rsa
+    PubkeyAcceptedAlgorithms = +ssh-rsa
+EOF
 
 install -m755 contrib/ssh-copy-id $RPM_BUILD_ROOT%{_bindir}/
 install -m644 contrib/ssh-copy-id.1 $RPM_BUILD_ROOT%{_mandir}/man1/
