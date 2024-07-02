@@ -14,7 +14,7 @@ Similar Project: [Backport OpenSSH for Debian / Ubuntu distros](https://github.c
 
 ## Current Version:
 
-- OpenSSH 9.7p1 (see: [OpenSSH Official](https://www.openssh.com/))
+- OpenSSH 9.8p1 (see: [OpenSSH Official](https://www.openssh.com/))
 - OpenSSL 3.0.14 / 3.0.9 (FIPS validated, see: [OpenSSL Official](https://www.openssl.org/source/))
 
 The build script reads `version.env` for actual version definitions.
