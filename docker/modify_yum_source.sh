@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Author: Rex Chow
-# Modified: 2024/2/5 08:49
+# Modified: 2024-07-03 11:28:16
 # Description: This script will modify yum repositories to Tsinghua University mirror.
 # Copyright: Copyright © 2024 Rex Zhou. All rights reserved.
 
@@ -26,7 +26,8 @@ case $RELEASE_VER in
             -i.bak /etc/yum.repos.d/CentOS-*.repo;
     elif [ "$(uname -m)" = "x86_64" ]; then
         sed -e 's|^mirrorlist=|#mirrorlist=|g' \
-            -e "s|^#baseurl=http://mirror.centos.org/centos|baseurl=${MIRROR_URL}/centos|g" \
+        -e "s|^#baseurl=http://mirror.centos.org/centos/\$releasever|baseurl=${MIRROR_URL}/centos-vault/7.9.2009|g" \
+        -e "s|^#baseurl=http://mirror.centos.org/\$contentdir/\$releasever|baseurl=${MIRROR_URL}/centos-vault/7.9.2009|g" \
             -i.bak /etc/yum.repos.d/CentOS-*.repo;
     fi && \
     rm -rf /var/cache/yum/ && \
