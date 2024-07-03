@@ -1,6 +1,6 @@
-# Backport OpenSSH RPM / SRPM for old CentOS
+# Backport OpenSSH RPM / SRPM for CentOS
 
-A simple script to build latest OpenSSH backport RPMs for older CentOS/RHEL distros.
+A simple script to backport latest OpenSSH RPMs for CentOS/RHEL (like) distros.
 
 Similar Project: [Backport OpenSSH for Debian / Ubuntu distros](https://github.com/boypt/openssh-deb)
 
