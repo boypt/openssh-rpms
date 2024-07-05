@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Author: Rex Chow
-# Modified: 2024/2/5 08:49
+# Modified: 2024-07-04 11:18:49
 # Description: This script will modify yum repositories to Tsinghua University mirror.
 # Copyright: Copyright © 2024 Rex Zhou. All rights reserved.
 
@@ -21,12 +21,13 @@ case $RELEASE_VER in
   .el7)
     if [ "$(uname -m)" = "aarch64" ]; then
         sed -e 's|^mirrorlist=|#mirrorlist=|g' \
-            -e 's|^#baseurl=http://mirror.centos.org/altarch/|baseurl=https://mirrors.tuna.tsinghua.edu.cn/centos-altarch/|g' \
-            -e 's|^#baseurl=http://mirror.centos.org/$contentdir/|baseurl=https://mirrors.tuna.tsinghua.edu.cn/centos-altarch/|g' \
+            -e 's|^#baseurl=http://mirror.centos.org/altarch/|baseurl=https://mirrors.tuna.tsinghua.edu.cn/centos-vault/altarch/|g' \
+            -e 's|^#baseurl=http://mirror.centos.org/$contentdir/|baseurl=https://mirrors.tuna.tsinghua.edu.cn/centos-vault/altarch/|g' \
             -i.bak /etc/yum.repos.d/CentOS-*.repo;
     elif [ "$(uname -m)" = "x86_64" ]; then
         sed -e 's|^mirrorlist=|#mirrorlist=|g' \
-            -e "s|^#baseurl=http://mirror.centos.org/centos|baseurl=${MIRROR_URL}/centos|g" \
+        -e "s|^#baseurl=http://mirror.centos.org/centos/\$releasever|baseurl=${MIRROR_URL}/centos-vault/7.9.2009|g" \
+        -e "s|^#baseurl=http://mirror.centos.org/\$contentdir/\$releasever|baseurl=${MIRROR_URL}/centos-vault/7.9.2009|g" \
             -i.bak /etc/yum.repos.d/CentOS-*.repo;
     fi && \
     rm -rf /var/cache/yum/ && \

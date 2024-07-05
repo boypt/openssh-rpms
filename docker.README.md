@@ -168,23 +168,23 @@ echo 'The building has been completed!'
 ##### Push images
 
 ```shell
-  # Specify build versions
-  VERSIONS=("8" "7" "6" "5")
+# Specify build versions
+VERSIONS=("8" "7" "6" "5")
 
-  for VERSION in "${VERSIONS[@]}"
-  do
-    echo "Pushing version: ${VERSION}"
-    # Tag image
-    docker tag $COMPONENT:centos$VERSION $COMPONENT:centos.$VERSION
-    docker tag $COMPONENT:centos$VERSION $COMPONENT:centos.$VERSION.$(date +%Y%m%d)
-    docker tag $COMPONENT:centos$VERSION $COMPONENT:el$VERSION
-    # Push image
-    docker push $COMPONENT:centos$VERSION
-    docker push $COMPONENT:centos.$VERSION
-    docker push $COMPONENT:centos.$VERSION.$(date +%Y%m%d)
-    docker push $COMPONENT:el$VERSION
-  done
-  echo 'Push has been completed!'
+for VERSION in "${VERSIONS[@]}"
+do
+  echo "Pushing version: ${VERSION}"
+  # Tag image
+  docker tag $COMPONENT:centos$VERSION $COMPONENT:centos.$VERSION
+  docker tag $COMPONENT:centos$VERSION $COMPONENT:centos.$VERSION.$(date +%Y%m%d)
+  docker tag $COMPONENT:centos$VERSION $COMPONENT:el$VERSION
+  # Push image
+  docker push $COMPONENT:centos$VERSION
+  docker push $COMPONENT:centos.$VERSION
+  docker push $COMPONENT:centos.$VERSION.$(date +%Y%m%d)
+  docker push $COMPONENT:el$VERSION
+done
+echo 'Push has been completed!'
 ```
 
 #### CentOS Stream
@@ -214,23 +214,23 @@ echo 'The building has been completed!'
 ##### Push images
 
 ```shell
-  # Specify build versions
-  VERSIONS=("9" "8")
+# Specify build versions
+VERSIONS=("9" "8")
 
-  for VERSION in "${VERSIONS[@]}"
-  do
-    echo "Pushing version: ${VERSION}"
-    # Tag image
-    docker tag $COMPONENT:centos-stream$VERSION $COMPONENT:centos-stream.$VERSION
-    docker tag $COMPONENT:centos-stream$VERSION $COMPONENT:centos-stream.$VERSION.$(date +%Y%m%d)
-    docker tag $COMPONENT:centos-stream$VERSION $COMPONENT:el$VERSION
-    # Push image
-    docker push $COMPONENT:centos-stream$VERSION
-    docker push $COMPONENT:centos-stream.$VERSION
-    docker push $COMPONENT:centos-stream.$VERSION.$(date +%Y%m%d)
-    docker push $COMPONENT:el$VERSION
-  done
-  echo 'Push has been completed!'
+for VERSION in "${VERSIONS[@]}"
+do
+  echo "Pushing version: ${VERSION}"
+  # Tag image
+  docker tag $COMPONENT:centos-stream$VERSION $COMPONENT:centos-stream.$VERSION
+  docker tag $COMPONENT:centos-stream$VERSION $COMPONENT:centos-stream.$VERSION.$(date +%Y%m%d)
+  docker tag $COMPONENT:centos-stream$VERSION $COMPONENT:el$VERSION
+  # Push image
+  docker push $COMPONENT:centos-stream$VERSION
+  docker push $COMPONENT:centos-stream.$VERSION
+  docker push $COMPONENT:centos-stream.$VERSION.$(date +%Y%m%d)
+  docker push $COMPONENT:el$VERSION
+done
+echo 'Push has been completed!'
 ```
 
 #### Amazon Linux
@@ -328,6 +328,11 @@ This script below can compile rpm packages for all support systems.
 
 ```bash
 # Download all src files
+source version.env
+PERLMIR=https://www.cpan.org/src/5.0
+if [[ ! -f downloads/$PERLSRC ]]; then
+	curl -k -o downloads/$PERLSRC $PERLMIR/$PERLSRC
+fi
 bash ./pullsrc.sh
 # Define whether to enable Tsinghua University mirror source. (Very useful for Chinese users)
 CHINA_MIRROR=1  # Setting this variable to non-zero means enabling
