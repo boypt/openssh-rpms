@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use autodie;
 
-my $mirrors = 'https://mirrors.tuna.tsinghua.edu.cn/centos-stream';
+my $mirrors = 'MIRROR_HOLDER';
 
 if (@ARGV < 1) {
     die "Usage: $0 <filename1> <filename2> ...\n";
