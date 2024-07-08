@@ -1,0 +1,249 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Create amd64 release
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    tags: [ "v*" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  build_al2023:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: "Compile Amazon Linux 2023 (amd64)"
+        run: |
+          docker run --rm -v ${{ github.workspace }}/output:/data/amzn2023/RPMS/x86_64 ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:amazonlinux2023
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: al2023-amd64
+          path: ${{ github.workspace }}/output
+
+  build_al2:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: "Compile Amazon Linux 2 (amd64)"
+        run: |
+          docker run --rm -v ${{ github.workspace }}/output:/data/amzn2/RPMS/x86_64 ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:amazonlinux2
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: al2-amd64
+          path: ${{ github.workspace }}/output
+
+  build_al1:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: "Compile Amazon Linux 1 (amd64)"
+        run: |
+          docker run --rm -v ${{ github.workspace }}/output:/data/amzn1/RPMS/x86_64 ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:amazonlinux1
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: al1-amd64
+          path: ${{ github.workspace }}/output
+
+  build_el9:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: "Compile CentOS Stream 9 (amd64)"
+        run: |
+          docker run --rm -v ${{ github.workspace }}/output:/data/el7/RPMS/x86_64 ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:centos-stream9
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: el9-amd64
+          path: ${{ github.workspace }}/output
+
+  build_el8:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: "Compile CentOS Stream 8 (amd64)"
+        run: |
+          docker run --rm -v ${{ github.workspace }}/output:/data/el7/RPMS/x86_64 ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:centos-stream8
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: el8-amd64
+          path: ${{ github.workspace }}/output
+
+  build_el7:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: "Compile CentOS 7 (amd64)"
+        run: |
+          docker run --rm -v ${{ github.workspace }}/output:/data/el7/RPMS/x86_64 ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:centos7
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: el7-amd64
+          path: ${{ github.workspace }}/output
+
+  build_el6:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: "Compile CentOS 6 (amd64)"
+        run: |
+          docker run --rm -v ${{ github.workspace }}/output:/data/el6/RPMS/x86_64 ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:centos6
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: el6-amd64
+          path: ${{ github.workspace }}/output
+
+  build_el5:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: "Download packages for CentOS 5"
+        run: |
+          OPENSSHMIR=https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable
+          OPENSSLMIR=https://www.openssl.org/source/
+          ASKPASSMIR=https://src.fedoraproject.org/repo/pkgs/openssh/x11-ssh-askpass-1.2.4.1.tar.gz/8f2e41f3f7eaa8543a2440454637f3c3
+          PERLMIR=https://www.cpan.org/src/5.0
+          source ${{ github.workspace }}/version.env
+          pushd ${{ github.workspace }}/downloads
+          curl -O -L -k $OPENSSLMIR/$OPENSSLSRC
+          curl -O -L -k $OPENSSHMIR/$OPENSSHSRC
+          curl -O -L -k $ASKPASSMIR/$ASKPASSSRC
+          curl -O -L -k $PERLMIR/$PERLSRC
+          popd
+
+      - name: "Compile CentOS 5 (amd64)"
+        run: |
+          docker run --rm -v ${{ github.workspace }}/output:/data/el5/RPMS/x86_64 -v ${{ github.workspace }}/downloads:/data/downloads ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:centos5
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: el5-amd64
+          path: ${{ github.workspace }}/output
+
+  create_release:
+    needs:
+      - build_al2023
+      - build_al2
+      - build_al1
+      - build_el9
+      - build_el8
+      - build_el7
+      - build_el6
+      - build_el5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: al2023-amd64
+          path: ./output
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: al2-amd64
+          path: ./output
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: al1-amd64
+          path: ./output
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: el9-amd64
+          path: ./output
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: el8-amd64
+          path: ./output
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: el7-amd64
+          path: ./output
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: el6-amd64
+          path: ./output
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: el5-amd64
+          path: ./output
+
+      - name: Get tag message
+        run: |
+          echo -e "> Automated release created by GitHub Actions.\n" > ${{ github.workspace }}/RELEASE.md
+          GITHUB_REF=${{ github.ref }}
+          TAG_NAME="${GITHUB_REF#refs/tags/}"
+          git tag -l --format='%(contents)' "${TAG_NAME}" | tee -a ${{ github.workspace }}/RELEASE.md
+
+      - name: Create Release
+        id: create_release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "${{ github.workspace }}/output/*"
+          bodyFile: ${{ github.workspace }}/RELEASE.md
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true

@@ -1,0 +1,196 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Create arm64 release
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    tags: [ "v*" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  build_al2023:
+    # The type of runner that the job will run on
+    # See: https://docs.github.com/zh/actions/using-jobs/choosing-the-runner-for-a-job
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: "Compile Amazon Linux 2023 (arm64)"
+        run: |
+          docker run --rm --platform linux/arm64 -v ${{ github.workspace }}/output:/data/amzn2023/RPMS/aarch64 ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:amazonlinux2023
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: al2023-arm64
+          path: ${{ github.workspace }}/output
+
+  build_al2:
+    # The type of runner that the job will run on
+    # See: https://docs.github.com/zh/actions/using-jobs/choosing-the-runner-for-a-job
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: "Compile Amazon Linux 2 (arm64)"
+        run: |
+          docker run --rm --platform linux/arm64 -v ${{ github.workspace }}/output:/data/amzn2/RPMS/aarch64 ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:amazonlinux2
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: al2-arm64
+          path: ${{ github.workspace }}/output
+
+  build_el9:
+    # The type of runner that the job will run on
+    # See: https://docs.github.com/zh/actions/using-jobs/choosing-the-runner-for-a-job
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: "Compile CentOS Stream 9 (arm64)"
+        run: |
+          docker run --rm --platform linux/arm64 -v ${{ github.workspace }}/output:/data/el7/RPMS/aarch64 ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:centos-stream9
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: el9-arm64
+          path: ${{ github.workspace }}/output
+
+  build_el8:
+    # The type of runner that the job will run on
+    # See: https://docs.github.com/zh/actions/using-jobs/choosing-the-runner-for-a-job
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: "Compile CentOS Stream 8 (arm64)"
+        run: |
+          docker run --rm --platform linux/arm64 -v ${{ github.workspace }}/output:/data/el7/RPMS/aarch64 ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:centos-stream8
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: el8-arm64
+          path: ${{ github.workspace }}/output
+
+  build_el7:
+    # The type of runner that the job will run on
+    # See: https://docs.github.com/zh/actions/using-jobs/choosing-the-runner-for-a-job
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: "Compile CentOS 7 (arm64)"
+        run: |
+          docker run --rm --platform linux/arm64 -v ${{ github.workspace }}/output:/data/el7/RPMS/aarch64 ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:centos7
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: el7-arm64
+          path: ${{ github.workspace }}/output
+
+  create_release:
+    needs:
+      - build_al2023
+      - build_al2
+      - build_el9
+      - build_el8
+      - build_el7
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: al2023-arm64
+          path: ./output
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: al2-arm64
+          path: ./output
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: el9-arm64
+          path: ./output
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: el8-arm64
+          path: ./output
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: el7-arm64
+          path: ./output
+
+      - name: Get tag message
+        run: |
+          echo -e "> Automated release created by GitHub Actions.\n" > ${{ github.workspace }}/RELEASE.md
+          GITHUB_REF=${{ github.ref }}
+          TAG_NAME="${GITHUB_REF#refs/tags/}"
+          git tag -l --format='%(contents)' "${TAG_NAME}" | tee -a ${{ github.workspace }}/RELEASE.md
+
+      - name: Create Release
+        id: create_release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "${{ github.workspace }}/output/*"
+          bodyFile: ${{ github.workspace }}/RELEASE.md
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true

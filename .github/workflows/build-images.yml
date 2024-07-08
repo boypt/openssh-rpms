@@ -1,0 +1,341 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Build Docker Images
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  build_and_push_al2023:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    env:
+      CHINA_MIRROR: "0"
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Build and push Amazon Linux 2023
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./docker/Dockerfile.amazonlinux
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:amazonlinux2023,${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:al2023
+          build-args: |
+            VERSION_NUM=2023
+
+      - name: Log out from Docker Hub
+        run: docker logout
+
+  build_and_push_al2:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    env:
+      CHINA_MIRROR: "0"
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Build and push Amazon Linux 2
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./docker/Dockerfile.amazonlinux
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:amazonlinux2,${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:al2
+          build-args: |
+            VERSION_NUM=2
+
+      - name: Log out from Docker Hub
+        run: docker logout
+
+  build_and_push_al1:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    env:
+      CHINA_MIRROR: "0"
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Build and push Amazon Linux 1
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./docker/Dockerfile.amazonlinux
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:amazonlinux1,${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:al1
+          build-args: |
+            VERSION_NUM=1
+
+      - name: Log out from Docker Hub
+        run: docker logout
+
+  build_and_push_el9:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    env:
+      CHINA_MIRROR: "0"
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Build and push CentOS Stream 9
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./docker/Dockerfile.centos-stream
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:centos-stream9,${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:el9
+          build-args: |
+            VERSION_NUM=9
+
+      - name: Log out from Docker Hub
+        run: docker logout
+
+  build_and_push_el8:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    env:
+      CHINA_MIRROR: "0"
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Build and push CentOS Stream 8
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./docker/Dockerfile.centos-stream
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:centos-stream8,${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:el8
+          build-args: |
+            VERSION_NUM=8
+
+      - name: Log out from Docker Hub
+        run: docker logout
+
+
+  build_and_push_el7:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    env:
+      CHINA_MIRROR: "0"
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Build and push CentOS 7
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./docker/Dockerfile.centos
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:centos7,${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:el7
+          build-args: |
+            VERSION_NUM=7
+
+      - name: Log out from Docker Hub
+        run: docker logout
+
+
+  build_and_push_el6:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    env:
+      CHINA_MIRROR: "0"
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Build and push CentOS 6
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./docker/Dockerfile.centos
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:centos6,${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:el6
+          build-args: |
+            VERSION_NUM=6
+
+      - name: Log out from Docker Hub
+        run: docker logout
+
+  build_and_push_el5:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Set this to prevents a workflow run from failing when this job fail.
+    continue-on-error: true
+
+    env:
+      CHINA_MIRROR: "0"
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Build and push CentOS 5
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./docker/Dockerfile.centos
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:centos5,${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:el5
+          build-args: |
+            VERSION_NUM=5
+
+      - name: Log out from Docker Hub
+        run: docker logout
