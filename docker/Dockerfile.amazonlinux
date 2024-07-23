@@ -9,9 +9,8 @@ WORKDIR /data
 # Copy all files
 COPY . /data
 
-RUN if [ "$CHINA_MIRROR" != "0" ]; then \
-        bash ./docker/modify_yum_source.sh; \
-    fi && \
+RUN export CHINA_MIRROR="$CHINA_MIRROR" && \
+    bash ./docker/modify_yum_source.sh && \
     if [ "$VERSION_NUM" = "2023" ]; then \
         yum makecache timer && yum install -y libnsl; \
     elif [ "$VERSION_NUM" = "2" ]; then \

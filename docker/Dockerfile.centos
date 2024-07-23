@@ -9,22 +9,8 @@ WORKDIR /data
 # Copy all files
 COPY . /data
 
-RUN if [ "$VERSION_NUM" = "8" ]; then \
-        MIRROR_URL="https://vault.centos.org" && \
-        sed -e "s|^mirrorlist=|#mirrorlist=|g" \
-            -e "s|^#baseurl=http://mirror.centos.org/centos/\$releasever|baseurl=${MIRROR_URL}/8.4.2105|g" \
-            -e "s|^#baseurl=http://mirror.centos.org/\$contentdir/\$releasever|baseurl=${MIRROR_URL}/8.4.2105|g" \
-            -i /etc/yum.repos.d/CentOS-*.repo; \
-    elif [ "$VERSION_NUM" = "5" ]; then \
-        MIRROR_URL="http://archive.kernel.org" && \
-        sed -e "s|^mirrorlist=|#mirrorlist=|g" \
-            -e "s|^#baseurl=http://mirror.centos.org/centos/\$releasever|baseurl=${MIRROR_URL}/centos-vault/5.11|g" \
-            -e "s|^#baseurl=http://mirror.centos.org/\$contentdir/\$releasever|baseurl=${MIRROR_URL}/centos-vault/5.11|g" \
-            -i.bak /etc/yum.repos.d/*.repo; \
-    fi && \
-    if [ "$CHINA_MIRROR" != "0" ]; then \
-        bash ./docker/modify_yum_source.sh; \
-    fi && \
+RUN export CHINA_MIRROR="$CHINA_MIRROR" && \
+    bash ./docker/modify_yum_source.sh && \
     if [ "$VERSION_NUM" = "8" ]; then \
         yum install -y perl perl-IPC-Cmd; \
     elif [ "$VERSION_NUM" = "7" ] || [ "$VERSION_NUM" = "6" ]; then \

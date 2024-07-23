@@ -10,21 +10,25 @@ WORKDIR /data
 # Copy all files
 COPY . /data
 
-RUN if [ "$CHINA_MIRROR" != "0" ]; then \
-        if [ "$VERSION_NUM" = "9" ]; then \
+RUN if [ "$VERSION_NUM" = "8" ]; then \
+    # This CentOS 8 stream had NO valid mirrors.
+        MIRROR_URL="https://vault.centos.org" && \
+        sed -e 's|^mirrorlist=|#mirrorlist=|g' \
+            -e "s|^#baseurl=http://mirror.centos.org/\$contentdir|baseurl=$MIRROR_URL|g" \
+            -i.bak \
+            /etc/yum.repos.d/CentOS-*.repo && \
+        yum install -y perl; \
+    else \
+        if [ "$CHINA_MIRROR" != "0" ]; then \
+            MIRROR_URL="https://mirrors.ustc.edu.cn" && \
+            sed -i "s|MIRROR_HOLDER|$MIRROR_URL/centos-stream|" /data/docker/modify_dnf_source.pl && \
             yum install -y perl && \
             perl /data/docker/modify_dnf_source.pl /etc/yum.repos.d/*.repo; \
-        elif [ "$VERSION_NUM" = "8" ]; then \
-            sed -e 's|^mirrorlist=|#mirrorlist=|g' \
-                -e 's|^#baseurl=http://mirror.centos.org/$contentdir|baseurl=https://mirrors.tuna.tsinghua.edu.cn/centos-vault|g' \
-                -i.bak \
-                /etc/yum.repos.d/CentOS-*.repo && \
-            yum install -y perl; \
-        fi \
+        fi; \
     fi && \
     yum clean all && yum makecache && \
     yum groupinstall -y "Development Tools" && \
-    yum install -y rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel gtk2-devel && \
+    yum install -y perl rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel gtk2-devel && \
     yum clean all && \
     find . -type f -name '.keep' -delete && \
     LINE_NO=$(grep -n -- "--define 'skip_x11_askpass 1'" /data/compile.sh | cut -d: -f1) && \
