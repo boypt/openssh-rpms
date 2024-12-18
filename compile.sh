@@ -77,9 +77,9 @@ BUILD_RPM() {
 	[[ $rpmtopdir == "el5" ]] && SOURCES+=($PERLSRC)
 
 	# add dist variable if not defined
-	local OTHERRPMOPTS=
+	local OTHERRPMOPTS=()
         local dist=$(rpm --eval '%{?dist}')
-	[[ -z $dist ]] && dist=$(rpm -q glibc | rev | cut -d. -f2 | rev) && OTHERRPMOPTS="--define dist ${dist}"
+	[[ -z $dist ]] && dist=$(rpm -q glibc | rev | cut -d. -f2 | rev) && OTHERRPMOPTS+=('--define' "dist .${dist}")
 
 	pushd $rpmtopdir
 	for fn in ${SOURCES[@]}; do
@@ -95,7 +95,7 @@ BUILD_RPM() {
 		--define 'no_gtk2 1' \
 		--define 'skip_gnome_askpass 1' \
 		--define 'skip_x11_askpass 1' \
-		"${OTHERRPMOPTS}" \
+		"${OTHERRPMOPTS[@]}" \
 		;
 	popd
 }
