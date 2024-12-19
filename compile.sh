@@ -68,18 +68,22 @@ GUESS_DIST() {
 BUILD_RPM() {
 
 	source version.env
+	local OTHERRPMOPTS=()
 	local SOURCES=( $OPENSSHSRC \
 		  $OPENSSLSRC \
 		  $ASKPASSSRC \
 		)
 
 	# only on EL5, perl source is needed.
-	[[ $rpmtopdir == "el5" ]] && SOURCES+=($PERLSRC)
+	[[ $rpmtopdir == "el5" ]] && \
+		SOURCES+=($PERLSRC) && \
+		OTHERRPMOPTS+=('--define' "perlver ${PERLVER}"
+			       '--define' 'dist .el5')
 
 	# add dist variable if not defined
-	local OTHERRPMOPTS=()
-        local dist=$(rpm --eval '%{?dist}')
-	[[ -z $dist ]] && dist=$(rpm -q glibc | rev | cut -d. -f2 | rev) && OTHERRPMOPTS+=('--define' "dist .${dist}")
+	[[ $rpmtopdir == "el7" ]] && \
+		[[ -z $(rpm --eval '%{?dist}') ]] && \
+	 	OTHERRPMOPTS+=('--define' "dist .$(rpm -q glibc | rev | cut -d. -f2 | rev)")
 
 	pushd $rpmtopdir
 	for fn in ${SOURCES[@]}; do
@@ -91,7 +95,6 @@ BUILD_RPM() {
 		--define "opensslver ${OPENSSLVER}" \
 		--define "opensshver ${OPENSSHVER}" \
 		--define "opensshpkgrel ${PKGREL}" \
-		--define "perlver ${PERLVER}" \
 		--define 'no_gtk2 1' \
 		--define 'skip_gnome_askpass 1' \
 		--define 'skip_x11_askpass 1' \
