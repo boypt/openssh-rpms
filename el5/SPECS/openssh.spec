@@ -1,7 +1,6 @@
 %{?!opensslver: %global opensslver 3.0.8}
 %{?!opensshver: %global opensshver 9.6p1}
 %{?!perlver: %global perlver 5.38.2}
-%define dist .el5
 %define static_openssl 1
 
 # wheather to build openssl
