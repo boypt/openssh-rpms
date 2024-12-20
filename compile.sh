@@ -98,7 +98,7 @@ BUILD_RPM() {
 		--define 'no_gtk2 1' \
 		--define 'skip_gnome_askpass 1' \
 		--define 'skip_x11_askpass 1' \
-		"${OTHERRPMOPTS[@]}" \
+		${OTHERRPMOPTS[@]+"${OTHERRPMOPTS[@]}"} \
 		;
 	popd
 }
