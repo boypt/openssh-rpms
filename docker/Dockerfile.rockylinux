@@ -1,0 +1,31 @@
+# Official: https://hub.docker.com/_/rockylinux
+ARG VERSION_NUM="9"
+FROM rockylinux:$VERSION_NUM
+ARG VERSION_NUM
+ARG CHINA_MIRROR=0
+LABEL Author="Rex Zhou <zrx879582094@gmail.com>"
+
+WORKDIR /data
+
+# Copy all files
+COPY . /data
+
+RUN if [ "$CHINA_MIRROR" != "0" ]; then \
+        # Official webpage: https://developer.aliyun.com/mirror/rockylinux
+        MIRROR_URL="https://mirrors.aliyun.com/rockylinux" && \
+        sed -e 's|^mirrorlist=|#mirrorlist=|g' \
+            -e "s|^#baseurl=http://dl.rockylinux.org/\$contentdir|baseurl=$MIRROR_URL|g" \
+            -i.bak \
+            /etc/yum.repos.d/*.repo; \
+    fi && \
+    rm -rf /var/cache/yum/ && \
+    yum clean all && yum makecache timer && \
+    yum groupinstall -y "Development Tools" && \
+    yum install -y perl rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel gtk2-devel && \
+    yum clean all && \
+    find . -type f -name '.keep' -delete && \
+    LINE_NO=$(grep -n -- "--define 'skip_x11_askpass 1'" /data/compile.sh | cut -d: -f1) && \
+    sed -i "$LINE_NO a\--define \"debug_package %{nil}\" \\\\" ./compile.sh && \
+    bash ./pullsrc.sh
+
+CMD ["bash", "/data/compile.sh"]

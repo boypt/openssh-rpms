@@ -11,10 +11,11 @@ Similar Project: [Backport OpenSSH for Debian / Ubuntu distros](https://github.c
 - UnionTech OS Server 20
 - openEuler 22.03 (LTS-SP1)
 - AnolisOS 7.9/8.6
+- Rocky Linux 8/9
 
 ## Current Version:
 
-- OpenSSH 9.8p1 (see: [OpenSSH Official](https://www.openssh.com/))
+- OpenSSH 9.9p1 (see: [OpenSSH Official](https://www.openssh.com/))
 - OpenSSL 3.0.15 / 3.0.9 (FIPS validated, see: [OpenSSL Official](https://www.openssl.org/source/))
 
 The build script reads `version.env` for actual version definitions.
@@ -113,8 +114,7 @@ MAPPING["centos-stream9"]="el7"
 MAPPING["centos-stream8"]="el7"
 MAPPING["centos7"]="el7"
 MAPPING["centos6"]="el6"
-# CentOS 5 is NOT valid.
-# MAPPING["centos5"]="el5"
+MAPPING["centos5"]="el5"
 
 for VERSION in "${!MAPPING[@]}";
 do
