@@ -72,7 +72,7 @@ BUILD_RPM() {
 		  $OPENSSLSRC \
 		  $ASKPASSSRC \
 		)
-	local RPMBUILDOPTS=( --target "$(uname -m)" --define "_topdir $PWD" \
+	local RPMBUILDOPTS=( \
 		--define "opensslver ${OPENSSLVER}" \
 		--define "opensshver ${OPENSSHVER}" \
 		--define "opensshpkgrel ${PKGREL}" \
@@ -93,12 +93,12 @@ BUILD_RPM() {
 	 	RPMBUILDOPTS+=('--define' "dist .$(rpm -q glibc | rev | cut -d. -f2 | rev)")
 
 	pushd $rpmtopdir
+	RPMBUILDOPTS+=('--define' "_topdir $PWD")
 	for fn in ${SOURCES[@]}; do
 	  CHECKEXISTS $fn && \
 	    install -v -m666 $__dir/downloads/$fn ./SOURCES/
 	done
-
-	rpmbuild -ba SPECS/openssh.spec ${RPMBUILDOPTS[@]}
+	rpmbuild -ba ./SPECS/openssh.spec "${RPMBUILDOPTS[@]}"
 	popd
 }
 
