@@ -13,12 +13,14 @@ COPY . /data
 RUN if [ "$VERSION_NUM" = "8" ]; then \
     # This CentOS 8 stream had NO valid mirrors.
         MIRROR_URL="https://vault.centos.org" && \
+        REPO_NAME="powertools" && \
         sed -e 's|^mirrorlist=|#mirrorlist=|g' \
             -e "s|^#baseurl=http://mirror.centos.org/\$contentdir|baseurl=$MIRROR_URL|g" \
             -i.bak \
             /etc/yum.repos.d/CentOS-*.repo && \
         yum install -y perl; \
     else \
+        REPO_NAME="crb" && \
         if [ "$CHINA_MIRROR" != "0" ]; then \
             MIRROR_URL="https://mirrors.ustc.edu.cn" && \
             sed -i "s|MIRROR_HOLDER|$MIRROR_URL/centos-stream|" /data/docker/modify_dnf_source.pl && \
@@ -28,7 +30,7 @@ RUN if [ "$VERSION_NUM" = "8" ]; then \
     fi && \
     yum clean all && yum makecache && \
     yum install -y 'dnf-command(config-manager)' && \
-    yum config-manager --set-enabled powertools && \
+    yum config-manager --set-enabled ${REPO_NAME} && \
     yum groupinstall -y "Development Tools" && \
     yum install -y imake perl rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel gtk2-devel && \
     yum clean all && \
