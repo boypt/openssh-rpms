@@ -12,14 +12,15 @@ COPY . /data
 RUN export CHINA_MIRROR="$CHINA_MIRROR" && \
     bash ./docker/modify_yum_source.sh && \
     if [ "$VERSION_NUM" = "8" ]; then \
-        yum install -y perl perl-IPC-Cmd; \
+        yum install -y perl perl-IPC-Cmd && \
+        yum config-manager --set-enabled powertools; \
     elif [ "$VERSION_NUM" = "7" ] || [ "$VERSION_NUM" = "6" ]; then \
-        yum install -y perl-IPC-Cmd imake; \
+        yum install -y perl-IPC-Cmd; \
     elif [ "$VERSION_NUM" = "5" ]; then \
-        yum install -y gcc44 imake; \
+        yum install -y gcc44; \
     fi && \
     yum groupinstall -y "Development Tools" && \
-    yum install -y rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel gtk2-devel && \
+    yum install -y imake rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel gtk2-devel && \
     yum clean all && \
     find . -type f -name '.keep' -delete && \
     sed -i "s/--define 'skip_x11_askpass 1'/--define \"debug_package %{nil}\"/" ./compile.sh && \
