@@ -68,38 +68,37 @@ GUESS_DIST() {
 BUILD_RPM() {
 
 	source version.env
-	local OTHERRPMOPTS=()
 	local SOURCES=( $OPENSSHSRC \
 		  $OPENSSLSRC \
 		  $ASKPASSSRC \
 		)
-
-	# only on EL5, perl source is needed.
-	[[ $rpmtopdir == "el5" ]] && \
-		SOURCES+=($PERLSRC) && \
-		OTHERRPMOPTS+=('--define' "perlver ${PERLVER}"
-			       '--define' 'dist .el5')
-
-	# add dist variable if not defined
-	[[ $rpmtopdir == "el7" ]] && \
-		[[ -z $(rpm --eval '%{?dist}') ]] && \
-	 	OTHERRPMOPTS+=('--define' "dist .$(rpm -q glibc | rev | cut -d. -f2 | rev)")
-
-	pushd $rpmtopdir
-	for fn in ${SOURCES[@]}; do
-	  CHECKEXISTS $fn && \
-	    install -v -m666 $__dir/downloads/$fn ./SOURCES/
-	done
-
-	rpmbuild -ba SPECS/openssh.spec --target $(uname -m) --define "_topdir $PWD" \
+	local RPMBUILDOPTS=( \
 		--define "opensslver ${OPENSSLVER}" \
 		--define "opensshver ${OPENSSHVER}" \
 		--define "opensshpkgrel ${PKGREL}" \
 		--define 'no_gtk2 1' \
 		--define 'skip_gnome_askpass 1' \
 		--define 'skip_x11_askpass 1' \
-		${OTHERRPMOPTS[@]+"${OTHERRPMOPTS[@]}"} \
-		;
+		)
+
+	# only on EL5, perl source is needed.
+	[[ $rpmtopdir == "el5" ]] && \
+		SOURCES+=($PERLSRC) && \
+		RPMBUILDOPTS+=('--define' "perlver ${PERLVER}"
+			       '--define' 'dist .el5')
+
+	# add dist variable if not defined
+	[[ $rpmtopdir == "el7" ]] && \
+		[[ -z $(rpm --eval '%{?dist}') ]] && \
+	 	RPMBUILDOPTS+=('--define' "dist .$(rpm -q glibc | rev | cut -d. -f2 | rev)")
+
+	pushd $rpmtopdir
+	RPMBUILDOPTS+=('--define' "_topdir $PWD")
+	for fn in ${SOURCES[@]}; do
+	  CHECKEXISTS $fn && \
+	    install -v -m666 $__dir/downloads/$fn ./SOURCES/
+	done
+	rpmbuild -ba ./SPECS/openssh.spec "${RPMBUILDOPTS[@]}"
 	popd
 }
 
