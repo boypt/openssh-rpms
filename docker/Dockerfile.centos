@@ -13,6 +13,7 @@ RUN export CHINA_MIRROR="$CHINA_MIRROR" && \
     bash ./docker/modify_yum_source.sh && \
     if [ "$VERSION_NUM" = "8" ]; then \
         yum install -y perl perl-IPC-Cmd && \
+        yum install -y 'dnf-command(config-manager)' && \
         yum config-manager --set-enabled powertools; \
     elif [ "$VERSION_NUM" = "7" ] || [ "$VERSION_NUM" = "6" ]; then \
         yum install -y perl-IPC-Cmd; \

@@ -27,6 +27,7 @@ RUN if [ "$VERSION_NUM" = "8" ]; then \
         fi; \
     fi && \
     yum clean all && yum makecache && \
+    yum install -y 'dnf-command(config-manager)' && \
     yum config-manager --set-enabled powertools && \
     yum groupinstall -y "Development Tools" && \
     yum install -y imake perl rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel gtk2-devel && \
