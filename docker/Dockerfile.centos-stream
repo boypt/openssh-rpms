@@ -20,10 +20,11 @@ RUN if [ "$VERSION_NUM" = "8" ]; then \
         yum install -y perl 'dnf-command(config-manager)' && \
         yum config-manager --set-enabled powertools; \
     else \
+        yum install -y epel-release && \
         if [ "$CHINA_MIRROR" != "0" ]; then \
             MIRROR_URL="https://mirrors.ustc.edu.cn" && \
             sed -i "s|MIRROR_HOLDER|$MIRROR_URL/centos-stream|" /data/docker/modify_dnf_source.pl && \
-            yum install -y perl epel-release && \
+            yum install -y perl && \
             perl /data/docker/modify_dnf_source.pl /etc/yum.repos.d/*.repo; \
         fi; \
     fi && \
