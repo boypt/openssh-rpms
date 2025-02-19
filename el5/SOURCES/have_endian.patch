@@ -1,0 +1,18 @@
+--- defines.h.orig	2025-02-19 17:48:14.000000000 +0800
++++ defines.h	2025-02-19 17:48:28.000000000 +0800
+@@ -646,7 +646,6 @@
+ # endif /* WORDS_BIGENDIAN */
+ #endif /* BYTE_ORDER */
+ 
+-#ifndef HAVE_ENDIAN_H
+ # define openssh_swap32(v)					\
+ 	(uint32_t)(((uint32_t)(v) & 0xff) << 24 |		\
+ 	((uint32_t)(v) & 0xff00) << 8 |				\
+@@ -670,7 +669,6 @@
+ #  define le64toh(v) ((uint64_t)v)
+ #  define htole64(v) ((uint64_t)v)
+ # endif
+-#endif
+ 
+ /* Function replacement / compatibility hacks */
+ 

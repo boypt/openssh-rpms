@@ -106,6 +106,7 @@ Source2: sshd.pam.el5
 Source3: https://www.openssl.org/source/openssl-%{opensslver}.tar.gz
 %endif
 Source4: https://www.cpan.org/src/5.0/perl-%{perlver}.tar.gz
+Source5: have_endian.patch
 License: BSD
 Group: Applications/Internet
 BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
@@ -246,6 +247,9 @@ popd
 %if %{rescue}
 CFLAGS="$RPM_OPT_FLAGS -Os"; export CFLAGS
 %endif
+
+# glibc-headers-2.5 have endian.h but didn't define htole64
+patch -p0 < %{SOURCE5}
 
 # Add OpenSSL library
 export LD_LIBRARY_PATH="%{openssl_dir}"
