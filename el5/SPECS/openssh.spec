@@ -106,7 +106,9 @@ Source2: sshd.pam.el5
 Source3: https://www.openssl.org/source/openssl-%{opensslver}.tar.gz
 %endif
 Source4: https://www.cpan.org/src/5.0/perl-%{perlver}.tar.gz
-Source5: have_endian.patch
+
+# glibc-headers-2.5 have endian.h but didn't define htole64
+Patch0: have_endian.patch
 License: BSD
 Group: Applications/Internet
 BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
@@ -219,6 +221,9 @@ environment.
 %setup -q
 %endif
 
+%patch0 -p0
+
+%if ! %{no_build_openssl}
 # Add install perl to ensure OpenSSL can be used.
 %define perl_dir %{_builddir}/%{name}-%{version}/perl
 mkdir -p perl
@@ -233,7 +238,6 @@ export PATH=$PWD/perlbin/bin:$PATH
 popd
 
 # Add content below to use source code of OpenSSL
-%if ! %{no_build_openssl}
 %define openssl_dir %{_builddir}/%{name}-%{version}/openssl
 mkdir -p openssl
 tar xfz %{SOURCE3} --strip-components=1 -C openssl
@@ -248,9 +252,6 @@ popd
 CFLAGS="$RPM_OPT_FLAGS -Os"; export CFLAGS
 %endif
 
-# glibc-headers-2.5 have endian.h but didn't define htole64
-patch -p0 < %{SOURCE5}
-
 # Add OpenSSL library
 export LD_LIBRARY_PATH="%{openssl_dir}"
 %configure \
@@ -264,9 +265,13 @@ export LD_LIBRARY_PATH="%{openssl_dir}"
 	--mandir=%{_mandir} \
 	--with-mantype=man \
 	--disable-strip \
+%if ! %{no_build_openssl}
 	--with-ssl-dir="%{openssl_dir}" \
-	--with-zlib \
 	--with-ssl-engine \
+%else
+	--without-openssl
+%endif
+	--with-zlib \
 %if %{scard}
 	--with-smartcard \
 %endif
