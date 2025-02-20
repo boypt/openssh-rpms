@@ -17,8 +17,10 @@ RUN if [ "$VERSION_NUM" = "8" ]; then \
             -e "s|^#baseurl=http://mirror.centos.org/\$contentdir|baseurl=$MIRROR_URL|g" \
             -i.bak \
             /etc/yum.repos.d/CentOS-*.repo && \
-        yum install -y perl; \
+        yum install -y perl 'dnf-command(config-manager)' && \
+        yum config-manager --set-enabled powertools; \
     else \
+        yum install -y epel-release && \
         if [ "$CHINA_MIRROR" != "0" ]; then \
             MIRROR_URL="https://mirrors.ustc.edu.cn" && \
             sed -i "s|MIRROR_HOLDER|$MIRROR_URL/centos-stream|" /data/docker/modify_dnf_source.pl && \
@@ -28,11 +30,10 @@ RUN if [ "$VERSION_NUM" = "8" ]; then \
     fi && \
     yum clean all && yum makecache && \
     yum groupinstall -y "Development Tools" && \
-    yum install -y perl rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel gtk2-devel && \
+    yum install -y imake perl rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel gtk2-devel && \
     yum clean all && \
     find . -type f -name '.keep' -delete && \
-    LINE_NO=$(grep -n -- "--define 'skip_x11_askpass 1'" /data/compile.sh | cut -d: -f1) && \
-    sed -i "$LINE_NO a\--define \"debug_package %{nil}\" \\\\" ./compile.sh && \
+    sed -i "s/--define 'skip_x11_askpass 1'/--define \"debug_package %{nil}\"/" ./compile.sh && \
     bash ./pullsrc.sh
 
 CMD ["bash", "/data/compile.sh"]

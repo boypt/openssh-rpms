@@ -24,8 +24,7 @@ RUN if [ "$CHINA_MIRROR" != "0" ]; then \
     yum install -y perl rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel gtk2-devel && \
     yum clean all && \
     find . -type f -name '.keep' -delete && \
-    LINE_NO=$(grep -n -- "--define 'skip_x11_askpass 1'" /data/compile.sh | cut -d: -f1) && \
-    sed -i "$LINE_NO a\--define \"debug_package %{nil}\" \\\\" ./compile.sh && \
+    sed -i "s/--define 'skip_x11_askpass 1'/--define \"debug_package %{nil}\"/" ./compile.sh && \
     bash ./pullsrc.sh
 
 CMD ["bash", "/data/compile.sh"]
