@@ -265,13 +265,9 @@ export LD_LIBRARY_PATH="%{openssl_dir}"
 	--mandir=%{_mandir} \
 	--with-mantype=man \
 	--disable-strip \
-%if ! %{no_build_openssl}
 	--with-ssl-dir="%{openssl_dir}" \
-	--with-ssl-engine \
-%else
-	--without-openssl
-%endif
 	--with-zlib \
+	--with-ssl-engine \
 %if %{scard}
 	--with-smartcard \
 %endif
