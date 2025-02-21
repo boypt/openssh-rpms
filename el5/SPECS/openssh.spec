@@ -221,7 +221,11 @@ environment.
 %setup -q
 %endif
 
+%global glibc_version %(ldd --version 2>&1 | head -n1 | grep -oP '[0-9.]+')
+echo "GLIBC version: %{glibc_version}"
+%if "%{glibc_version}" <= "2.5"
 %patch0 -p0
+%endif
 
 %if ! %{no_build_openssl}
 # Add install perl to ensure OpenSSL can be used.
