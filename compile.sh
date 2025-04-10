@@ -104,7 +104,7 @@ BUILD_RPM() {
 
 LIST_RPMDIR(){
     local DISTVER=$(GUESS_DIST)
-    local RPMDIR=$__dir/$(GUESS_DIST)/RPMS/$(uname -m)
+    local RPMDIR=$__dir/$(GUESS_DIST)/RPMS/$(rpm --eval '%{_arch}')
     [[ -d $RPMDIR ]] && echo $RPMDIR
 }
 
