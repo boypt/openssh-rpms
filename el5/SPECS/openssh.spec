@@ -256,7 +256,7 @@ pushd perl
 mkdir -p perlbin
 ./configure.gnu --prefix=$PWD/perlbin
 make %{?_smp_mflags}
-make installperl
+make install.perl
 export PATH=$PWD/perlbin/bin:$PATH
 popd
 
