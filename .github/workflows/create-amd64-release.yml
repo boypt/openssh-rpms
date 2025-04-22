@@ -239,6 +239,10 @@ jobs:
           TAG_NAME="${GITHUB_REF#refs/tags/}"
           git tag -l --format='%(contents)' "${TAG_NAME}" | tee -a ${{ github.workspace }}/RELEASE.md
 
+      - name: Remove debug pkgs
+        run: |
+          rm -fv "${{ github.workspace }}/output/*debug*"
+
       - name: Create Release
         id: create_release
         uses: ncipollo/release-action@v1
