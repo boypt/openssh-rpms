@@ -1,0 +1,30 @@
+# Official: https://hub.docker.com/r/openeuler/openeuler
+ARG VERSION_NUM="24.03"
+FROM openeuler/openeuler:$VERSION_NUM
+ARG VERSION_NUM
+ARG CHINA_MIRROR=0
+LABEL Author="Rex Zhou <zrx879582094@gmail.com>"
+
+WORKDIR /data
+
+# Copy all files
+COPY . /data
+
+RUN if [ "$CHINA_MIRROR" != "0" ]; then \
+        # Official webpage: https://www.openeuler.openatom.cn/zh/blog/2024-10-15-boostYum/2024-10-15-boostYum.html
+        MIRROR_URL="https://mirrors.163.com/openeuler" && \
+        sed -i.bak \
+            "s|http://repo.openeuler.org|$MIRROR_URL|g" \
+            /etc/yum.repos.d/openEuler.repo; \
+    fi && \
+    rm -rf /var/cache/yum/ && \
+    yum clean all && yum makecache timer && \
+    yum groupinstall -y "Development Tools" && \
+    yum install -y imake rpm-build pam-devel krb5-devel zlib-devel \
+                   libXt-devel libX11-devel gtk2-devel perl perl-IPC-Cmd && \
+    yum clean all && \
+    find . -type f -name '.keep' -delete && \
+    sed -i "s/--define 'skip_x11_askpass 1'/--define \"debug_package %{nil}\"/" ./compile.sh && \
+    bash ./pullsrc.sh
+
+CMD ["bash", "/data/compile.sh"]
