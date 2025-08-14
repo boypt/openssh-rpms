@@ -178,6 +178,64 @@ jobs:
           name: el5-amd64
           path: ${{ github.workspace }}/output
 
+  build_oe2003:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: "Compile OpenEuler 20.03 LTS (amd64)"
+        run: |
+          docker run --rm -v ${{ github.workspace }}/output:/data/el7/RPMS/x86_64 ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:openeuler20.03
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: oe2003-amd64
+          path: ${{ github.workspace }}/output
+
+  build_oe2203:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: "Compile OpenEuler 22.03 LTS (amd64)"
+        run: |
+          docker run --rm -v ${{ github.workspace }}/output:/data/el7/RPMS/x86_64 ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:openeuler22.03
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: oe2203-amd64
+          path: ${{ github.workspace }}/output
+
+  build_oe2403:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: "Compile OpenEuler 24.03 LTS (amd64)"
+        run: |
+          docker run --rm -v ${{ github.workspace }}/output:/data/el7/RPMS/x86_64 ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:openeuler24.03
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: oe2403-amd64
+          path: ${{ github.workspace }}/output
+
+
   create_release:
     needs:
       - build_al2023
@@ -188,6 +246,9 @@ jobs:
       - build_el7
       - build_el6
       - build_el5
+      - build_oe2003
+      - build_oe2203
+      - build_oe2403
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -230,6 +291,21 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: el5-amd64
+          path: ./output
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: oe2003-amd64
+          path: ./output
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: oe2203-amd64
+          path: ./output
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: oe2403-amd64
           path: ./output
 
       - name: Get tag message
