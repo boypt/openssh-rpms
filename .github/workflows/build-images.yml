@@ -421,3 +421,123 @@ jobs:
 
       - name: Log out from Docker Hub
         run: docker logout
+
+  build_and_push_oe2003:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    env:
+      CHINA_MIRROR: "0"
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Build and push OpenEuler 20.03 LTS
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./docker/Dockerfile.openeuler
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:openeuler20.03,${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:oe20.03
+          build-args: |
+            VERSION_NUM=20.03
+
+      - name: Log out from Docker Hub
+        run: docker logout
+
+  build_and_push_oe2203:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    env:
+      CHINA_MIRROR: "0"
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Build and push OpenEuler 22.03 LTS
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./docker/Dockerfile.openeuler
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:openeuler22.03,${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:oe22.03
+          build-args: |
+            VERSION_NUM=22.03
+
+      - name: Log out from Docker Hub
+        run: docker logout
+
+  build_and_push_oe2403:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    env:
+      CHINA_MIRROR: "0"
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Build and push OpenEuler 24.03 LTS
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./docker/Dockerfile.openeuler
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:openeuler24.03,${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:oe24.03
+          build-args: |
+            VERSION_NUM=24.03
+
+      - name: Log out from Docker Hub
+        run: docker logout
