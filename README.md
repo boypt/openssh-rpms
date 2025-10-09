@@ -24,7 +24,7 @@ The build script reads `version.env` for actual version definitions.
 
 ```bash
 yum groupinstall -y "Development Tools"
-yum install -y imake rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel gtk2-devel perl perl-IPC-Cmd
+yum install -y imake rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel gtk2-devel perl perl-IPC-Cmd perl-Time-Piece
 
 # For CentOS5 only:
 yum install -y gcc44

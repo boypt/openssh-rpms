@@ -19,7 +19,7 @@ RUN export CHINA_MIRROR="$CHINA_MIRROR" && \
         yum makecache fast && yum install -y imake; \
     fi && \
     yum groupinstall -y "Development Tools" && \
-    yum install -y rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel perl perl-IPC-Cmd && \
+    yum install -y rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel perl perl-IPC-Cmd perl-Time-Piece && \
     yum clean all && \
     find . -type f -name '.keep' -delete && \
     bash ./pullsrc.sh
