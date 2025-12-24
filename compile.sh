@@ -76,6 +76,7 @@ BUILD_RPM() {
 		--define "opensslver ${OPENSSLVER}" \
 		--define "opensshver ${OPENSSHVER}" \
 		--define "opensshpkgrel ${PKGREL}" \
+		--define 'debug_package %{nil}' \
 		--define 'no_gtk2 1' \
 		--define 'skip_gnome_askpass 1' \
 		--define 'skip_x11_askpass 1' \
