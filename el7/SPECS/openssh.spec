@@ -105,6 +105,7 @@ Source2: sshd.pam.el7
 %if ! %{no_build_openssl}
 Source3: https://www.openssl.org/source/openssl-%{opensslver}.tar.gz
 %endif
+Patch100: openssh-aarch64-kernel-panic-fix.patch
 License: BSD
 Group: Applications/Internet
 BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
@@ -214,6 +215,7 @@ environment.
 %else
 %setup -q
 %endif
+%patch100 -p0
 
 # Add content below to use source code of OpenSSL
 %if ! %{no_build_openssl}
@@ -232,7 +234,9 @@ CFLAGS="$RPM_OPT_FLAGS -Os"; export CFLAGS
 %endif
 
 # Add OpenSSL library
+%if ! %{no_build_openssl}
 export LD_LIBRARY_PATH="%{openssl_dir}"
+%endif
 %configure \
 	--sysconfdir=%{_sysconfdir}/ssh \
 	--libexecdir=%{_libexecdir}/openssh \
@@ -244,7 +248,10 @@ export LD_LIBRARY_PATH="%{openssl_dir}"
 	--mandir=%{_mandir} \
 	--with-mantype=man \
 	--disable-strip \
+	--with-pie \
+%if ! %{no_build_openssl}
 	--with-ssl-dir="%{openssl_dir}" \
+%endif
 	--with-zlib \
 	--with-ssl-engine \
 %if %{scard}
@@ -260,7 +267,7 @@ export LD_LIBRARY_PATH="%{openssl_dir}"
 %endif
 
 
-%if %{static_libcrypto}
+%if ! %{no_build_openssl}
 #perl -pi -e "s|-lcrypto|%{_libdir}/libcrypto.a|g" Makefile
 # Add OpenSSL library
 perl -pi -e "s|-lcrypto|%{openssl_dir}/libcrypto.a -lpthread|g" Makefile
