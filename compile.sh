@@ -17,10 +17,11 @@ __root="$(cd "$(dirname "${__dir}")" && pwd)" # <-- change this as it depends on
 arg1="${1:-}"
 rpmtopdir=
 
-# trap 'echo Signal caught, cleaning up >&2; cd /tmp; /bin/rm -rfv "$TMP"; exit 15' 1 2 3 15
-# allow command fail:
-# fail_command || true
-#
+WITH_OPENSSL=0
+# Control openssl dependency
+# 0: build without openssl
+# 1: use system openssl
+# 2: build openssl statically
 
 CHECKEXISTS() {
   if [[ ! -f $__dir/downloads/$1 ]];then
@@ -45,7 +46,7 @@ GUESS_DIST() {
 	[[ $dist == "an8" ]] && dist="el7"
 
 
-        [[ -n $dist ]] && echo $dist && return 0
+    [[ -n $dist ]] && echo $dist && return 0
 
 	local glibcver=$(ldd --version | head -n1 | grep -Eo '[0-9]+' | tr -d '\n')
 
@@ -59,10 +60,10 @@ GUESS_DIST() {
 	[[ $glibcver -eq 217 ]] && echo 'el7' && return 0
 
 	# centos 8 uses glibc 2.28, not yet to be in a seprate dir
-	#[[ $glibcver -eq 228 ]] && echo 'el8' && return 0
+	[[ $glibcver -eq 228 ]] && echo 'el8' && return 0
 
 	# some centos-like dists ships higher version of glibc, fallback to el7
-	[[ $glibcver -gt 217 ]] && echo 'el7' && return 0
+	[[ $glibcver -gt 217 ]] && echo 'el8' && return 0
 }
 
 BUILD_RPM() {
@@ -73,7 +74,7 @@ BUILD_RPM() {
 		  $ASKPASSSRC \
 		)
 	local RPMBUILDOPTS=( \
-		--define "with_openssl 2" \
+		--define "with_openssl ${WITH_OPENSSL}" \
 		--define "opensslver ${OPENSSLVER}" \
 		--define "opensshver ${OPENSSHVER}" \
 		--define "opensshpkgrel ${PKGREL}" \
@@ -136,24 +137,31 @@ esac
 if [[ -z $arg1 ]]; then
     DISTVER=$(GUESS_DIST)
     case $DISTVER in
+        el8)
+            rpmtopdir=el7
+			WITH_OPENSSL=1
+            ;;
         el7)
             rpmtopdir=el7
+			WITH_OPENSSL=2
             ;;
         el6)
             rpmtopdir=el6
+			WITH_OPENSSL=0
             ;;
         el5)
             rpmtopdir=el5
+			WITH_OPENSSL=0
             # on centos5, it's prefered to use gcc44
-	    rpm -q gcc44 && export CC=gcc44
+			rpm -q gcc44 && export CC=gcc44
             ;;
         *)
             echo "Distro undefined, please specify manually: el5 el6 el7"
-	    echo -e "\nCurrent OS:"
-	    [[ -f /etc/os-release ]] && cat /etc/os-release
-	    [[ -f /etc/redhat-release ]] && cat /etc/redhat-release 
-	    [[ -f /etc/system-release ]] && cat /etc/system-release
-	    echo -e "Current OS vendor: $(rpm --eval '%{?_vendor}') \n"
+			echo -e "\nCurrent OS:"
+			[[ -f /etc/os-release ]] && cat /etc/os-release
+			[[ -f /etc/redhat-release ]] && cat /etc/redhat-release 
+			[[ -f /etc/system-release ]] && cat /etc/system-release
+			echo -e "Current OS vendor: $(rpm --eval '%{?_vendor}') \n"
             ;;
     esac
 fi
