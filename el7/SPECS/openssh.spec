@@ -5,7 +5,7 @@
 # 0: build without openssl
 # 1: use system openssl
 # 2: build openssl statically
-%global with_openssl 1
+%{!?with_openssl: %global with_openssl 2}
 
 %global ver %{?opensshver}
 %global rel %{?opensshpkgrel}%{?dist}
