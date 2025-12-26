@@ -102,8 +102,8 @@ Source1: http://www.jmknoble.net/software/x11-ssh-askpass/x11-ssh-askpass-%{aver
 Source2: sshd.pam.el5
 %if %{with_openssl} == 2
 Source3: https://www.openssl.org/source/openssl-%{opensslver}.tar.gz
-%endif
 Source4: https://www.cpan.org/src/5.0/perl-%{perlver}.tar.gz
+%endif
 
 # glibc-headers-2.5 have endian.h but didn't define htole64
 Patch0: have_endian.patch
