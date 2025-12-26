@@ -71,19 +71,19 @@ TOPDIR_SELECT() {
     case $DISTVER in
         el8)
             rpmtopdir=el7
-            [[ -z ${WITH_OPENSSL:-} ]] && WITH_OPENSSL=1
+            WITH_OPENSSL=${WITH_OPENSSL:-1}
             ;;
         el7)
             rpmtopdir=el7
-            [[ -z ${WITH_OPENSSL:-} ]] && WITH_OPENSSL=2
+            WITH_OPENSSL=${WITH_OPENSSL:-2}
             ;;
         el6)
             rpmtopdir=el6
-            [[ -z ${WITH_OPENSSL:-} ]] && WITH_OPENSSL=0
+            WITH_OPENSSL=${WITH_OPENSSL:-0}
             ;;
         el5)
             rpmtopdir=el5
-            [[ -z ${WITH_OPENSSL:-} ]] && WITH_OPENSSL=0
+            WITH_OPENSSL=${WITH_OPENSSL:-0}
             # on centos5, it's prefered to use gcc44
             rpm -q gcc44 2>&1 >/dev/null && export CC=gcc44
             ;;
@@ -177,4 +177,3 @@ if [[ ! -d $rpmtopdir ]]; then
 fi
 
 [[ -d $rpmtopdir ]] && BUILD_RPM
-
