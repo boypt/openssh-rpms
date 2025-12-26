@@ -1,0 +1,20 @@
+--- sshd.c	2025-10-10 02:38:31.000000000 +0000
++++ sshd.c	2025-12-25 09:10:26.018598057 +0000
+@@ -1891,14 +1891,17 @@
+ 	debug("rexec start in %d out %d newsock %d config_s %d/%d",
+ 	    sock_in, sock_out, newsock, config_s[0], config_s[1]);
+ 	if (!inetd_flag) {
++		close(STDIN_FILENO);
+ 		if (dup2(newsock, STDIN_FILENO) == -1)
+ 			fatal("dup2 stdin: %s", strerror(errno));
++		close(STDOUT_FILENO);
+ 		if (dup2(STDIN_FILENO, STDOUT_FILENO) == -1)
+ 			fatal("dup2 stdout: %s", strerror(errno));
+ 		if (newsock > STDOUT_FILENO)
+ 			close(newsock);
+ 	}
+ 	if (config_s[1] != REEXEC_CONFIG_PASS_FD) {
++		close(REEXEC_CONFIG_PASS_FD);
+ 		if (dup2(config_s[1], REEXEC_CONFIG_PASS_FD) == -1)
+ 			fatal("dup2 config_s: %s", strerror(errno));
+ 		close(config_s[1]);

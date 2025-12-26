@@ -86,6 +86,7 @@ Source2: sshd.pam.el7
 %if %{with_openssl} == 2
 Source3: https://www.openssl.org/source/openssl-%{opensslver}.tar.gz
 %endif
+Patch100: openssh-aarch64-kernel-panic-fix.patch
 License: BSD
 Group: Applications/Internet
 BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
@@ -195,6 +196,7 @@ environment.
 %else
 %setup -q
 %endif
+%patch100 -p0
 
 %if %{with_openssl} == 2
 # Add content below to use source code of OpenSSL
