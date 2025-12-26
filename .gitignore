@@ -1,4 +1,5 @@
 BUILD/
+*-local*
 *.orig
 *.swp
 *.tar.gz
