@@ -38,7 +38,7 @@
 %endif
 
 # Do we want kerberos5 support (1=yes 0=no)
-%global kerberos5 1
+%global kerberos5 0
 
 # Reserve options to override askpass settings with:
 # rpm -ba|--rebuild --define 'skip_xxx 1'
