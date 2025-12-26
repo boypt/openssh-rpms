@@ -37,14 +37,14 @@ GUESS_DIST() {
 	  echo 'unknown' && return 0
 	fi
 
-        local dist=$(rpm --eval '%{?dist}' | tr -d '.')
+    local dist=$(rpm --eval '%{?dist}' | tr -d '.')
 
 	# fallback to el7
-	[[ $dist == "el9" ]] && dist="el7"
-	[[ $dist == "el8" ]] && dist="el7"
-	[[ $dist == "an7" ]] && dist="el7"
-	[[ $dist == "an8" ]] && dist="el7"
-
+	[[ $dist == "el9" ]] && dist="el8"
+	[[ $dist == "el8" ]] && dist="el8"
+	[[ $dist == "an8" ]] && dist="el8" # Anolis 8
+	[[ $dist == "an7" ]] && dist="el7" # Anolis 7
+	[[ $dist == uel* ]] && dist="el8"  # UOS20+
 
     [[ -n $dist ]] && echo $dist && return 0
 
