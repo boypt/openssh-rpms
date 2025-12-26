@@ -73,6 +73,7 @@ BUILD_RPM() {
 		  $ASKPASSSRC \
 		)
 	local RPMBUILDOPTS=( \
+		--define "with_openssl 2" \
 		--define "opensslver ${OPENSSLVER}" \
 		--define "opensshver ${OPENSSHVER}" \
 		--define "opensshpkgrel ${PKGREL}" \
