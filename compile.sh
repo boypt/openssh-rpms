@@ -136,15 +136,6 @@ esac
 if [[ -z $arg1 ]]; then
     DISTVER=$(GUESS_DIST)
     case $DISTVER in
-        amzn1)
-            rpmtopdir=amzn1
-            ;;
-        amzn2)
-            rpmtopdir=amzn2
-            ;;
-        amzn2023)
-            rpmtopdir=amzn2023
-            ;;
         el7)
             rpmtopdir=el7
             ;;
@@ -157,7 +148,7 @@ if [[ -z $arg1 ]]; then
 	    rpm -q gcc44 && export CC=gcc44
             ;;
         *)
-            echo "Distro undefined, please specify manually: el5 el6 el7 amzn1 amzn2 amzn2023"
+            echo "Distro undefined, please specify manually: el5 el6 el7"
 	    echo -e "\nCurrent OS:"
 	    [[ -f /etc/os-release ]] && cat /etc/os-release
 	    [[ -f /etc/redhat-release ]] && cat /etc/redhat-release 
@@ -168,7 +159,7 @@ if [[ -z $arg1 ]]; then
 fi
 
 if [[ ! -d $rpmtopdir ]]; then 
-  echo "This script works only in el5/el6/el7/amzn1/amzn2/amzn2023"
+  echo "This script works only in el5/el6/el7"
   echo "eg: ${0} el7"
   exit 1
 fi
