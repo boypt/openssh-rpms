@@ -16,9 +16,11 @@ Similar Project: [Backport OpenSSH for Debian / Ubuntu distros](https://github.c
 ## Current Version:
 
 - OpenSSH 10.2p1 (see: [OpenSSH Official](https://www.openssh.com/))
-- OpenSSL 3.0.18 / 3.0.9 (FIPS validated, see: [OpenSSL Official](https://www.openssl.org/source/))
+- OpenSSL 3.0.18 / 3.0.9 (see: [OpenSSL Official](https://www.openssl.org/source/))
 
 The build script reads `version.env` for actual version definitions.
+
+OpenSSL is not needed when using `WITH_OPENSSL=0`. (see `version.env`)
 
 ## Build Requirements:
 
@@ -33,6 +35,8 @@ yum install -y gcc44
 ## Usage
 
 ### Build RPMs
+
+Note: it's not necessary to build on every system that needs an edgeing version of OpenSSH. As most rpm-based linux distributions are glibc compatible to each other. That is, RPMs built on CentOS can install and run on Rockylinux 8/AlmaLinux/Oracle Linux8 ...etc.
 
 1. Install build requirements listed above.
 2. Edit `version.env` file if necessary.
@@ -59,8 +63,8 @@ ls
 # Backup current SSH config
 [[ -f /etc/ssh/sshd_config ]] && mv /etc/ssh/sshd_config /etc/ssh/sshd_config.$(date +%Y%m%d)
 
-# Install rpm packages. Exclude all debug packages.
-find . ! -name '*debug*' -name '*.rpm' | xargs sudo yum --disablerepo=* localinstall -y
+# Install rpm packages.
+sudo yum --disablerepo=* localinstall -y ./openssh*.rpm
 
 # in case host key files got permissions too open.
 chmod -v 600 /etc/ssh/ssh_host_*_key
@@ -77,12 +81,15 @@ fi
 ssh -V && /usr/sbin/sshd -V
 
 # Restart service
-service sshd restart
+sudo service sshd restart
+
+# Test a new ssh connection
+ssh localhost
 ```
 
 **DO NOT DISCONNECET** current ssh shell yet, open a **NEW** shell and login to you machine to verify that sshd is working properly.
 
-#### Trouble shoot
+#### Trouble shooting
 
 You may get complains during the `yum localinstall` process. It's mostly because some subpackages depend on the main openssh package, upgrading only the main package won't fit in their dependencies.
 
@@ -107,9 +114,6 @@ rpm -ivh --force --nodeps --replacepkgs --replacefiles openssh-*.rpm
 OUTPUT="/tmp/openssh-rpms"
 # Specify build os and versions
 declare -A MAPPING
-MAPPING["amazonlinux2023"]="amzn2023"
-MAPPING["amazonlinux2"]="amzn2"
-MAPPING["amazonlinux1"]="amzn1"
 MAPPING["centos-stream9"]="el7"
 MAPPING["centos-stream8"]="el7"
 MAPPING["centos7"]="el7"
@@ -134,6 +138,8 @@ For more details, see file `docker.README.md`
 ## Security Notes
 
 This package provide following options in `/etc/ssh/sshd_config` to work like triditional sshd.
+
+Note: when built with `WITH_OPENSSL=0`, `ssh-rsa` is not supported.
 
 ```
 PubkeyAcceptedAlgorithms +ssh-rsa
