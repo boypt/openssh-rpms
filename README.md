@@ -36,7 +36,7 @@ yum install -y gcc44
 
 ### Build RPMs
 
-Note: it's not necessary to build on every system that needs an edgeing version of OpenSSH. As most rpm-based linux distributions are glibc compatible to each other. That is, RPMs built on CentOS can install and run on Rockylinux 8/AlmaLinux/Oracle Linux8 ...etc.
+Note: It is not necessary to build on every system that needs the latest version of OpenSSH, as most RPM-based Linux distributions are glibc compatible with each other. That is, RPMs built on CentOS can be installed and run on Rocky Linux 8/AlmaLinux/Oracle Linux 8, etc.
 
 1. Install build requirements listed above.
 2. Edit `version.env` file if necessary.
@@ -53,7 +53,7 @@ Note: it's not necessary to build on every system that needs an edgeing version 
 ### Install RPMs
 
 ```bash
-# Go go the generated RPMS directory.
+# Go to the generated RPMS directory.
 cd $(./compile.sh RPMDIR)
 pwd
 ls
@@ -66,12 +66,12 @@ ls
 # Install rpm packages.
 sudo yum --disablerepo=* localinstall -y ./openssh*.rpm
 
-# in case host key files got permissions too open.
+# In case host key file permissions are too open.
 chmod -v 600 /etc/ssh/ssh_host_*_key
 
 # For CentOS7+:
-# in some cases previously installed systemd unit file is left on disk after upgrade.
-# causes systemd mixing unit files and initscripts units provided by this package.
+# In some cases, the previously installed systemd unit file is left on disk after an upgrade,
+# causing systemd to mix unit files and initscripts units provided by this package.
 if [[ -d /run/systemd/system && -f /usr/lib/systemd/system/sshd.service ]]; then
     mv /usr/lib/systemd/system/sshd.service /usr/lib/systemd/system/sshd.service.$(date +%Y%m%d)
     systemctl daemon-reload
@@ -99,7 +99,7 @@ Commonly these packages are needed to be erased before installing built RPMs.
 yum erase openssh-askpass openssh-keycat openssh-cavs openssh-askpass openssh-askpass-gnome openssh-debuginfo
 ```
 
-If still not satisfied, you may try the final wepon: FORCED INSTALL.
+If still not satisfied, you may try the final weapon: FORCED INSTALL.
 
 ```bash
 rpm -ivh --force --nodeps --replacepkgs --replacefiles openssh-*.rpm
