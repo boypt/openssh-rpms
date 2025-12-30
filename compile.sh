@@ -102,6 +102,8 @@ TOPDIR_SELECT() {
 BUILD_RPM() {
 
     source version.env
+    [[ -f version-local.env ]] && source version-local.env
+
     local SOURCES=( $OPENSSHSRC \
           $OPENSSLSRC \
           $ASKPASSSRC \
