@@ -1,0 +1,15 @@
+# Configuration file for the sshd service.
+
+# The server keys are automatically generated if they are missing.
+# To change the automatic creation uncomment and change the appropriate
+# line. Accepted key types are: DSA RSA ECDSA ED25519.
+# The default is "RSA ECDSA ED25519"
+
+# AUTOCREATE_SERVER_KEYS=""
+# AUTOCREATE_SERVER_KEYS="RSA ECDSA ED25519"
+
+# Do not change this option unless you have hardware random
+# generator and you REALLY know what you are doing
+
+SSH_USE_STRONG_RNG=0
+# SSH_USE_STRONG_RNG=1

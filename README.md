@@ -18,7 +18,7 @@ Similar Project: [Backport OpenSSH for Debian / Ubuntu distros](https://github.c
 - OpenSSH 10.2p1 (see: [OpenSSH Official](https://www.openssh.com/))
 - OpenSSL 3.0.18 / 3.0.9 (see: [OpenSSL Official](https://www.openssl.org/source/))
 
-The build script reads `version.env` for actual version definitions.
+The build script reads `version.env` for version definitions.
 
 OpenSSL is not needed when using `WITH_OPENSSL=0`. (see `version.env`)
 
@@ -27,6 +27,9 @@ OpenSSL is not needed when using `WITH_OPENSSL=0`. (see `version.env`)
 ```bash
 yum groupinstall -y "Development Tools"
 yum install -y imake rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel gtk2-devel perl perl-IPC-Cmd perl-Time-Piece
+
+# For CentOS7 and above:
+yum install -y systemd-devel
 
 # For CentOS5 only:
 yum install -y gcc44

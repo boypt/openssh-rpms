@@ -86,12 +86,6 @@ Source2: sshd.pam.el7
 %if %{with_openssl} == 2
 Source3: https://www.openssl.org/source/openssl-%{opensslver}.tar.gz
 %endif
-# systemd support
-Source7: sshd.sysconfig
-Source11: sshd.service
-Source12: sshd-keygen.service
-Source13: sshd-keygen
-
 License: BSD
 Group: Applications/Internet
 BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
@@ -100,7 +94,6 @@ Obsoletes: ssh
 PreReq: initscripts >= 5.00
 %else
 Requires: initscripts >= 5.20
-BuildRequires: systemd-devel
 %endif
 BuildRequires: perl
 %if %{with_openssl} == 1
@@ -143,10 +136,6 @@ Requires: openssh = %{version}-%{release}, chkconfig >= 0.9
 %if ! %{build6x}
 Requires: /etc/pam.d/system-auth
 %endif
-Requires(post): systemd-units
-Requires(preun): systemd-units
-Requires(postun): systemd-units
-
 
 %package askpass
 Summary: A passphrase dialog for OpenSSH and X.
@@ -237,7 +226,6 @@ export LD_LIBRARY_PATH="%{openssl_dir}"
 	--with-md5-passwords \
 	--mandir=%{_mandir} \
 	--with-mantype=man \
-        --with-systemd \
 	--disable-strip \
 %if %{with_openssl} == 2
 	--with-ssl-dir="%{openssl_dir}" \
@@ -304,6 +292,8 @@ mkdir -p -m755 $RPM_BUILD_ROOT%{_var}/empty/sshd
 
 make install DESTDIR=$RPM_BUILD_ROOT
 # Modify sshd config file.
+sed -E -i 's/^#?( ?)*GSSAPIAuthentication.*$/GSSAPIAuthentication yes/' $RPM_BUILD_ROOT/etc/ssh/sshd_config
+sed -E -i 's/^#?( ?)*GSSAPICleanupCredentials.*$/GSSAPICleanupCredentials no/' $RPM_BUILD_ROOT/etc/ssh/sshd_config
 cat << EOF >> $RPM_BUILD_ROOT/etc/ssh/sshd_config
 %if %{with_openssl} > 0
 PubkeyAcceptedAlgorithms +ssh-rsa
@@ -331,17 +321,7 @@ install -d $RPM_BUILD_ROOT/etc/rc.d/init.d
 install -d $RPM_BUILD_ROOT%{_libexecdir}/openssh
 # Using custom PAM file
 install -m644 %{SOURCE2}     $RPM_BUILD_ROOT/etc/pam.d/sshd
-
-# init-v
 install -m755 contrib/redhat/sshd.init $RPM_BUILD_ROOT/etc/rc.d/init.d/sshd
-
-# systemd support 
-install -d $RPM_BUILD_ROOT/etc/sysconfig/
-install -m644 %{SOURCE7} $RPM_BUILD_ROOT/etc/sysconfig/sshd
-install -m755 %{SOURCE13} $RPM_BUILD_ROOT/%{_sbindir}/sshd-keygen
-install -d -m755 $RPM_BUILD_ROOT/%{_unitdir}
-install -m644 %{SOURCE11} $RPM_BUILD_ROOT/%{_unitdir}/sshd.service
-install -m644 %{SOURCE12} $RPM_BUILD_ROOT/%{_unitdir}/sshd-keygen.service
 
 %if ! %{no_x11_askpass}
 install x11-ssh-askpass-%{aversion}/x11-ssh-askpass $RPM_BUILD_ROOT%{_libexecdir}/openssh/x11-ssh-askpass
@@ -401,27 +381,17 @@ fi
 	-g sshd -M -r sshd 2>/dev/null || :
 
 %post server
-# Fix permissions and ownership for private host key files.
-# This ensures that even if an old package had incorrect permissions (like 0640),
-# or if %config(noreplace) prevented %files from re-applying permissions during an upgrade,
-# these critical security permissions are corrected.
-for keyfile in \
-    /etc/ssh/ssh_host_rsa_key \
-    /etc/ssh/ssh_host_ed25519_key \
-    /etc/ssh/ssh_host_dsa_key \
-    /etc/ssh/ssh_host_ecdsa_key; do
-    if [ -f "$keyfile" ]; then
-        chmod 0600 "$keyfile"
-        chown root:root "$keyfile"
-    fi
-done
-%systemd_post sshd.service
-
-%preun server
-%systemd_postun_with_restart sshd.service
+/sbin/chkconfig --add sshd
 
 %postun server
-%systemd_postun_with_restart sshd.service
+/sbin/service sshd condrestart > /dev/null 2>&1 || :
+
+%preun server
+if [ "$1" = 0 ]
+then
+	/sbin/service sshd stop > /dev/null 2>&1 || :
+	/sbin/chkconfig --del sshd
+fi
 
 %files
 %defattr(-,root,root)
@@ -470,7 +440,6 @@ done
 %defattr(-,root,root)
 %dir %attr(0111,root,root) %{_var}/empty/sshd
 %attr(0755,root,root) %{_sbindir}/sshd
-%attr(0755,root,root) %{_sbindir}/sshd-keygen
 %attr(0755,root,root) %{_libexecdir}/openssh/sshd-session
 %attr(0755,root,root) %{_libexecdir}/openssh/sshd-auth
 %attr(0755,root,root) %{_libexecdir}/openssh/sftp-server
@@ -480,11 +449,8 @@ done
 %attr(0644,root,root) %{_mandir}/man8/sftp-server.8*
 %attr(0755,root,root) %dir %{_sysconfdir}/ssh
 %attr(0600,root,root) %config(noreplace) %{_sysconfdir}/ssh/sshd_config
-%attr(0640,root,root) %config(noreplace) /etc/sysconfig/sshd
 %attr(0600,root,root) %config(noreplace) /etc/pam.d/sshd
 %attr(0755,root,root) %config /etc/rc.d/init.d/sshd
-%attr(0644,root,root) %{_unitdir}/sshd.service
-%attr(0644,root,root) %{_unitdir}/sshd-keygen.service
 %endif
 
 %if ! %{no_x11_askpass}
