@@ -29,14 +29,6 @@
 # Use GTK2 instead of GNOME in gnome-ssh-askpass
 %global gtk2 1
 
-# Use build6x options for older RHEL builds
-# RHEL 7 not yet supported
-%if 0%{?rhel} > 6
-%global build6x 0
-%else
-%global build6x 1
-%endif
-
 # Do we want kerberos5 support (1=yes 0=no)
 %global kerberos5 0
 
@@ -49,14 +41,6 @@
 # RedHat <= 7.2 and Red Hat Advanced Server 2.1 are examples.
 # rpm -ba|--rebuild --define 'no_gtk2 1'
 %{?no_gtk2:%global gtk2 0}
-
-# Is this a build for RHL 6.x or earlier?
-%{?build_6x:%global build6x 1}
-
-# If this is RHL 6.x, the default configuration has sysconfdir in /usr/etc.
-%if %{build6x}
-%global _sysconfdir /etc
-%endif
 
 # Options for Smartcard support: (needs libsectok and openssl-engine)
 # rpm -ba|--rebuild --define "smartcard 1"
@@ -98,22 +82,14 @@ License: BSD
 Group: Applications/Internet
 BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
 Obsoletes: ssh
-%if %{build6x}
-PreReq: initscripts >= 5.00
-%else
 Requires: initscripts >= 5.20
 BuildRequires: systemd-devel
-%endif
 BuildRequires: perl
 %if %{with_openssl} == 1
 BuildRequires: openssl-devel
 %endif
 BuildRequires: /bin/login
-%if ! %{build6x}
 BuildRequires: glibc-devel, pam
-%else
-BuildRequires: /usr/include/security/pam_appl.h
-%endif
 %if ! %{no_x11_askpass}
 BuildRequires: /usr/include/X11/Xlib.h
 # Xt development tools
@@ -142,9 +118,7 @@ Summary: The OpenSSH server daemon.
 Group: System Environment/Daemons
 Obsoletes: ssh-server
 Requires: openssh = %{version}-%{release}, chkconfig >= 0.9
-%if ! %{build6x}
 Requires: /etc/pam.d/system-auth
-%endif
 Requires(post): systemd-units
 Requires(preun): systemd-units
 Requires(postun): systemd-units
