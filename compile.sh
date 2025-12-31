@@ -166,6 +166,11 @@ case $arg1 in
         LIST_RPMDIR
         exit 0
         ;;
+    *)
+        [[ -n $arg1 ]] && \
+        echo -e "Subcmd: $arg1 not found.\n GETEL, GETRPM, RPMDIR" && \
+        exit 1
+        ;;
 esac
 
 # manual specified dist
