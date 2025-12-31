@@ -1,5 +1,5 @@
-%{?!opensslver: %global opensslver 3.0.8}
-%{?!opensshver: %global opensshver 9.6p1}
+%{?!opensslver: %global opensslver 3.0.18}
+%{?!opensshver: %global opensshver 10.2p1}
 
 # Control openssl dependency
 # 0: build without openssl
@@ -88,6 +88,8 @@ Source3: https://www.openssl.org/source/openssl-%{opensslver}.tar.gz
 %endif
 # systemd support
 Source7: sshd.sysconfig
+Source9: sshd@.service
+Source10: sshd.socket
 Source11: sshd.service
 Source12: sshd-keygen.service
 Source13: sshd-keygen
@@ -340,6 +342,8 @@ install -d $RPM_BUILD_ROOT/etc/sysconfig/
 install -m644 %{SOURCE7} $RPM_BUILD_ROOT/etc/sysconfig/sshd
 install -m755 %{SOURCE13} $RPM_BUILD_ROOT/%{_sbindir}/sshd-keygen
 install -d -m755 $RPM_BUILD_ROOT/%{_unitdir}
+install -m644 %{SOURCE9} $RPM_BUILD_ROOT/%{_unitdir}/sshd@.service
+install -m644 %{SOURCE10} $RPM_BUILD_ROOT/%{_unitdir}/sshd.socket
 install -m644 %{SOURCE11} $RPM_BUILD_ROOT/%{_unitdir}/sshd.service
 install -m644 %{SOURCE12} $RPM_BUILD_ROOT/%{_unitdir}/sshd-keygen.service
 
@@ -415,10 +419,10 @@ for keyfile in \
         chown root:root "$keyfile"
     fi
 done
-%systemd_post sshd.service
+%systemd_post sshd.service sshd.socket
 
 %preun server
-%systemd_postun_with_restart sshd.service
+%systemd_preun sshd.service sshd.socket
 
 %postun server
 %systemd_postun_with_restart sshd.service
@@ -484,6 +488,8 @@ done
 %attr(0600,root,root) %config(noreplace) /etc/pam.d/sshd
 %attr(0755,root,root) %config /etc/rc.d/init.d/sshd
 %attr(0644,root,root) %{_unitdir}/sshd.service
+%attr(0644,root,root) %{_unitdir}/sshd@.service
+%attr(0644,root,root) %{_unitdir}/sshd.socket
 %attr(0644,root,root) %{_unitdir}/sshd-keygen.service
 %endif
 
