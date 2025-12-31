@@ -72,14 +72,6 @@ sudo yum --disablerepo=* localinstall -y ./openssh*.rpm
 # In case host key file permissions are too open.
 chmod -v 600 /etc/ssh/ssh_host_*_key
 
-# For CentOS7+:
-# In some cases, the previously installed systemd unit file is left on disk after an upgrade,
-# causing systemd to mix unit files and initscripts units provided by this package.
-if [[ -d /run/systemd/system && -f /usr/lib/systemd/system/sshd.service ]]; then
-    mv /usr/lib/systemd/system/sshd.service /usr/lib/systemd/system/sshd.service.$(date +%Y%m%d)
-    systemctl daemon-reload
-fi
-
 # Check Installed version:
 ssh -V && /usr/sbin/sshd -V
 
