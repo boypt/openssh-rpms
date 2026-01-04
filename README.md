@@ -1,22 +1,28 @@
 # Backport OpenSSH RPM / SRPM for CentOS
 
-A simple script to backport latest OpenSSH RPMs for CentOS/RHEL (like) distros.
+A script to backport upstream OpenSSH for CentOS/RHEL (like) distros.
 
 Similar Project: [Backport OpenSSH for Debian / Ubuntu distros](https://github.com/boypt/openssh-deb)
 
 ## Supported (tested) Distro:
 
 - CentOS 5/6/7/8/Stream 8/9
-- Amazon Linux 1/2/2023
-- UnionTech OS Server 20
-- openEuler 22.03 (LTS-SP1)
-- AnolisOS 7.9/8.6
 - Rocky Linux 8/9
+- Amazon Linux 1/2/2023
+- UnionTech OS 20
+- openEuler 22.03/24.03
+- AnolisOS 7/8/2023
+
+## Project Structure 
+
+- `el5`: Designed for legacy environments. It requires independent compilation of toolchains (e.g., Perl) to support the build process. 
+- `el6`: Utilizes traditional SysVinit scripts for service startup. 
+- `el7`: Adopts modern Systemd unit files for service management.
 
 ## Current Version:
 
 - OpenSSH 10.2p1 (see: [OpenSSH Official](https://www.openssh.com/))
-- OpenSSL 3.0.18 / 3.0.9 (see: [OpenSSL Official](https://www.openssl.org/source/))
+- OpenSSL 3.0.18 (see: [OpenSSL Official](https://www.openssl.org/source/))
 
 The build script reads `version.env` for version definitions.
 
@@ -102,33 +108,7 @@ rpm -ivh --force --nodeps --replacepkgs --replacefiles openssh-*.rpm
 
 ## Use Docker
 
-### TL;DR
-
-```bash
-# Define output directory
-OUTPUT="/tmp/openssh-rpms"
-# Specify build os and versions
-declare -A MAPPING
-MAPPING["centos-stream9"]="el7"
-MAPPING["centos-stream8"]="el7"
-MAPPING["centos7"]="el7"
-MAPPING["centos6"]="el6"
-MAPPING["centos5"]="el5"
-
-for VERSION in "${!MAPPING[@]}";
-do
-  DIST=${MAPPING[$VERSION]}
-  echo "Create for OS: ${VERSION}"
-  mkdir -p $OUTPUT/$VERSION
-  # Run the builder container
-  docker run -it --rm \
-             -v $OUTPUT/$VERSION:/data/$DIST/RPMS \
-             chowrex/openssh-rpms:$VERSION
-done
-
-```
-
-For more details, see file `docker.README.md`
+For more details, see [docker/README.md](docker/README.md)
 
 ## Security Notes
 
