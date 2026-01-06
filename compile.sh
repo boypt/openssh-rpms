@@ -79,11 +79,11 @@ TOPDIR_SELECT() {
             ;;
         el6)
             rpmtopdir=el6
-            WITH_OPENSSL=${WITH_OPENSSL:-0}
+            WITH_OPENSSL=${WITH_OPENSSL:-2}
             ;;
         el5)
             rpmtopdir=el5
-            WITH_OPENSSL=${WITH_OPENSSL:-0}
+            WITH_OPENSSL=${WITH_OPENSSL:-2}
             # on centos5, it's prefered to use gcc44
             rpm -q gcc44 2>&1 >/dev/null && export CC=gcc44
             ;;
