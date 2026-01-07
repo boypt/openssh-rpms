@@ -145,38 +145,38 @@ jobs:
           name: el6-amd64
           path: ${{ github.workspace }}/output
 
-  build_el5:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+  # build_el5:
+  #   # The type of runner that the job will run on
+  #   runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - name: Checkout code
-        uses: actions/checkout@v4
+  #   # Steps represent a sequence of tasks that will be executed as part of the job
+  #   steps:
+  #     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
 
-      - name: "Download packages for CentOS 5"
-        run: |
-          OPENSSHMIR=https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable
-          OPENSSLMIR=https://www.openssl.org/source/
-          ASKPASSMIR=https://src.fedoraproject.org/repo/pkgs/openssh/x11-ssh-askpass-1.2.4.1.tar.gz/8f2e41f3f7eaa8543a2440454637f3c3
-          PERLMIR=https://www.cpan.org/src/5.0
-          source ${{ github.workspace }}/version.env
-          pushd ${{ github.workspace }}/downloads
-          curl -O -L -k $OPENSSLMIR/$OPENSSLSRC
-          curl -O -L -k $OPENSSHMIR/$OPENSSHSRC
-          curl -O -L -k $ASKPASSMIR/$ASKPASSSRC
-          curl -O -L -k $PERLMIR/$PERLSRC
-          popd
+  #     - name: "Download packages for CentOS 5"
+  #       run: |
+  #         OPENSSHMIR=https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable
+  #         OPENSSLMIR=https://www.openssl.org/source/
+  #         ASKPASSMIR=https://src.fedoraproject.org/repo/pkgs/openssh/x11-ssh-askpass-1.2.4.1.tar.gz/8f2e41f3f7eaa8543a2440454637f3c3
+  #         PERLMIR=https://www.cpan.org/src/5.0
+  #         source ${{ github.workspace }}/version.env
+  #         pushd ${{ github.workspace }}/downloads
+  #         curl -O -L -k $OPENSSLMIR/$OPENSSLSRC
+  #         curl -O -L -k $OPENSSHMIR/$OPENSSHSRC
+  #         curl -O -L -k $ASKPASSMIR/$ASKPASSSRC
+  #         curl -O -L -k $PERLMIR/$PERLSRC
+  #         popd
 
-      - name: "Compile CentOS 5 (amd64)"
-        run: |
-          docker run --rm -v ${{ github.workspace }}/output:/data/el5/RPMS/x86_64 -v ${{ github.workspace }}/downloads:/data/downloads ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:centos5
+  #     - name: "Compile CentOS 5 (amd64)"
+  #       run: |
+  #         docker run --rm -v ${{ github.workspace }}/output:/data/el5/RPMS/x86_64 -v ${{ github.workspace }}/downloads:/data/downloads ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:centos5
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: el5-amd64
-          path: ${{ github.workspace }}/output
+  #     - uses: actions/upload-artifact@v4
+  #       with:
+  #         name: el5-amd64
+  #         path: ${{ github.workspace }}/output
 
   build_oe2003:
     # The type of runner that the job will run on
@@ -245,7 +245,7 @@ jobs:
       - build_el8
       - build_el7
       - build_el6
-      - build_el5
+      # - build_el5
       - build_oe2003
       - build_oe2203
       - build_oe2403
@@ -288,10 +288,10 @@ jobs:
           name: el6-amd64
           path: ./output
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: el5-amd64
-          path: ./output
+      # - uses: actions/download-artifact@v4
+      #   with:
+      #     name: el5-amd64
+      #     path: ./output
 
       - uses: actions/download-artifact@v4
         with:
