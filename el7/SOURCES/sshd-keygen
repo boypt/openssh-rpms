@@ -1,0 +1,154 @@
+#!/bin/bash
+
+# Create the host keys for the OpenSSH server.
+#
+# The creation is controlled by the $AUTOCREATE_SERVER_KEYS environment
+# variable.
+AUTOCREATE_SERVER_KEYS="RSA ECDSA ED25519"
+
+# source function library
+. /etc/rc.d/init.d/functions
+
+# Some functions to make the below more readable
+KEYGEN=/usr/bin/ssh-keygen
+RSA1_KEY=/etc/ssh/ssh_host_key
+RSA_KEY=/etc/ssh/ssh_host_rsa_key
+DSA_KEY=/etc/ssh/ssh_host_dsa_key
+ECDSA_KEY=/etc/ssh/ssh_host_ecdsa_key
+ED25519_KEY=/etc/ssh/ssh_host_ed25519_key
+
+# pull in sysconfig settings
+[ -f /etc/sysconfig/sshd ] && . /etc/sysconfig/sshd
+
+fips_enabled() {
+	if [ -r /proc/sys/crypto/fips_enabled ]; then
+		cat /proc/sys/crypto/fips_enabled
+	else
+		echo 0
+	fi
+}
+
+do_rsa1_keygen() {
+	if [ ! -s $RSA1_KEY -a `fips_enabled` -eq 0 ]; then
+		echo -n $"Generating SSH1 RSA host key: "
+		rm -f $RSA1_KEY
+		if test ! -f $RSA1_KEY && $KEYGEN -q -t rsa1 -f $RSA1_KEY -C '' -N '' >&/dev/null; then
+			chgrp ssh_keys $RSA1_KEY
+			chmod 600 $RSA1_KEY
+			chmod 600 $RSA1_KEY.pub
+			if [ -x /sbin/restorecon ]; then
+			    /sbin/restorecon $RSA1_KEY{,.pub}
+			fi
+			success $"RSA1 key generation"
+			echo
+		else
+			failure $"RSA1 key generation"
+			echo
+			#exit 1
+		fi
+	fi
+}
+
+do_rsa_keygen() {
+	if [ ! -s $RSA_KEY ]; then
+		echo -n $"Generating SSH2 RSA host key: "
+		rm -f $RSA_KEY
+		if test ! -f $RSA_KEY && $KEYGEN -q -t rsa -f $RSA_KEY -C '' -N '' >&/dev/null; then
+			chgrp ssh_keys $RSA_KEY
+			chmod 600 $RSA_KEY
+			chmod 600 $RSA_KEY.pub
+			if [ -x /sbin/restorecon ]; then
+			    /sbin/restorecon $RSA_KEY{,.pub}
+			fi
+			success $"RSA key generation"
+			echo
+		else
+			failure $"RSA key generation"
+			echo
+			#exit 1
+		fi
+	fi
+}
+
+do_dsa_keygen() {
+	if [ ! -s $DSA_KEY -a `fips_enabled` -eq 0 ]; then
+		echo -n $"Generating SSH2 DSA host key: "
+		rm -f $DSA_KEY
+		if test ! -f $DSA_KEY && $KEYGEN -q -t dsa -f $DSA_KEY -C '' -N '' >&/dev/null; then
+			chgrp ssh_keys $DSA_KEY
+			chmod 600 $DSA_KEY
+			chmod 600 $DSA_KEY.pub
+			if [ -x /sbin/restorecon ]; then
+			    /sbin/restorecon $DSA_KEY{,.pub}
+			fi
+			success $"DSA key generation"
+			echo
+		else
+			failure $"DSA key generation"
+			echo
+			#exit 1
+		fi
+	fi
+}
+
+do_ecdsa_keygen() {
+	if [ ! -s $ECDSA_KEY ]; then
+		echo -n $"Generating SSH2 ECDSA host key: "
+		rm -f $ECDSA_KEY
+		if test ! -f $ECDSA_KEY && $KEYGEN -q -t ecdsa -f $ECDSA_KEY -C '' -N '' >&/dev/null; then
+			chgrp ssh_keys $ECDSA_KEY
+			chmod 600 $ECDSA_KEY
+			chmod 600 $ECDSA_KEY.pub
+			if [ -x /sbin/restorecon ]; then
+			    /sbin/restorecon $ECDSA_KEY{,.pub}
+			fi
+			success $"ECDSA key generation"
+			echo
+		else
+			failure $"ECDSA key generation"
+			echo
+			#exit 1
+		fi
+	fi
+}
+
+do_ed25519_keygen() {
+	if [ ! -s $ED25519_KEY -a `fips_enabled` -eq 0 ]; then
+		echo -n $"Generating SSH2 ED25519 host key: "
+		rm -f $ED25519_KEY
+		if test ! -f $ED25519_KEY && $KEYGEN -q -t ed25519 -f $ED25519_KEY -C '' -N '' >&/dev/null; then
+			chgrp ssh_keys $ED25519_KEY
+			chmod 600 $ED25519_KEY
+			chmod 600 $ED25519_KEY.pub
+			if [ -x /sbin/restorecon ]; then
+			    /sbin/restorecon $ED25519_KEY{,.pub}
+			fi
+			success $"ED25519 key generation"
+			echo
+		else
+			failure $"ED25519 key generation"
+			echo
+			#exit 1
+		fi
+	fi
+}
+
+if [ "x${AUTOCREATE_SERVER_KEYS}" == "xNO" ]; then
+	exit 0
+fi
+
+# legacy options
+case $AUTOCREATE_SERVER_KEYS in
+	NODSA) AUTOCREATE_SERVER_KEYS="RSA ECDSA ED25519";;
+	RSAONLY) AUTOCREATE_SERVER_KEYS="RSA";;
+	YES) AUTOCREATE_SERVER_KEYS="DSA RSA ECDSA ED25519";;
+esac
+
+for KEY in $AUTOCREATE_SERVER_KEYS; do
+	case $KEY in
+		DSA) do_dsa_keygen;;
+		RSA) do_rsa_keygen;;
+		ECDSA) do_ecdsa_keygen;;
+		ED25519) do_ed25519_keygen;;
+	esac
+done

@@ -79,11 +79,11 @@ TOPDIR_SELECT() {
             ;;
         el6)
             rpmtopdir=el6
-            WITH_OPENSSL=${WITH_OPENSSL:-0}
+            WITH_OPENSSL=${WITH_OPENSSL:-2}
             ;;
         el5)
             rpmtopdir=el5
-            WITH_OPENSSL=${WITH_OPENSSL:-0}
+            WITH_OPENSSL=${WITH_OPENSSL:-2}
             # on centos5, it's prefered to use gcc44
             rpm -q gcc44 2>&1 >/dev/null && export CC=gcc44
             ;;
@@ -102,6 +102,8 @@ TOPDIR_SELECT() {
 BUILD_RPM() {
 
     source version.env
+    [[ -f version-local.env ]] && source version-local.env
+
     local SOURCES=( $OPENSSHSRC \
           $OPENSSLSRC \
           $ASKPASSSRC \
@@ -163,6 +165,11 @@ case $arg1 in
         TOPDIR_SELECT
         LIST_RPMDIR
         exit 0
+        ;;
+    *)
+        [[ -n $arg1 ]] && \
+        echo -e "Subcmd: $arg1 not found.\n GETEL, GETRPM, RPMDIR" && \
+        exit 1
         ;;
 esac
 

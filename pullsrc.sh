@@ -20,7 +20,8 @@ arg1="${1:-}"
 # allow command fail:
 # fail_command || true
 
-source version.env	
+source version.env
+[[ -f version-local.env ]] && source version-local.env
 
 OPENSSHMIR=https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable
 OPENSSLMIR=https://www.openssl.org/source/
