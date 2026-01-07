@@ -15,9 +15,11 @@ Similar Project: [Backport OpenSSH for Debian / Ubuntu distros](https://github.c
 
 ## Project Structure 
 
-- `el5`: Designed for legacy environments. It requires independent compilation of toolchains (e.g., Perl) to support the build process. 
-- `el6`: Utilizes traditional SysVinit scripts for service startup. 
-- `el7`: Adopts modern Systemd unit files for service management.
+`el5`: Designed for legacy environments. It requires independent compilation of toolchains (e.g., Perl) to support the build process.
+`el6`: Utilizes traditional SysVinit scripts for service startup.
+`el7`: Adopts modern Systemd unit files for service management.
+
+**Note**: The directory names (`el5`, `el6`, `el7`) serve as functional templates for different environment types. For instance, the Systemd units in `el7` are applicable not only to EL7 but also to EL8, EL9, and other modern distributions that rely on Systemd.
 
 ## Current Version:
 
