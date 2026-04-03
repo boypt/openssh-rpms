@@ -266,7 +266,7 @@ popd
 mkdir -p openssl
 tar xfz %{SOURCE3} --strip-components=1 -C openssl
 pushd openssl
-./config shared zlib -fPIC
+./config no-dgram no-tests shared zlib -fPIC
 make %{?_smp_mflags}
 popd
 
