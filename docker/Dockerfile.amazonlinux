@@ -18,8 +18,7 @@ RUN export CHINA_MIRROR="$CHINA_MIRROR" && \
     elif [ "$VERSION_NUM" = "1" ]; then \
         yum makecache fast && yum install -y imake; \
     fi && \
-    yum groupinstall -y "Development Tools" && \
-    yum install -y rpm-build openssl-devel pam-devel krb5-devel zlib-devel libXt-devel libX11-devel perl perl-IPC-Cmd perl-Time-Piece && \
+    yum install -y wget autoconf automake gcc rpm-build openssl-devel pam-devel krb5-devel zlib-devel libXt-devel libX11-devel perl perl-IPC-Cmd perl-Time-Piece && \
     yum clean all
 
 CMD ["bash", "-c", "./pullsrc.sh && ./compile.sh"]

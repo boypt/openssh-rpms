@@ -22,7 +22,7 @@ if [ "$RELEASE_VER" != ".el5" ]; then
     AWS_REGION="us-east-2"
   fi
   else
-    MIRROR_URL="http://linuxsoft.cern.ch"
+    MIRROR_URL="http://mirrors.huaweicloud.com"
 fi
 
 # For ARM platform, the mirror url needs a suffix `altarch`
