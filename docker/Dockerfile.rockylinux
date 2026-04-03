@@ -17,6 +17,12 @@ RUN if [ "$CHINA_MIRROR" != "0" ]; then \
             -e "s|^#baseurl=http://dl.rockylinux.org/\$contentdir|baseurl=$MIRROR_URL|g" \
             -i.bak \
             /etc/yum.repos.d/*.repo; \
+    else \
+        MIRROR_URL="https://mirrors.ocf.berkeley.edu/rocky" && \
+        sed -e 's|^mirrorlist=|#mirrorlist=|g' \
+            -e "s|^#baseurl=http://dl.rockylinux.org/\$contentdir|baseurl=$MIRROR_URL|g" \
+            -i.bak \
+            /etc/yum.repos.d/*.repo; \
     fi && \
     rm -rf /var/cache/yum/ && \
     yum clean all && yum makecache timer && \

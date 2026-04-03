@@ -16,6 +16,11 @@ RUN if [ "$CHINA_MIRROR" != "0" ]; then \
         sed -i.bak \
             "s|http://repo.openeuler.org|$MIRROR_URL|g" \
             /etc/yum.repos.d/openEuler.repo; \
+    else \
+        MIRROR_URL="https://mirrors.ocf.berkeley.edu/openeuler" && \
+        sed -i.bak \
+            "s|http://repo.openeuler.org|$MIRROR_URL|g" \
+            /etc/yum.repos.d/openEuler.repo; \
     fi && \
     rm -rf /var/cache/yum/ && \
     yum clean all && yum makecache timer && \
