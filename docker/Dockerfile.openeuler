@@ -22,6 +22,10 @@ RUN if [ "$CHINA_MIRROR" != "0" ]; then \
             "s|repo.openeuler.org|$MIRROR_URL|g;s|^metalink|#metalink|g" \
             /etc/yum.repos.d/openEuler.repo; \
     fi && \
+    if [ "$VERSION_NUM" == "20"* ]; then sed \
+            "s|gpgcheck=1|gpgcheck=0|g" \
+            /etc/yum.repos.d/openEuler.repo; \
+    fi && \
     rm -rf /var/cache/yum/ && \
     yum clean all && yum makecache timer && \
     yum groupinstall -y "Development Tools" && \
