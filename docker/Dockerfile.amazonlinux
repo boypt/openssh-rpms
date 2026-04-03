@@ -20,7 +20,6 @@ RUN export CHINA_MIRROR="$CHINA_MIRROR" && \
     fi && \
     yum groupinstall -y "Development Tools" && \
     yum install -y rpm-build openssl-devel pam-devel krb5-devel zlib-devel libXt-devel libX11-devel perl perl-IPC-Cmd perl-Time-Piece && \
-    yum clean all && \
-    bash ./pullsrc.sh
+    yum clean all
 
-CMD ["bash", "/data/compile.sh"]
+CMD ["bash", "-c", "./pullsrc.sh && ./compile.sh"]
