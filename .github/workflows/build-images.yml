@@ -457,7 +457,7 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:openeuler20.03,${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:oe20.03
           build-args: |
-            VERSION_NUM=20.03
+            VERSION_NUM=20.03-lts
 
       - name: Log out from Docker Hub
         run: docker logout
@@ -497,7 +497,7 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:openeuler22.03,${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:oe22.03
           build-args: |
-            VERSION_NUM=22.03
+            VERSION_NUM=22.03-lts
 
       - name: Log out from Docker Hub
         run: docker logout
@@ -537,7 +537,7 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:openeuler24.03,${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:oe24.03
           build-args: |
-            VERSION_NUM=24.03
+            VERSION_NUM=24.03-lts
 
       - name: Log out from Docker Hub
         run: docker logout
