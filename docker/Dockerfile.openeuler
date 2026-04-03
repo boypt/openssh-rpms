@@ -10,8 +10,8 @@ WORKDIR /data
 # Copy all files
 COPY . /data
 
+# Official webpage: https://www.openeuler.openatom.cn/zh/blog/2024-10-15-boostYum/2024-10-15-boostYum.html
 RUN if [ "$CHINA_MIRROR" != "0" ]; then \
-        # Official webpage: https://www.openeuler.openatom.cn/zh/blog/2024-10-15-boostYum/2024-10-15-boostYum.html
         MIRROR_URL="https://mirrors.163.com/openeuler" && \
         sed -i.bak \
             "s|http://repo.openeuler.org|$MIRROR_URL|g" \
