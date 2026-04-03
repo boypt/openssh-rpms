@@ -20,7 +20,7 @@ RUN if [ "$CHINA_MIRROR" != "0" ]; then \
     rm -rf /var/cache/yum/ && \
     yum clean all && yum makecache timer && \
     yum groupinstall -y "Development Tools" && \
-    yum install -y imake rpm-build pam-devel krb5-devel zlib-devel \
+    yum install -y imake rpm-build pam-devel krb5-devel zlib-devel systemd-devel openssl-devel \
                    libXt-devel libX11-devel gtk2-devel perl perl-IPC-Cmd perl-Time-Piece && \
     yum clean all && \
     find . -type f -name '.keep' -delete && \

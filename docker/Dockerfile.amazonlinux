@@ -12,14 +12,14 @@ COPY . /data
 RUN export CHINA_MIRROR="$CHINA_MIRROR" && \
     bash ./docker/modify_yum_source.sh && \
     if [ "$VERSION_NUM" = "2023" ]; then \
-        yum makecache timer && yum install -y libnsl; \
+        yum makecache timer && yum install -y libnsl systemd-devel; \
     elif [ "$VERSION_NUM" = "2" ]; then \
-        yum makecache fast && yum install -y gtk2-devel imake; \
+        yum makecache fast && yum install -y gtk2-devel imake systemd-devel; \
     elif [ "$VERSION_NUM" = "1" ]; then \
         yum makecache fast && yum install -y imake; \
     fi && \
     yum groupinstall -y "Development Tools" && \
-    yum install -y rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel perl perl-IPC-Cmd perl-Time-Piece && \
+    yum install -y rpm-build openssl-devel pam-devel krb5-devel zlib-devel libXt-devel libX11-devel perl perl-IPC-Cmd perl-Time-Piece && \
     yum clean all && \
     find . -type f -name '.keep' -delete && \
     bash ./pullsrc.sh
