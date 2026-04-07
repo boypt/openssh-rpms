@@ -18,7 +18,7 @@ RUN export CHINA_MIRROR="$CHINA_MIRROR" && \
     elif [ "$VERSION_NUM" = "7" ]; then \
         yum install -y systemd-devel perl perl-IPC-Cmd perl-Time-Piece ;\
     elif [ "$VERSION_NUM" = "6" ]; then \
-        yum install -y perl perl-IPC-Cmd perl-Time-Piece ;\
+        yum install -y util-linux-ng perl perl-IPC-Cmd perl-Time-Piece ;\
     elif [ "$VERSION_NUM" = "5" ]; then \
         yum install -y gcc44; \
     fi && \
