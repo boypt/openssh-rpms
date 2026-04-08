@@ -66,14 +66,12 @@ Note: It is unnecessary to build on each system, as most RPM-based Linux distrib
     ```bash
     ./compile.sh
     ```
+5. The generated RPM files will be copied to the `output` directory.
 
 ### Install RPMs
 
 ```bash
-# Go to the generated RPMS directory.
-cd $(./compile.sh RPMDIR)
-pwd
-ls
+ls output
 # you will find multiple RPM files in this directory.
 # you may copy them to other machines, and continue following steps there.
 

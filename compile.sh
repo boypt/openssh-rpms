@@ -136,7 +136,10 @@ BUILD_RPM() {
       CHECKEXISTS $fn && \
         install -v -m666 $__dir/downloads/$fn ./SOURCES/
     done
+    find ./RPMS -type f -name '*.rpm' -exec rm -fv {} \;
     rpmbuild -ba ./SPECS/openssh.spec "${RPMBUILDOPTS[@]}"
+    mkdir -p $__dir/output
+    find ./RPMS -type f -name '*.rpm' -exec install -v -m644 {} $__dir/output/ \;
     popd
 }
 

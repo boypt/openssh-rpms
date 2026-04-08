@@ -8,7 +8,7 @@ LABEL Author="Rex Zhou <zrx879582094@gmail.com>"
 WORKDIR /data
 
 # Copy all files
-COPY . /data
+COPY ./docker/ /data/docker/
 
 # CentOS 8 stream had NO valid mirrors.
 RUN if [ "$VERSION_NUM" = "8" ]; then \
@@ -20,7 +20,6 @@ RUN if [ "$VERSION_NUM" = "8" ]; then \
         yum install -y perl 'dnf-command(config-manager)' && \
         yum config-manager --set-enabled powertools; \
     else \
-        yum install -y epel-release && \
         if [ "$CHINA_MIRROR" != "0" ]; then \
             MIRROR_URL="https://mirrors.ustc.edu.cn" && \
             sed -i "s|MIRROR_HOLDER|$MIRROR_URL/centos-stream|" /data/docker/modify_dnf_source.pl && \
