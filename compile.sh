@@ -122,8 +122,8 @@ BUILD_RPM() {
     # only on EL5, perl source is needed.
     [[ $rpmtopdir == "el5" ]] && \
         SOURCES+=($PERLSRC) && \
-        RPMBUILDOPTS+=('--define' "perlver ${PERLVER}"
-                   '--define' 'dist .el5')
+        RPMBUILDOPTS+=('--define' "perlver ${PERLVER}" '--define' 'dist .el5') && \
+        [[ ${M32:-0} != 0 ]] && RPMBUILDOPTS+=('--target' i686) && export CFLAGS=-m32 LDFLAGS=-m32
 
     # add dist variable if not defined
     [[ $rpmtopdir == "el7" ]] && \

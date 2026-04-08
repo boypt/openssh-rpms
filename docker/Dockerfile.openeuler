@@ -27,8 +27,8 @@ RUN if [ "$CHINA_MIRROR" != "0" ]; then \
     fi && \
     rm -rf /var/cache/yum/ && \
     yum clean all && yum makecache timer && \
-    yum install -y autoconf automake gcc make imake rpm-build pam-devel krb5-devel zlib-devel systemd-devel openssl-devel \
-                   libXt-devel libX11-devel gtk2-devel perl perl-IPC-Cmd perl-Time-Piece wget && \
+    yum install -y autoconf automake gcc make rpm-build pam-devel krb5-devel zlib-devel systemd-devel openssl-devel \
+                   perl perl-IPC-Cmd perl-Time-Piece wget && \
     yum clean all
 
 CMD ["bash", "-c", "./pullsrc.sh && ./compile.sh"]

@@ -3,6 +3,7 @@ BUILD/
 *.orig
 *.swp
 *.tar.gz
+*/RPMS/*
 */SRPMS/*
 */BUILD/*
 */BUILDROOT/*

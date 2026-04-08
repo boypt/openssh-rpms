@@ -29,7 +29,6 @@ OPENSSLMIR=${GH_PROXY:-}https://github.com/openssl/openssl/releases/download/ope
 ASKPASSMIR=https://src.fedoraproject.org/repo/pkgs/openssh/x11-ssh-askpass-1.2.4.1.tar.gz/8f2e41f3f7eaa8543a2440454637f3c3
 PERLMIR=https://www.cpan.org/src/5.0
 
-rpm -q wget >/dev/null || yum install -y wget
 mkdir -p downloads
 pushd downloads
 if [[ ! -f $OPENSSLSRC ]]; then
@@ -50,7 +49,7 @@ if [[ ! -f $ASKPASSSRC  ]]; then
 	  echo "!!! Please download $ASKPASSSRC in $PWD by yourself."
 fi
 
-if [[ $($__dir/compile.sh GETEL) == "el5" && ! -f $PERLSRC ]]; then
+if [[ $($__dir/compile.sh GETEL) == "el5" || ${ALL:-0} == 1 && ! -f $PERLSRC ]]; then
   echo Get: $PERLMIR/$PERLSRC
   wget --no-check-certificate $PERLMIR/$PERLSRC || \
 	  echo "!!! Please download $PERLSRC in $PWD by yourself."
