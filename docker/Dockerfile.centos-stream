@@ -32,4 +32,4 @@ RUN if [ "$VERSION_NUM" = "8" ]; then \
     yum install -y wget autoconf automake gcc make perl rpm-build pam-devel krb5-devel zlib-devel openssl-devel systemd-devel && \
     yum clean all
 
-CMD ["bash", "-c", "./pullsrc.sh && ./compile.sh"]
+CMD ["./compile.sh"]

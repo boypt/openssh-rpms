@@ -26,4 +26,4 @@ RUN export CHINA_MIRROR="$CHINA_MIRROR" && \
     yum clean all && \
     rm -rfv /data/
 
-CMD ["bash", "-c", "./pullsrc.sh && ./compile.sh"]
+CMD ["./compile.sh"]

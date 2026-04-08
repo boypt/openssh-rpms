@@ -19,5 +19,4 @@ RUN cp /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base-i386.repo 
 	 sed -i 's|]$|-i386]|;s|\$basearch|i386|g' /etc/yum.repos.d/CentOS-Base-i386.repo && yum makecache && \
 	yum install -y glibc-devel.i386 libgcc.i386 pam-devel.i386 krb5-devel.i386 zlib-devel.i386
 
-
-CMD ["bash", "-c", "./compile.sh"]
+CMD ["./compile.sh"]
