@@ -39,8 +39,7 @@ OpenSSL is not needed when using `WITH_OPENSSL=0`. (see `version.env`)
 ## Build Requirements:
 
 ```bash
-yum groupinstall -y "Development Tools"
-yum install -y imake rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel gtk2-devel perl perl-IPC-Cmd perl-Time-Piece
+yum install -y autoconf automake gcc make rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel gtk2-devel perl perl-IPC-Cmd perl-Time-Piece
 
 # For CentOS7 and above:
 yum install -y systemd-devel
