@@ -30,7 +30,7 @@ The directory (`el5`, `el6`, `el7`) serve as functional templates for different 
 ## Current Version:
 
 - OpenSSH 10.3p1 (see: [OpenSSH Official](https://www.openssh.com/))
-- OpenSSL 3.5.5 (see: [OpenSSL Official](https://openssl-library.org/source/))
+- OpenSSL 3.5.6 (see: [OpenSSL Official](https://openssl-library.org/source/))
 
 The build script reads `version.env` for version definitions.
 
