@@ -31,4 +31,4 @@ RUN if [ "$CHINA_MIRROR" != "0" ]; then \
                    perl perl-IPC-Cmd perl-Time-Piece wget && \
     yum clean all
 
-CMD ["./compile.sh"]
+CMD ["./docker/docker_compile.sh"]

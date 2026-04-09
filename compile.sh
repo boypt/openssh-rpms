@@ -170,16 +170,17 @@ case $arg1 in
         exit 0
         ;;
     *)
-        [[ -n $arg1 ]] && \
+        [[ -n $arg1 && ! -d $arg1 ]] && \
         echo -e "Subcmd: $arg1 not found.\n GETEL, GETRPM, RPMDIR" && \
         exit 1
         ;;
 esac
 
 # manual specified dist
-[[ -n $arg1 && -d $__dir/$arg1 ]] && rpmtopdir=$arg1 && BUILD_RPM && exit 0
-TOPDIR_SELECT
+[[ -n $arg1 && -d $arg1 ]] && rpmtopdir=$arg1 && BUILD_RPM && exit 0
 
+# auto select dist
+TOPDIR_SELECT
 if [[ ! -d $rpmtopdir ]]; then 
   echo "This script works only in el5/el6/el7"
   echo "eg: ${0} el7"

@@ -29,4 +29,4 @@ RUN if [ "$CHINA_MIRROR" != "0" ]; then \
     yum install -y wget autoconf automake gcc perl make rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel gtk2-devel systemd-devel openssl-devel && \
     yum clean all
 
-CMD ["./compile.sh"]
+CMD ["./docker/docker_compile.sh"]
