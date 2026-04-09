@@ -1,0 +1,6 @@
+#!/bin/bash
+DOCKER_BUILD_DIR=/BUILD
+mkdir -p $DOCKER_BUILD_DIR
+ELDIR=$(./compile.sh GETEL)
+cp -r $ELDIR $DOCKER_BUILD_DIR
+./compile.sh $DOCKER_BUILD_DIR/$ELDIR
