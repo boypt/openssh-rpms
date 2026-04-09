@@ -84,8 +84,6 @@ TOPDIR_SELECT() {
         el5)
             rpmtopdir=el5
             WITH_OPENSSL=${WITH_OPENSSL:-2}
-            # on centos5, it's prefered to use gcc44
-            rpm -q gcc44 2>&1 >/dev/null && export CC=gcc44
             ;;
         *)
             echo "Distro undefined, please specify manually: el5 el6 el7"
@@ -120,13 +118,14 @@ BUILD_RPM() {
         )
 
     # only on EL5, perl source is needed.
-    [[ $rpmtopdir == "el5" ]] && \
+    [[ $rpmtopdir == *el5 ]] && \
         SOURCES+=($PERLSRC) && \
         RPMBUILDOPTS+=('--define' "perlver ${PERLVER}" '--define' 'dist .el5') && \
+        export CC=gcc44 && \
         [[ ${M32:-0} != 0 ]] && RPMBUILDOPTS+=('--target' i686) && export CFLAGS=-m32 LDFLAGS=-m32
 
     # add dist variable if not defined
-    [[ $rpmtopdir == "el7" ]] && \
+    [[ $rpmtopdir == *el7 ]] && \
         [[ -z $(rpm --eval '%{?dist}') ]] && \
          RPMBUILDOPTS+=('--define' "dist .$(rpm -q glibc | rev | cut -d. -f2 | rev)")
 
