@@ -117,16 +117,19 @@ BUILD_RPM() {
         --define 'skip_x11_askpass 1' \
         )
 
-    # only on EL5, perl source is needed.
-    [[ $rpmtopdir == *el5 ]] && \
-        SOURCES+=($PERLSRC) && \
-        RPMBUILDOPTS+=('--define' "perlver ${PERLVER}" '--define' 'dist .el5') && \
-        export CC=gcc44 && \
-        [[ ${M32:-0} != 0 ]] && RPMBUILDOPTS+=('--target' i686) && export CFLAGS=-m32 LDFLAGS=-m32
+    # EL5 dist fixes
+    if [[ $rpmtopdir == *el5 ]]; then
+        SOURCES+=($PERLSRC)
+        RPMBUILDOPTS+=('--define' "perlver ${PERLVER}" '--define' 'dist .el5')
+        export CC=gcc44
+	if [[ ${M32:-0} != 0 ]]; then
+	       RPMBUILDOPTS+=('--target' i686)
+	       export CFLAGS=-m32 LDFLAGS=-m32
+	fi
+    fi
 
     # add dist variable if not defined
-    [[ $rpmtopdir == *el7 ]] && \
-        [[ -z $(rpm --eval '%{?dist}') ]] && \
+    [[ $rpmtopdir == *el7 ]] && [[ -z $(rpm --eval '%{?dist}') ]] && \
          RPMBUILDOPTS+=('--define' "dist .$(rpm -q glibc | rev | cut -d. -f2 | rev)")
 
     pushd $rpmtopdir
@@ -135,7 +138,6 @@ BUILD_RPM() {
       CHECKEXISTS $fn && \
         install -v -m666 $__dir/downloads/$fn ./SOURCES/
     done
-    find ./RPMS -type f -name '*.rpm' -exec rm -fv {} \;
     rpmbuild -ba ./SPECS/openssh.spec "${RPMBUILDOPTS[@]}"
     mkdir -p $__dir/output
     find ./RPMS -type f -name '*.rpm' -exec install -v -m644 {} $__dir/output/ \;
