@@ -16,6 +16,7 @@ __root="$(cd "$(dirname "${__dir}")" && pwd)" # <-- change this as it depends on
 
 arg1="${1:-}"
 rpmtopdir=
+specfile=${SPECFILE:-openssh.spec}
 
 # WITH_OPENSSL=
 # Control openssl dependency
@@ -138,7 +139,7 @@ BUILD_RPM() {
       CHECKEXISTS $fn && \
         install -v -m666 $__dir/downloads/$fn ./SOURCES/
     done
-    rpmbuild -ba ./SPECS/openssh.spec "${RPMBUILDOPTS[@]}"
+    rpmbuild -ba ./SPECS/${specfile} "${RPMBUILDOPTS[@]}"
     mkdir -p $__dir/output
     find ./RPMS -type f -name '*.rpm' -exec install -v -m644 {} $__dir/output/ \;
     popd
