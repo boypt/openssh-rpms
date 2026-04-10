@@ -59,7 +59,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-n          file: ${{ matrix.dockerfile }}
+          file: ${{ matrix.dockerfile }}
           build-args: ${{ matrix.build_args }}
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.tag_suffix }}
