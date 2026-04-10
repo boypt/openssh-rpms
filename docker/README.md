@@ -1,442 +1,166 @@
-## Wanna 🐳Docker?
+# elssh Build Guide – Docker-based RPM Packaging
 
-### TLDR
+This document explains how to build **elssh** RPM packages for various Enterprise Linux versions using Docker.
 
-#### I JUST WANT RPMS
+You only need to build the versions you actually require. There is no need to run all commands.
 
-This script below can compile rpm packages for all systems.
+All built RPM packages will be automatically placed in the `./output/` directory on your host machine.
 
-```bash
-# Download all src files
-source version.env
-PERLMIR=https://www.cpan.org/src/5.0
-if [[ ! -f downloads/$PERLSRC ]]; then
-	curl -k -o downloads/$PERLSRC $PERLMIR/$PERLSRC
-fi
-bash ./pullsrc.sh
-# Define whether to enable Tsinghua University mirror source. (Very useful for Chinese users)
-CHINA_MIRROR=1  # Setting this variable to non-zero means enabling
-OUTPUT="/tmp"
+## Prerequisites
 
-# Specify build CentOS versions
-VERSIONS=("7" "6" "5")
+- Docker (version 20+ recommended)
+- Git
+- Sufficient disk space (~10 GB+ recommended)
+- Internet connection
 
-for VERSION in "${VERSIONS[@]}"
-do
-  echo "Building CentOS: ${VERSION}"
-  # Build docker image
-  docker build \
-         -t rpm-builder-centos:$VERSION \
-         --build-arg VERSION_NUM=$VERSION \
-         --build-arg CHINA_MIRROR=$CHINA_MIRROR \
-         -f docker/Dockerfile.centos .
-  mkdir -p $OUTPUT/centos/$VERSION
-  # Start container
-  docker run -it --rm \
-         -v $OUTPUT/centos/$VERSION:/data/el$VERSION/RPMS/$(uname -m) \
-         rpm-builder-centos:$VERSION
-done
+## Step 1: Download Sources
 
-# Specify build CentOS Stream versions
-VERSIONS=("9" "8")
-
-for VERSION in "${VERSIONS[@]}"
-do
-  echo "Building CentOS Stream: ${VERSION}"
-  # Build docker image
-  docker build \
-         -t rpm-builder-centos-stream:$VERSION \
-         --build-arg VERSION_NUM=$VERSION \
-         --build-arg CHINA_MIRROR=$CHINA_MIRROR \
-         -f docker/Dockerfile.centos-stream .
-  mkdir -p $OUTPUT/centos-stream/$VERSION
-  # Start container
-  docker run -it --rm \
-         -v $OUTPUT/centos-stream/$VERSION:/data/el7/RPMS/$(uname -m) \
-         rpm-builder-centos-stream:$VERSION
-done
-
-# Specify build Amazon Linux versions
-VERSIONS=("2023" "2" "1")
-
-for VERSION in "${VERSIONS[@]}"
-do
-  echo "Building version: ${VERSION}"
-  # Build docker image
-  docker build \
-         -t rpm-builder-amazonlinux:$VERSION \
-         --build-arg VERSION_NUM=$VERSION \
-         --build-arg CHINA_MIRROR=$CHINA_MIRROR \
-         -f docker/Dockerfile.amazonlinux .
-  mkdir -p $OUTPUT/amazonlinux/$VERSION
-  # Start container
-  docker run -it --rm \
-         -v $OUTPUT/amazonlinux/$VERSION:/data/amzn$VERSION/RPMS/$(uname -m) \
-         rpm-builder-amazonlinux:$VERSION
-done
-
-```
-
-#### I WANT UPLOAD TO NEXUS REPOSITORY
+You must download the source code and tarballs before building:
 
 ```bash
-# Define output dir
-OUTPUT='/tmp'
-# Define upload auth info
-export NEXUS_REPOSITORY_URL='https://nexus.example.com/service/rest/v1/components?repository=my-yum-hosted'
-export NEXUS_USERNAME='uploader'
-export NEXUS_PASSWORD='Pa$$w0rD'
-
-declare -A MAPPING
-MAPPING["centos"]="7 6 5"
-MAPPING["centos-stream"]="9 8"
-MAPPING["amazonlinux"]="2023 2 1"
-
-function upload_file(){
-  echo "Uploading: $1"
-  echo "Destination: $2"
-  curl \
-    --user "$NEXUS_USERNAME:$NEXUS_PASSWORD" \
-    $NEXUS_REPOSITORY_URL \
-    -H 'accept: application/json' \
-    -H 'Content-Type: multipart/form-data' \
-    -F "yum.directory=$2" \
-    -F "yum.asset=@$1;type=application/x-rpm" \
-    -F "yum.asset.filename=$(basename $1)"
-}
-export -f upload_file
-
-for OS_TYPE in "${!MAPPING[@]}"; do
-    VERSIONS=${MAPPING[$OS_TYPE]}
-    VERSIONS_ARRAY=($VERSIONS)
-
-    # If you need a clearer structure, uncomment the following
-    __OS_TYPE=$OS_TYPE
-    if [ "$OS_TYPE" = 'centos-stream' ];then __OS_TYPE='centos';fi
-    
-    for VERSION in "${VERSIONS_ARRAY[@]}"; do
-        echo "$OS_TYPE $VERSION"
-        find $OUTPUT/$OS_TYPE/$VERSION \
-          -type f \
-          -name '*.rpm' \
-          -exec bash -c 'upload_file "$1" "$2"' _ {} "$__OS_TYPE/$VERSION/$(uname -m)" \;
-    done
-done
+# Download all required sources
+env ALL=1 ./pullsrc.sh
 ```
 
-### Create image
+> **Note**: Run this command only once before starting any builds. It prepares all necessary files for every supported platform.
 
-#### Login registry
+## Step 2: Building RPMs for Specific Platforms
 
-```shell
-# Login info
-USERNAME='User'
-PASSWORD='Pa$$W0rd'
-# Registry URL, leave it blank will use docker offcial registry: registry-1.docker.io
-SERVER='harbor.example.com'
+Choose only the platforms you need and run the corresponding commands.
 
-docker login -u "$USERNAME" -p "$PASSWORD" "$SERVER"
+### x86_64 Builds
 
-# Define the path of compenent
-COMPONENT="$SERVER/cloudteam/openssh-rpm-builder"
-```
-
-#### CentOS
-
-##### Build images
-
-```shell
-# Specify build versions
-VERSIONS=("8" "7" "6" "5")
-# Define whether to enable Tsinghua University mirror source. (Very useful for Chinese users)
-CHINA_MIRROR=1  # Setting this variable to non-zero means enabling
-
-for VERSION in "${VERSIONS[@]}"
-do
-  echo "Building version: ${VERSION}"
-  # Build docker image
-  docker build \
-         -t $COMPONENT:centos$VERSION \
-         --build-arg VERSION_NUM=$VERSION \
-         --build-arg CHINA_MIRROR=$CHINA_MIRROR \
-         -f docker/Dockerfile.centos .
-done
-
-echo 'The building has been completed!'
-```
-
-##### Push images
-
-```shell
-# Specify build versions
-VERSIONS=("8" "7" "6" "5")
-
-for VERSION in "${VERSIONS[@]}"
-do
-  echo "Pushing version: ${VERSION}"
-  # Tag image
-  docker tag $COMPONENT:centos$VERSION $COMPONENT:centos.$VERSION
-  docker tag $COMPONENT:centos$VERSION $COMPONENT:centos.$VERSION.$(date +%Y%m%d)
-  docker tag $COMPONENT:centos$VERSION $COMPONENT:el$VERSION
-  # Push image
-  docker push $COMPONENT:centos$VERSION
-  docker push $COMPONENT:centos.$VERSION
-  docker push $COMPONENT:centos.$VERSION.$(date +%Y%m%d)
-  docker push $COMPONENT:el$VERSION
-done
-echo 'Push has been completed!'
-```
-
-#### CentOS Stream
-
-##### Build images
-
-```shell
-# Specify build versions
-VERSIONS=("9" "8")
-# Define whether to enable Tsinghua University mirror source. (Very useful for Chinese users)
-CHINA_MIRROR=1  # Setting this variable to non-zero means enabling
-
-for VERSION in "${VERSIONS[@]}"
-do
-  echo "Building version: ${VERSION}"
-  # Build docker image
-  docker build \
-         -t $COMPONENT:centos-stream$VERSION \
-         --build-arg VERSION_NUM=$VERSION \
-         --build-arg CHINA_MIRROR=$CHINA_MIRROR \
-         -f docker/Dockerfile.centos-stream .
-done
-
-echo 'The building has been completed!'
-```
-
-##### Push images
-
-```shell
-# Specify build versions
-VERSIONS=("9" "8")
-
-for VERSION in "${VERSIONS[@]}"
-do
-  echo "Pushing version: ${VERSION}"
-  # Tag image
-  docker tag $COMPONENT:centos-stream$VERSION $COMPONENT:centos-stream.$VERSION
-  docker tag $COMPONENT:centos-stream$VERSION $COMPONENT:centos-stream.$VERSION.$(date +%Y%m%d)
-  docker tag $COMPONENT:centos-stream$VERSION $COMPONENT:el$VERSION
-  # Push image
-  docker push $COMPONENT:centos-stream$VERSION
-  docker push $COMPONENT:centos-stream.$VERSION
-  docker push $COMPONENT:centos-stream.$VERSION.$(date +%Y%m%d)
-  docker push $COMPONENT:el$VERSION
-done
-echo 'Push has been completed!'
-```
-
-#### Amazon Linux
-
-##### Build images
-
-```shell
-# Specify build versions
-VERSIONS=("2023" "2" "1")
-# Define whether to enable China mirror source. (Very useful for Chinese users)
-CHINA_MIRROR=1  # Setting this variable to non-zero means enabling
-
-for VERSION in "${VERSIONS[@]}"
-do
-  echo "Building version: ${VERSION}"
-  # Build docker image
-  docker build \
-         -t $COMPONENT:amazonlinux$VERSION \
-         --build-arg VERSION_NUM=$VERSION \
-         --build-arg CHINA_MIRROR=$CHINA_MIRROR \
-         -f docker/Dockerfile.amazonlinux .
-done
-echo 'The building has been completed!'
-```
-
-##### Push images
-
-```shell
-# Specify build versions
-VERSIONS=("2023" "2" "1")
-
-for VERSION in "${VERSIONS[@]}"
-do
-  echo "Pushing version: ${VERSION}"
-  # Tag image
-  docker tag $COMPONENT:amazonlinux$VERSION $COMPONENT:amazonlinux.$VERSION
-  docker tag $COMPONENT:amazonlinux$VERSION $COMPONENT:amazonlinux.$VERSION.$(date +%Y%m%d)
-  docker tag $COMPONENT:amazonlinux$VERSION $COMPONENT:amzn$VERSION
-  docker tag $COMPONENT:amazonlinux$VERSION $COMPONENT:al$VERSION
-  # Push image
-  docker push $COMPONENT:amazonlinux$VERSION
-  docker push $COMPONENT:amazonlinux.$VERSION
-  docker push $COMPONENT:amazonlinux.$VERSION.$(date +%Y%m%d)
-  docker push $COMPONENT:amzn$VERSION
-  docker push $COMPONENT:al$VERSION
-done
-echo 'Push has been completed!'
-```
-
-### Use image
-
-#### Single OS
-
-```shell
-# Specify the name of tag.
-IMAGE_TAG="amzn2023"
-# Specify output path
-OUT_PATH="$PWD"
-
-mkdir -p $OUT_PATH
-
-# Start container
-docker run -it --rm \
-       -v $OUT_PATH:/data/$IMAGE_TAG/RPMS \
-       $COMPONENT:$IMAGE_TAG
-```
-
-#### Multi OS
-
-```shell
-# Specify output path
-OUT_PATH="$PWD"
-
-# Specify the name of tags.
-IMAGE_TAGS=("amzn2023" "amzn2" "amzn1" "el9" "el8" "el7" "el6" "el5")
-
-for IMAGE_TAG in "${IMAGE_TAGS[@]}"
-do
-  # Start container
-  docker run -it --rm \
-         -v $OUT_PATH:/data/$IMAGE_TAG/RPMS \
-         $COMPONENT:$IMAGE_TAG
-done
-```
-
-## For ARM users
-
-- *CentOS 6 and lower operating systems **DO NOT** have an image of the ARM architecture.*
-
-- *Amazon Linux 1 **DO NOT** have an image of the ARM architecture.*
-
-#### I JUST WANT RPMS
-
-This script below can compile rpm packages for all support systems.
+#### For EL5 (CentOS 5)
 
 ```bash
-# Download all src files
-source version.env
-PERLMIR=https://www.cpan.org/src/5.0
-if [[ ! -f downloads/$PERLSRC ]]; then
-	curl -k -o downloads/$PERLSRC $PERLMIR/$PERLSRC
-fi
-bash ./pullsrc.sh
-# Define whether to enable Tsinghua University mirror source. (Very useful for Chinese users)
-CHINA_MIRROR=1  # Setting this variable to non-zero means enabling
-OUTPUT="/tmp"
+# Build Docker image
+docker build -t elssh_el5 -f ./docker/Dockerfile.centos5 --build-arg CHINA_MIRROR=0 .
 
-# Specify build CentOS versions
-VERSION="7"
+# Build 64-bit packages (recommended)
+docker run --rm -v .:/data -e "M32=0" elssh_el5
 
-echo "Building CentOS: ${VERSION}"
-# Build docker image
-docker build \
-       -t rpm-builder-centos:$VERSION \
-       --build-arg VERSION_NUM=$VERSION \
-       --build-arg CHINA_MIRROR=$CHINA_MIRROR \
-       -f docker/Dockerfile.centos .
-mkdir -p $OUTPUT/centos/$VERSION
-# Start container
-docker run -it --rm \
-       -v $OUTPUT/centos/$VERSION:/data/el7/RPMS/$(uname -m) \
-       rpm-builder-centos:$VERSION
-
-# Specify build CentOS Stream versions
-VERSIONS=("9" "8")
-
-for VERSION in "${VERSIONS[@]}"
-do
-  echo "Building CentOS Stream: ${VERSION}"
-  # Build docker image
-  docker build \
-         -t rpm-builder-centos-stream:$VERSION \
-         --build-arg VERSION_NUM=$VERSION \
-         --build-arg CHINA_MIRROR=$CHINA_MIRROR \
-         -f docker/Dockerfile.centos-stream .
-  mkdir -p $OUTPUT/centos-stream/$VERSION
-  # Start container
-  docker run -it --rm \
-         -v $OUTPUT/centos-stream/$VERSION:/data/el7/RPMS/$(uname -m) \
-         rpm-builder-centos-stream:$VERSION
-done
-
-# Specify build Amazon Linux versions
-VERSIONS=("2023" "2")
-
-for VERSION in "${VERSIONS[@]}"
-do
-  echo "Building version: ${VERSION}"
-  # Build docker image
-  docker build \
-         -t rpm-builder-amazonlinux:$VERSION \
-         --build-arg VERSION_NUM=$VERSION \
-         --build-arg CHINA_MIRROR=$CHINA_MIRROR \
-         -f docker/Dockerfile.amazonlinux .
-  mkdir -p $OUTPUT/amazonlinux/$VERSION
-  # Start container
-  docker run -it --rm \
-         -v $OUTPUT/amazonlinux/$VERSION:/data/amzn$VERSION/RPMS/$(uname -m) \
-         rpm-builder-amazonlinux:$VERSION
-done
-
+# Build 32-bit packages (optional)
+docker run --rm -v .:/data -e "M32=1" elssh_el5
 ```
 
-#### I WANT UPLOAD TO NEXUS REPOSITORY
+#### For EL6 (CentOS 6)
 
 ```bash
-# Define output dir
-OUTPUT='/tmp'
-# Define upload auth info
-export NEXUS_REPOSITORY_URL='https://nexus.example.com/service/rest/v1/components?repository=my-yum-hosted'
-export NEXUS_USERNAME='uploader'
-export NEXUS_PASSWORD='Pa$$w0rD'
-
-declare -A MAPPING
-MAPPING["centos"]="7"
-MAPPING["centos-stream"]="9 8"
-MAPPING["amazonlinux"]="2023 2 1"
-
-function upload_file(){
-  echo "Uploading: $1"
-  echo "Destination: $2"
-  curl \
-    --user "$NEXUS_USERNAME:$NEXUS_PASSWORD" \
-    $NEXUS_REPOSITORY_URL \
-    -H 'accept: application/json' \
-    -H 'Content-Type: multipart/form-data' \
-    -F "yum.directory=$2" \
-    -F "yum.asset=@$1;type=application/x-rpm" \
-    -F "yum.asset.filename=$(basename $1)"
-}
-export -f upload_file
-
-for OS_TYPE in "${!MAPPING[@]}"; do
-    VERSIONS=${MAPPING[$OS_TYPE]}
-    VERSIONS_ARRAY=($VERSIONS)
-
-    # If you need a clearer structure, uncomment the following
-    __OS_TYPE=$OS_TYPE
-    if [ "$OS_TYPE" = 'centos-stream' ];then __OS_TYPE='centos';fi
-    
-    for VERSION in "${VERSIONS_ARRAY[@]}"; do
-        echo "$OS_TYPE $VERSION"
-        find $OUTPUT/$OS_TYPE/$VERSION \
-          -type f \
-          -name '*.rpm' \
-          -exec bash -c 'upload_file "$1" "$2"' _ {} "$__OS_TYPE/$VERSION/$(uname -m)" \;
-    done
-done
+docker build -t elssh_el6 -f ./docker/Dockerfile.centos --build-arg VERSION_NUM=6 --build-arg CHINA_MIRROR=0 .
+docker run --rm -v .:/data elssh_el6
 ```
+
+#### For EL7 (CentOS 7)
+
+```bash
+docker build -t elssh_el7 -f ./docker/Dockerfile.centos --build-arg VERSION_NUM=7 --build-arg CHINA_MIRROR=0 .
+docker run --rm -v .:/data elssh_el7
+```
+
+#### For EL8 (CentOS 8 / RHEL 8 / Rocky 8 / AlmaLinux 8)
+
+```bash
+docker build -t elssh_el8 -f ./docker/Dockerfile.centos --build-arg VERSION_NUM=8 --build-arg CHINA_MIRROR=0 .
+docker run --rm -v .:/data elssh_el8
+```
+
+#### For EL9 (CentOS Stream 9 / RHEL 9 / Rocky 9 / AlmaLinux 9)
+
+```bash
+docker build -t elssh_el9 -f ./docker/Dockerfile.centos-stream --build-arg VERSION_NUM=9 --build-arg CHINA_MIRROR=0 .
+docker run --rm -v .:/data elssh_el9
+```
+
+### aarch64 (ARM64) Builds
+
+#### For EL8 aarch64
+
+```bash
+docker build -t elssh_aarch64_el8 \
+  --platform linux/arm64 \
+  -f ./docker/Dockerfile.centos-stream \
+  --build-arg VERSION_NUM=8 \
+  --build-arg CHINA_MIRROR=0 .
+
+docker run --rm -v .:/data --platform linux/arm64 elssh_aarch64_el8
+```
+
+#### For EL9 aarch64
+
+```bash
+docker build -t elssh_aarch64_el9 \
+  --platform linux/arm64 \
+  -f ./docker/Dockerfile.centos-stream \
+  --build-arg VERSION_NUM=9 \
+  --build-arg CHINA_MIRROR=0 .
+
+docker run --rm -v .:/data --platform linux/arm64 elssh_aarch64_el9
+```
+
+## Build Arguments
+
+| Argument          | Values | Description |
+|-------------------|--------|-----------|
+| `CHINA_MIRROR`    | 0 or 1 | Set to `1` if you are in China and want to use faster domestic mirrors |
+| `VERSION_NUM`     | 6,7,8,9| Specifies the target EL version (used in most Dockerfiles) |
+| `M32` (EL5 only)  | 0 or 1 | `0` = 64-bit, `1` = 32-bit |
+
+**Example for users in China:**
+
+Add `--build-arg CHINA_MIRROR=1` to the `docker build` command.
+
+## Output Location
+
+After each successful build, the RPM packages are copied to:
+
+```
+./output/
+```
+
+Typical output structure:
+
+```
+output/
+├── el5/
+│   ├── x86_64/
+│   └── i686/          # only if M32=1
+├── el6/
+├── el7/
+├── el8/
+├── el9/
+├── el8-aarch64/
+└── el9-aarch64/
+```
+
+Each subdirectory contains the generated `.rpm` files (including debuginfo if available).
+
+## Quick Start Examples
+
+### Build only for modern systems (EL8 + EL9)
+
+```bash
+env ALL=1 ./pullsrc.sh
+
+docker build -t elssh_el8 -f ./docker/Dockerfile.centos --build-arg VERSION_NUM=8 --build-arg CHINA_MIRROR=0 .
+docker run --rm -v .:/data elssh_el8
+
+docker build -t elssh_el9 -f ./docker/Dockerfile.centos-stream --build-arg VERSION_NUM=9 --build-arg CHINA_MIRROR=0 .
+docker run --rm -v .:/data elssh_el9
+```
+
+### Build only for ARM64
+
+```bash
+env ALL=1 ./pullsrc.sh
+
+docker build -t elssh_aarch64_el9 --platform linux/arm64 -f ./docker/Dockerfile.centos-stream --build-arg VERSION_NUM=9 --build-arg CHINA_MIRROR=0 .
+docker run --rm -v .:/data --platform linux/arm64 elssh_aarch64_el9
+```
+
+## Troubleshooting
+
+- **Slow downloads**: Use `CHINA_MIRROR=1`
+- **Permission issues**: Run `chown -R $USER output/` after building
+- **Docker build fails on first run**: This is normal — it needs to download base images and dependencies
+- **ARM64 builds**: Requires a machine with ARM64 support or Docker Buildx multi-platform enabled
+
