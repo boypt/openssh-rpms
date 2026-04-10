@@ -6,12 +6,26 @@ Similar Project: [Backport OpenSSH for Debian / Ubuntu distros](https://github.c
 
 ## Supported (tested) Distro:
 
-- CentOS 5/6/7/8/Stream 8/9
-- Rocky Linux 8/9
-- Amazon Linux 1/2/2023
-- UnionTech OS 20
-- openEuler 22.03/24.03
-- AnolisOS 7/8/2023
+| Distro         | Version        | Recommanded EL RPMs         |
+|----------------|----------------|-----------------------------|
+| CentOS         | 5              | EL 5                        |
+| CentOS         | 6              | EL 6                        |
+| CentOS         | 7              | EL 7                        |
+| CentOS         | 8              | EL 8                        |
+| CentOS Stream  | 8              | EL 8                        |
+| CentOS Stream  | 9              | EL 9                        |
+| Rocky Linux    | 8              | EL 8                        |
+| Rocky Linux    | 9              | EL 9                        |
+| Amazon Linux   | 1              | EL 6                        |
+| Amazon Linux   | 2              | EL 7                        |
+| Amazon Linux   | 2023           | EL 9                        |
+| UnionTech UOS  | V20            | EL 8                        |
+| openEuler      | 20.03          | EL 8                        |
+| openEuler      | 22.03          | EL 8                        |
+| openEuler      | 24.03          | EL 9                        |
+| AnolisOS       | 7              | EL 7                        |
+| AnolisOS       | 8              | EL 8                        |
+| AnolisOS       | 2023           | EL 9                        |
 
 ## Project Structure 
 
