@@ -4,7 +4,7 @@ mkdir -p $DOCKER_BUILD_DIR
 ELDIR=$(./compile.sh GETEL)
 OPENSSLVER=$(rpm -q openssl --qf "%{VERSION}" | cut -d. -f1)
 
-if [[ $OPENSSLVER -ge 3 ]]; then
+if [[ -z $WITH_OPENSSL && $OPENSSLVER -ge 3 ]]; then
   export WITH_OPENSSL=1
 else
   export WITH_OPENSSL=2
