@@ -50,6 +50,19 @@ yum install -y gcc44
 
 ## Usage
 
+### Download RPMs
+
+You can download the needed RPMs from the Release, or use a simple script to download.
+
+The following example filters out files with `contains("el7") and contains("x86_64")` to download.
+
+```bash
+curl -s https://api.github.com/repos/boypt/openssh-rpms/releases/latest \
+| jq -r '.assets[] | select(.name | ascii_downcase | contains("el7") and contains("x86_64")) | .browser_download_url' \
+| wget -i - --show-progress -c
+
+```
+
 ### Build RPMs
 
 Note: It is unnecessary to build on each system, as most RPM-based Linux distributions are glibc compatible. That is, RPMs built on `CentOS 8` can be installed and run on `Rocky Linux 8`/`AlmaLinux 8`/`Oracle Linux 8`, etc.
