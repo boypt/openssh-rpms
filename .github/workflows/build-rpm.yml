@@ -26,6 +26,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Generate version-local.env
+        run: |
+          TAG=${{ github.ref_name }}
+          # Extract bX from tag (e.g., v1.0.0b5 -> b5)
+          BUILD_NUM=$(echo "$TAG" | grep -oE 'b[0-9]+' | tail -1)
+          if [ -z "$BUILD_NUM" ]; then
+            BUILD_NUM="b1"
+          fi
+          echo "WITH_OPENSSL=2" > version-local.env
+          echo "PKGREL=$BUILD_NUM" >> version-local.env
+          cat version-local.env
+
       - name: Run pullsrc.sh
         run: env ALL=1 ./pullsrc.sh
 
