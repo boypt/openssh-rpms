@@ -16,7 +16,6 @@ __root="$(cd "$(dirname "${__dir}")" && pwd)" # <-- change this as it depends on
 
 arg1="${1:-}"
 rpmtopdir=
-specfile=${SPECFILE:-openssh.spec}
 
 # WITH_OPENSSL=
 # Control openssl dependency
@@ -108,10 +107,10 @@ BUILD_RPM() {
           $ASKPASSSRC \
         )
     local RPMBUILDOPTS=( \
-        --define "with_openssl ${WITH_OPENSSL}" \
+        --define "with_openssl ${WITH_OPENSSL:-2}" \
         --define "opensslver ${OPENSSLVER}" \
         --define "opensshver ${OPENSSHVER}" \
-        --define "opensshpkgrel ${PKGREL}" \
+        --define "opensshpkgrel ${PKGREL:-1}" \
         --define 'debug_package %{nil}' \
         --define 'no_gtk2 1' \
         --define 'skip_gnome_askpass 1' \
@@ -139,7 +138,7 @@ BUILD_RPM() {
       CHECKEXISTS $fn && \
         install -v -m666 $__dir/downloads/$fn ./SOURCES/
     done
-    rpmbuild -ba ./SPECS/${specfile} "${RPMBUILDOPTS[@]}"
+    rpmbuild -ba ./SPECS/${SPECFILE:-openssh.spec} "${RPMBUILDOPTS[@]}"
     mkdir -p $__dir/output
     find ./RPMS -type f -name '*.rpm' -exec install -v -m644 {} $__dir/output/ \;
     popd
