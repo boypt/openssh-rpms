@@ -1,0 +1,156 @@
+name: Run Build Tasks and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-arm64:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    strategy:
+      matrix:
+        include:
+          - tag: aarch64_el8
+            platform: linux/arm64
+          - tag: aarch64_el9
+            platform: linux/arm64
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run pullsrc.sh
+        run: env ALL=1 ./pullsrc.sh
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run ${{ matrix.tag }}
+        run: |
+          docker run --rm \
+            -v $(pwd):/data \
+            --platform ${{ matrix.platform }} \
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.tag }}
+
+      - name: Upload RPM artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: rpm-${{ matrix.tag }}
+          path: output/*.rpm
+          if-no-files-found: ignore
+
+  build-amd64:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    strategy:
+      matrix:
+        include:
+          - tag: el9
+          - tag: el8
+          - tag: el7
+          - tag: el6
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run pullsrc.sh
+        run: env ALL=1 ./pullsrc.sh
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run ${{ matrix.tag }}
+        run: |
+          docker run --rm \
+            -v $(pwd):/data \
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.tag }}
+
+      - name: Upload RPM artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: rpm-${{ matrix.tag }}
+          path: output/*.rpm
+          if-no-files-found: ignore
+
+  build-el5:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    strategy:
+      matrix:
+        include:
+          - m32: "0"
+          - m32: "1"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run pullsrc.sh
+        run: env ALL=1 ./pullsrc.sh
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run el5 with M32=${{ matrix.m32 }}
+        run: |
+          docker run --rm \
+            -v $(pwd):/data \
+            -e "M32=${{ matrix.m32 }}" \
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:el5
+
+      - name: Upload RPM artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: rpm-el5-m32-${{ matrix.m32 }}
+          path: output/*.rpm
+          if-no-files-found: ignore
+
+  release:
+    needs: [build-arm64, build-amd64, build-el5]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: List artifacts
+        run: |
+          echo "Downloaded artifacts:"
+          find artifacts -type f -name "*.rpm" || echo "No RPM files found"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: artifacts/**/*.rpm
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
