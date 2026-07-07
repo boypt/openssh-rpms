@@ -253,7 +253,7 @@ export LD_LIBRARY_PATH="%{openssl_dir}"
 	--with-pam \
 %endif
 %if %{kerberos5}
-	 --with-kerberos5=$K5DIR \
+	 --with-kerberos5 \
 %endif
 
 
