@@ -122,10 +122,10 @@ BUILD_RPM() {
         SOURCES+=($PERLSRC)
         RPMBUILDOPTS+=('--define' "perlver ${PERLVER}" '--define' 'dist .el5')
         export CC=gcc44
-	if [[ ${M32:-0} != 0 ]]; then
-	       RPMBUILDOPTS+=('--target' i686)
-	       export CFLAGS=-m32 LDFLAGS=-m32
-	fi
+        if [[ ${M32:-0} != 0 ]]; then
+               RPMBUILDOPTS+=('--target' i686)
+               export CFLAGS=-m32 LDFLAGS=-m32
+        fi
     fi
 
     # add dist variable if not defined
@@ -138,7 +138,14 @@ BUILD_RPM() {
       CHECKEXISTS $fn && \
         install -v -m666 $__dir/downloads/$fn ./SOURCES/
     done
+
     rpmbuild -ba ./SPECS/${SPECFILE:-openssh.spec} "${RPMBUILDOPTS[@]}"
+    
+    if [[ $? -ne 0 ]]; then
+        echo "Error: rpmbuild failed with exit code $?"
+        exit 1
+    fi
+
     mkdir -p $__dir/output
     find ./RPMS -type f -name '*.rpm' -exec install -v -m644 {} $__dir/output/ \;
     popd
@@ -171,14 +178,19 @@ case $arg1 in
         exit 0
         ;;
     *)
-        [[ -n $arg1 && ! -d $arg1 ]] && \
-        echo -e "Subcmd: $arg1 not found.\n GETEL, GETRPM, RPMDIR" && \
-        exit 1
+        if [[ -n $arg1 && ! -d $arg1 ]]; then
+            echo -e "Subcmd: $arg1 not found.\n GETEL, GETRPM, RPMDIR"
+            exit 1
+        fi
         ;;
 esac
 
 # manual specified dist
-[[ -n $arg1 && -d $arg1 ]] && rpmtopdir=$arg1 && BUILD_RPM && exit 0
+if [[ -n $arg1 && -d $arg1 ]]; then
+    rpmtopdir=$arg1
+    BUILD_RPM
+    exit 0
+fi
 
 # auto select dist
 TOPDIR_SELECT
@@ -188,4 +200,6 @@ if [[ ! -d $rpmtopdir ]]; then
   exit 1
 fi
 
-[[ -d $rpmtopdir ]] && BUILD_RPM
+if [[ -d $rpmtopdir ]]; then
+    BUILD_RPM
+fi

@@ -189,7 +189,7 @@ jobs:
         with:
           name: rpm-el${{ matrix.el }}-${{ matrix.arch }}
           path: output/*.rpm
-          if-no-files-found: ignore
+          if-no-files-found: error
 
   release:
     needs: [build-arm64, build-amd64, build-el5]
