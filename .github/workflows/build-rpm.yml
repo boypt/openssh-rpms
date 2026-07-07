@@ -18,6 +18,9 @@ jobs:
     strategy:
       matrix:
         include:
+          - tag: aarch64_el7
+            el: "7"
+            arch: aarch64
           - tag: aarch64_el8
             el: "8"
             arch: aarch64
