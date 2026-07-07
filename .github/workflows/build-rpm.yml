@@ -19,7 +19,11 @@ jobs:
       matrix:
         include:
           - tag: aarch64_el8
+            el: "8"
+            arch: aarch64
           - tag: aarch64_el9
+            el: "9"
+            arch: aarch64
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -57,7 +61,7 @@ jobs:
       - name: Upload RPM artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: rpm-${{ matrix.tag }}
+          name: rpm-el${{ matrix.el }}-${{ matrix.arch }}
           path: output/*.rpm
           if-no-files-found: ignore
 
@@ -70,9 +74,17 @@ jobs:
       matrix:
         include:
           - tag: el9
+            el: "9"
+            arch: x86_64
           - tag: el8
+            el: "8"
+            arch: x86_64
           - tag: el7
+            el: "7"
+            arch: x86_64
           - tag: el6
+            el: "6"
+            arch: x86_64
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -107,7 +119,7 @@ jobs:
       - name: Upload RPM artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: rpm-${{ matrix.tag }}
+          name: rpm-el${{ matrix.el }}-${{ matrix.arch }}
           path: output/*.rpm
           if-no-files-found: ignore
 
@@ -120,8 +132,10 @@ jobs:
       matrix:
         include:
           - m32: "0"
+            el: "5"
             arch: x86_64
           - m32: "1"
+            el: "5"
             arch: i686
     steps:
       - name: Checkout repository
@@ -158,7 +172,7 @@ jobs:
       - name: Upload RPM artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: rpm-el5-${{ matrix.arch }}
+          name: rpm-el${{ matrix.el }}-${{ matrix.arch }}
           path: output/*.rpm
           if-no-files-found: ignore
 
