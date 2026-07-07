@@ -120,7 +120,9 @@ jobs:
       matrix:
         include:
           - m32: "0"
+            arch: x86_64
           - m32: "1"
+            arch: i686
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -156,7 +158,7 @@ jobs:
       - name: Upload RPM artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: rpm-el5-m32-${{ matrix.m32 }}
+          name: rpm-el5-${{ matrix.arch }}
           path: output/*.rpm
           if-no-files-found: ignore
 
@@ -170,17 +172,29 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: artifacts
-          merge-multiple: true
 
-      - name: List artifacts
+      - name: List downloaded artifacts
         run: |
-          echo "Downloaded artifacts:"
-          find artifacts -type f -name "*.rpm" || echo "No RPM files found"
+          echo "Downloaded artifact directories:"
+          find artifacts -mindepth 1 -maxdepth 1 -type d
+
+      - name: Repackage artifacts with prefixed names
+        run: |
+          TAG=${{ github.ref_name }}
+          mkdir -p release-assets
+          for dir in artifacts/*/; do
+            artifact_name=$(basename "$dir")
+            new_name="openssh_${TAG}_${artifact_name}"
+            echo "Packaging ${artifact_name} -> ${new_name}.zip"
+            (cd "$dir" && zip -r "${GITHUB_WORKSPACE}/release-assets/${new_name}.zip" .)
+          done
+          echo "Release assets:"
+          ls -la release-assets
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          files: artifacts/**/*.rpm
+          files: release-assets/*.zip
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
