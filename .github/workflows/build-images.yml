@@ -43,7 +43,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
 
       - name: Run pullsrc.sh
         run: env ALL=1 ./pullsrc.sh
@@ -92,9 +95,13 @@ jobs:
             build_args: |
               VERSION_NUM=9
               CHINA_MIRROR=0
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -120,3 +127,4 @@ jobs:
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.tag_suffix }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+

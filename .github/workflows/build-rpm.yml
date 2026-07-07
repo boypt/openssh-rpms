@@ -27,9 +27,13 @@ jobs:
           - tag: aarch64_el9
             el: "9"
             arch: aarch64
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
 
       - name: Run pullsrc.sh
         run: env ALL=1 ./pullsrc.sh
@@ -62,7 +66,7 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.tag }}
 
       - name: Upload RPM artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: rpm-el${{ matrix.el }}-${{ matrix.arch }}
           path: output/*.rpm
@@ -88,9 +92,13 @@ jobs:
           - tag: el6
             el: "6"
             arch: x86_64
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
 
       - name: Run pullsrc.sh
         run: env ALL=1 ./pullsrc.sh
@@ -120,7 +128,7 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.tag }}
 
       - name: Upload RPM artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: rpm-el${{ matrix.el }}-${{ matrix.arch }}
           path: output/*.rpm
@@ -140,9 +148,13 @@ jobs:
           - m32: "1"
             el: "5"
             arch: i686
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
 
       - name: Run pullsrc.sh
         run: env ALL=1 ./pullsrc.sh
@@ -173,7 +185,7 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:el5
 
       - name: Upload RPM artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: rpm-el${{ matrix.el }}-${{ matrix.arch }}
           path: output/*.rpm
@@ -184,9 +196,10 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+
     steps:
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           path: artifacts
 
@@ -215,3 +228,4 @@ jobs:
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
