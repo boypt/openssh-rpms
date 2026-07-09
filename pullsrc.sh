@@ -31,25 +31,25 @@ PERLMIR=https://www.cpan.org/src/5.0
 
 mkdir -p downloads
 pushd downloads
-if [[ ! -f $OPENSSLSRC ]]; then
+if [[ ! -f $OPENSSLSRC && ${DOCKERBUILD:-0} == 0 ]]; then
   echo "Get:" $OPENSSLMIR/$OPENSSLSRC
   wget --no-check-certificate $OPENSSLMIR/$OPENSSLSRC || \
 	  echo "!!! Please download $OPENSSLSRC in $PWD by yourself."
 fi
 
-if [[ ! -f $OPENSSHSRC  ]]; then
+if [[ ! -f $OPENSSHSRC && ${DOCKERBUILD:-0} == 0 ]]; then
   echo Get: $OPENSSHMIR/$OPENSSHSRC
   wget --no-check-certificate $OPENSSHMIR/$OPENSSHSRC || \
 	  echo "!!! Please download $OPENSSHSRC in $PWD by yourself."
 fi
 
-if [[ ! -f $ASKPASSSRC  ]]; then
+if [[ ! -f $ASKPASSSRC && ${DOCKERBUILD:-0} == 0 ]]; then
   echo Get: $ASKPASSMIR/$ASKPASSSRC
   wget --no-check-certificate $ASKPASSMIR/$ASKPASSSRC || \
 	  echo "!!! Please download $ASKPASSSRC in $PWD by yourself."
 fi
 
-if [[ $($__dir/compile.sh GETEL) == "el5" || ${ALL:-0} == 1 && ! -f $PERLSRC ]]; then
+if [[ $($__dir/compile.sh GETEL) == "el5" || ${DOCKERBUILD:-0} == 1 && ! -f $PERLSRC ]]; then
   echo Get: $PERLMIR/$PERLSRC
   wget --no-check-certificate $PERLMIR/$PERLSRC || \
 	  echo "!!! Please download $PERLSRC in $PWD by yourself."
