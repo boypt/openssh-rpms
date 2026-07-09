@@ -119,8 +119,12 @@ BUILD_RPM() {
 
     # EL5 dist fixes
     if [[ $rpmtopdir == *el5 ]]; then
+	SOURCES+=($PERLSRC)
+
+	# Hack: fake the perl src when perl is ready already(docker images)
 	[[ $(perl -e 'print $] >= 5.010 ? 1 : 0') -eq 0 ]] && \
-		SOURCES+=($PERLSRC)
+		touch ./el5/SOURCES/$PERLSRC
+	
         RPMBUILDOPTS+=('--define' "perlver ${PERLVER}" '--define' 'dist .el5')
         export CC=gcc44
 
@@ -147,7 +151,7 @@ BUILD_RPM() {
     fi
 
     ${SETARCH:-} \
-    rpmbuild -ba ./SPECS/${SPECFILE:-openssh.spec} "${RPMBUILDOPTS[@]}"
+    rpmbuild -bb ./SPECS/${SPECFILE:-openssh.spec} "${RPMBUILDOPTS[@]}"
     
     if [[ $? -ne 0 ]]; then
         echo "Error: rpmbuild failed with exit code $?"

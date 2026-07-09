@@ -211,20 +211,7 @@ into and executing commands on a remote machine. This package contains
 an X11 passphrase dialog for OpenSSH and the GNOME GUI desktop
 environment.
 
-%global perl_version_ok %( \
-    if command -v perl >/dev/null 2>&1; then \
-        perl -e ' \
-            if ($] >= 5.010) { \
-                print "1"; \
-            } else { \
-                print "0"; \
-            }; \
-        ' \
-    else \
-        echo "0"; \
-    fi \
-)
-
+%global perl_version_ok %(perl -e 'exit($] < 5.010)' && echo 1 || echo 0)
 
 %prep
 %if ! %{no_x11_askpass}
