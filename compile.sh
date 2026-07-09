@@ -122,7 +122,7 @@ BUILD_RPM() {
 	SOURCES+=($PERLSRC)
 
 	# Hack: fake the perl src when perl is ready already(docker images)
-	[[ $(perl -e 'print $] >= 5.010 ? 1 : 0') -eq 0 ]] && \
+	[[ $(perl -e 'print $] >= 5.010 ? 1 : 0') -eq 1 ]] && \
 		touch ./downloads/$PERLSRC
 	
         RPMBUILDOPTS+=('--define' "perlver ${PERLVER}" '--define' 'dist .el5')
