@@ -34,41 +34,41 @@ Choose only the platforms you need and run the corresponding commands.
 
 ```bash
 # Build Docker image
-docker build -t elssh_el5 -f ./docker/Dockerfile.centos5 --build-arg CHINA_MIRROR=0 .
+docker build -t elssh:el5 -f ./docker/Dockerfile.centos5 --build-arg CHINA_MIRROR=0 .
 
 # Build 64-bit packages (recommended)
-docker run --rm -v .:/data -e "M32=0" elssh_el5
+docker run --rm -v .:/data -e "M32=0" elssh:el5
 
 # Build 32-bit packages (optional)
-docker run --rm -v .:/data -e "M32=1" elssh_el5
+docker run --rm -v .:/data -e "M32=1" elssh:el5
 ```
 
 #### For EL6 (CentOS 6)
 
 ```bash
-docker build -t elssh_el6 -f ./docker/Dockerfile.centos --build-arg VERSION_NUM=6 --build-arg CHINA_MIRROR=0 .
-docker run --rm -v .:/data elssh_el6
+docker build -t elssh:el6 -f ./docker/Dockerfile.centos --build-arg VERSION_NUM=6 --build-arg CHINA_MIRROR=0 .
+docker run --rm -v .:/data elssh:el6
 ```
 
 #### For EL7 (CentOS 7)
 
 ```bash
-docker build -t elssh_el7 -f ./docker/Dockerfile.centos --build-arg VERSION_NUM=7 --build-arg CHINA_MIRROR=0 .
-docker run --rm -v .:/data elssh_el7
+docker build -t elssh:el7 -f ./docker/Dockerfile.centos --build-arg VERSION_NUM=7 --build-arg CHINA_MIRROR=0 .
+docker run --rm -v .:/data elssh:el7
 ```
 
 #### For EL8 (CentOS 8 / RHEL 8 / Rocky 8 / AlmaLinux 8)
 
 ```bash
-docker build -t elssh_el8 -f ./docker/Dockerfile.centos --build-arg VERSION_NUM=8 --build-arg CHINA_MIRROR=0 .
-docker run --rm -v .:/data elssh_el8
+docker build -t elssh:el8 -f ./docker/Dockerfile.centos --build-arg VERSION_NUM=8 --build-arg CHINA_MIRROR=0 .
+docker run --rm -v .:/data elssh:el8
 ```
 
 #### For EL9 (CentOS Stream 9 / RHEL 9 / Rocky 9 / AlmaLinux 9)
 
 ```bash
-docker build -t elssh_el9 -f ./docker/Dockerfile.centos-stream --build-arg VERSION_NUM=9 --build-arg CHINA_MIRROR=0 .
-docker run --rm -v .:/data elssh_el9
+docker build -t elssh:el9 -f ./docker/Dockerfile.centos-stream --build-arg VERSION_NUM=9 --build-arg CHINA_MIRROR=0 .
+docker run --rm -v .:/data elssh:el9
 ```
 
 ### aarch64 (ARM64) Builds
@@ -76,25 +76,25 @@ docker run --rm -v .:/data elssh_el9
 #### For EL8 aarch64
 
 ```bash
-docker build -t elssh_aarch64_el8 \
+docker build -t elssh_aarch64:el8 \
   --platform linux/arm64 \
   -f ./docker/Dockerfile.centos-stream \
   --build-arg VERSION_NUM=8 \
   --build-arg CHINA_MIRROR=0 .
 
-docker run --rm -v .:/data --platform linux/arm64 elssh_aarch64_el8
+docker run --rm -v .:/data --platform linux/arm64 elssh_aarch64:el8
 ```
 
 #### For EL9 aarch64
 
 ```bash
-docker build -t elssh_aarch64_el9 \
+docker build -t elssh_aarch64:el9 \
   --platform linux/arm64 \
   -f ./docker/Dockerfile.centos-stream \
   --build-arg VERSION_NUM=9 \
   --build-arg CHINA_MIRROR=0 .
 
-docker run --rm -v .:/data --platform linux/arm64 elssh_aarch64_el9
+docker run --rm -v .:/data --platform linux/arm64 elssh_aarch64:el9
 ```
 
 ## Build Arguments
@@ -141,11 +141,11 @@ Each subdirectory contains the generated `.rpm` files (including debuginfo if av
 ```bash
 env ALL=1 ./pullsrc.sh
 
-docker build -t elssh_el8 -f ./docker/Dockerfile.centos --build-arg VERSION_NUM=8 --build-arg CHINA_MIRROR=0 .
-docker run --rm -v .:/data elssh_el8
+docker build -t elssh:el8 -f ./docker/Dockerfile.centos --build-arg VERSION_NUM=8 --build-arg CHINA_MIRROR=0 .
+docker run --rm -v .:/data elssh:el8
 
-docker build -t elssh_el9 -f ./docker/Dockerfile.centos-stream --build-arg VERSION_NUM=9 --build-arg CHINA_MIRROR=0 .
-docker run --rm -v .:/data elssh_el9
+docker build -t elssh:el9 -f ./docker/Dockerfile.centos-stream --build-arg VERSION_NUM=9 --build-arg CHINA_MIRROR=0 .
+docker run --rm -v .:/data elssh:el9
 ```
 
 ### Build only for ARM64
@@ -153,8 +153,8 @@ docker run --rm -v .:/data elssh_el9
 ```bash
 env ALL=1 ./pullsrc.sh
 
-docker build -t elssh_aarch64_el9 --platform linux/arm64 -f ./docker/Dockerfile.centos-stream --build-arg VERSION_NUM=9 --build-arg CHINA_MIRROR=0 .
-docker run --rm -v .:/data --platform linux/arm64 elssh_aarch64_el9
+docker build -t elssh_aarch64:el9 --platform linux/arm64 -f ./docker/Dockerfile.centos-stream --build-arg VERSION_NUM=9 --build-arg CHINA_MIRROR=0 .
+docker run --rm -v .:/data --platform linux/arm64 elssh_aarch64:el9
 ```
 
 ## Troubleshooting
