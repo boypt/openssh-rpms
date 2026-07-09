@@ -28,7 +28,7 @@ RUN if [ "$VERSION_NUM" = "8" ]; then \
         fi; \
     fi && \
     yum clean all && yum makecache && \
-    yum install -y wget autoconf automake gcc make perl rpm-build setarch pam-devel krb5-devel zlib-devel openssl-devel systemd-devel e2fsprogs-devel && \
+    yum install -y wget autoconf automake gcc make perl rpm-build pam-devel krb5-devel zlib-devel openssl-devel systemd-devel e2fsprogs-devel && \
     yum clean all
 
 CMD ["./docker/docker_compile.sh"]
