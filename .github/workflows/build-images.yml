@@ -48,9 +48,13 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Run
+      - name: Pull Sources for CentOS 5
+        if: matrix.tag_suffix == 'el5'
         run: |
           env DOCKERBUILD=1 ./pullsrc.sh
+
+      - name: Replace Mirror URL
+        run: |
           sed -i 's|mirrors.\+\.cn|mirror.centos.org|g' ./docker/*
 
       - name: Set up Docker Buildx
@@ -105,7 +109,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Run Shell
+      - name: Replace Mirror URL
         run: |
           sed -i 's|mirrors.\+\.cn|mirror.centos.org|g' ./docker/*
 
