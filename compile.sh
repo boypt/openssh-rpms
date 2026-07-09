@@ -119,18 +119,18 @@ BUILD_RPM() {
 
     # EL5 dist fixes
     if [[ $rpmtopdir == *el5 ]]; then
-	SOURCES+=($PERLSRC)
+        SOURCES+=($PERLSRC)
 
-	# Hack: fake the perl src when perl is ready already(docker images)
-	[[ $(perl -e 'print $] >= 5.010 ? 1 : 0') -eq 1 ]] && \
-		touch ./downloads/$PERLSRC
-	
+        # Hack: fake the perl src when perl is ready already(docker images)
+        [[ $(perl -e 'print $] >= 5.010 ? 1 : 0') -eq 1 ]] && \
+    	    touch ./downloads/$PERLSRC
+    
         RPMBUILDOPTS+=('--define' "perlver ${PERLVER}" '--define' 'dist .el5')
         export CC=gcc44
 
-	# Hack: old krb5 fail the test with openssl3.x, but works with openssh
-	export ac_cv_func_krb5_free_error_message=yes
-	export ac_cv_func_krb5_get_error_message=yes
+        # Hack: old krb5 fail the test with openssl3.x, but works with openssh
+        export ac_cv_func_krb5_free_error_message=yes
+        export ac_cv_func_krb5_get_error_message=yes
     fi
 
     # add dist variable if not defined
