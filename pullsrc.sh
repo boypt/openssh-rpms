@@ -49,7 +49,7 @@ if [[ ! -f $ASKPASSSRC && ${DOCKERBUILD:-0} == 0 ]]; then
 	  echo "!!! Please download $ASKPASSSRC in $PWD by yourself."
 fi
 
-if [[ $($__dir/compile.sh GETEL) == "el5" || ${DOCKERBUILD:-0} == 1 && ! -f $PERLSRC ]]; then
+if [[ $($__dir/compile.sh GETEL) == "el5" && ${DOCKERBUILD:-0} == 1 && ! -f $PERLSRC ]]; then
   echo Get: $PERLMIR/$PERLSRC
   wget --no-check-certificate $PERLMIR/$PERLSRC || \
 	  echo "!!! Please download $PERLSRC in $PWD by yourself."

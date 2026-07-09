@@ -119,7 +119,8 @@ BUILD_RPM() {
 
     # EL5 dist fixes
     if [[ $rpmtopdir == *el5 ]]; then
-        SOURCES+=($PERLSRC)
+	[[ $(perl -e 'print $] >= 5.010 ? 1 : 0') -eq 0 ]] && \
+		SOURCES+=($PERLSRC)
         RPMBUILDOPTS+=('--define' "perlver ${PERLVER}" '--define' 'dist .el5')
         export CC=gcc44
 

@@ -101,7 +101,7 @@ jobs:
           persist-credentials: false
 
       - name: Run pullsrc.sh
-        run: env ALL=1 ./pullsrc.sh
+        run: ./pullsrc.sh
 
       - name: Generate version-local.env
         run: |
@@ -157,7 +157,7 @@ jobs:
           persist-credentials: false
 
       - name: Run pullsrc.sh
-        run: env ALL=1 ./pullsrc.sh
+        run: ./pullsrc.sh
 
       - name: Generate version-local.env
         run: |
