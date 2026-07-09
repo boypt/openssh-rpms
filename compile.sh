@@ -122,10 +122,6 @@ BUILD_RPM() {
         SOURCES+=($PERLSRC)
         RPMBUILDOPTS+=('--define' "perlver ${PERLVER}" '--define' 'dist .el5')
         export CC=gcc44
-        if [[ ${M32:-0} != 0 ]]; then
-               RPMBUILDOPTS+=('--target' i686)
-               export CFLAGS=-m32 LDFLAGS=-m32
-        fi
     fi
 
     # add dist variable if not defined
@@ -139,6 +135,13 @@ BUILD_RPM() {
         install -v -m666 $__dir/downloads/$fn ./SOURCES/
     done
 
+    if [[ ${M32:-0} != 0 ]]; then
+        local SETARCH="setarch i386"
+        RPMBUILDOPTS+=('--target' i686)
+        export CFLAGS=-m32 LDFLAGS=-m32
+    fi
+
+    ${SETARCH:-} \
     rpmbuild -ba ./SPECS/${SPECFILE:-openssh.spec} "${RPMBUILDOPTS[@]}"
     
     if [[ $? -ne 0 ]]; then
