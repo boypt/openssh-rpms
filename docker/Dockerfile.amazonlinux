@@ -1,7 +1,7 @@
 ARG VERSION_NUM="2023"
 FROM amazonlinux:$VERSION_NUM
 ARG VERSION_NUM
-ARG CHINA_MIRROR=0
+ARG MIRROR=0
 LABEL Author="Rex Zhou <zrx879582094@gmail.com>"
 
 WORKDIR /data
@@ -9,7 +9,7 @@ WORKDIR /data
 # Copy all files
 COPY . /data
 
-RUN export CHINA_MIRROR="$CHINA_MIRROR" && \
+RUN export MIRROR="$MIRROR" && \
     bash ./docker/modify_yum_source.sh && \
     if [ "$VERSION_NUM" = "2023" ]; then \
         yum makecache timer && yum install -y libnsl systemd-devel; \

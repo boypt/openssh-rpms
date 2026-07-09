@@ -1,11 +1,11 @@
 FROM centos:5 AS builder
-ARG CHINA_MIRROR=1
+ARG MIRROR=1
 WORKDIR /data
 
 COPY ./docker/*.sh /data/docker/
 COPY ./downloads/perl* /data/
 
-RUN export CHINA_MIRROR="$CHINA_MIRROR" && \
+RUN export MIRROR="$MIRROR" && \
     bash ./docker/modify_yum_source.sh && \
     yum install -y gcc44 make
 
@@ -16,13 +16,13 @@ RUN rm -rf perl-*.tar.gz perl
 
 
 FROM centos:5
-ARG CHINA_MIRROR=1
+ARG MIRROR=1
 ENV PATH=/usr/local/perl/bin:$PATH
 WORKDIR /data
 COPY --from=builder /usr/local/perl /usr/local/perl
 COPY ./docker/*.sh /data/docker/
 
-RUN export CHINA_MIRROR="$CHINA_MIRROR" && \
+RUN export MIRROR="$MIRROR" && \
     bash ./docker/modify_yum_source.sh && \
     yum install -y gcc44 autoconf automake make rpm-build setarch pam-devel krb5-devel zlib-devel && \
     sed 's|]$|-i386]|;s|\$basearch|i386|g' /etc/yum.repos.d/CentOS-Base.repo > /etc/yum.repos.d/CentOS-Base-i386.repo && \

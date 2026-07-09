@@ -2,7 +2,7 @@
 ARG VERSION_NUM="24.03"
 FROM openeuler/openeuler:$VERSION_NUM
 ARG VERSION_NUM
-ARG CHINA_MIRROR=0
+ARG MIRROR=0
 LABEL Author="Rex Zhou <zrx879582094@gmail.com>"
 
 WORKDIR /data
@@ -11,7 +11,7 @@ WORKDIR /data
 COPY . /data
 
 # Official webpage: https://www.openeuler.openatom.cn/zh/blog/2024-10-15-boostYum/2024-10-15-boostYum.html
-RUN if [ "$CHINA_MIRROR" != "0" ]; then \
+RUN if [ "$MIRROR" != "0" ]; then \
         MIRROR_URL="mirrors.163.com/openeuler" && \
         sed -i.bak \
             "s|repo.openeuler.org|$MIRROR_URL|g;s|^metalink|#metalink|g" \

@@ -2,7 +2,7 @@
 ARG VERSION_NUM="9"
 FROM quay.io/centos/centos:stream$VERSION_NUM
 ARG VERSION_NUM
-ARG CHINA_MIRROR=0
+ARG MIRROR=0
 LABEL Author="Rex Zhou <zrx879582094@gmail.com>"
 
 WORKDIR /data
@@ -20,7 +20,7 @@ RUN if [ "$VERSION_NUM" = "8" ]; then \
         yum install -y perl 'dnf-command(config-manager)' && \
         yum config-manager --set-enabled powertools; \
     else \
-        if [ "$CHINA_MIRROR" != "0" ]; then \
+        if [ "$MIRROR" != "0" ]; then \
             MIRROR_URL="https://mirrors.ustc.edu.cn" && \
             sed -i "s|MIRROR_HOLDER|$MIRROR_URL/centos-stream|" /data/docker/modify_dnf_source.pl && \
             yum install -y perl && \

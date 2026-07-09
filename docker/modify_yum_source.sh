@@ -10,7 +10,7 @@ RELEASE_VER=$(rpm --eval '%{?dist}')
 
 # Cent OS 5 is NOT support modern SSL protocol, so use plain HTTP protocol.
 if [ "$RELEASE_VER" != ".el5" ]; then
-  if [ "$CHINA_MIRROR" != "0" ]; then
+  if [ "$MIRROR" != "0" ]; then
     # Using USTC mirror, which is much useful for Chinese users.
     MIRROR_URL="https://mirrors.ustc.edu.cn/centos-vault";
     AWS_DOMAIN="amazonaws.com.cn"

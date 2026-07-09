@@ -2,7 +2,7 @@
 ARG VERSION_NUM="9"
 FROM rockylinux:$VERSION_NUM
 ARG VERSION_NUM
-ARG CHINA_MIRROR=0
+ARG MIRROR=0
 LABEL Author="Rex Zhou <zrx879582094@gmail.com>"
 
 WORKDIR /data
@@ -11,7 +11,7 @@ WORKDIR /data
 COPY . /data
 
 # Official webpage: https://developer.aliyun.com/mirror/rockylinux
-RUN if [ "$CHINA_MIRROR" != "0" ]; then \
+RUN if [ "$MIRROR" != "0" ]; then \
         MIRROR_URL="https://mirrors.aliyun.com/rockylinux" && \
         sed -e 's|^mirrorlist=|#mirrorlist=|g' \
             -e "s|^#baseurl=http://dl.rockylinux.org/\$contentdir|baseurl=$MIRROR_URL|g" \
