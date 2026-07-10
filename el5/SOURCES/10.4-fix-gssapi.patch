@@ -1,0 +1,134 @@
+From c147093565634eae9f91e4df99e04a6b3513f9c6 Mon Sep 17 00:00:00 2001
+From: "djm@openbsd.org" <djm@openbsd.org>
+Date: Tue, 7 Jul 2026 01:00:22 +0000
+Subject: [PATCH 1/2] upstream: fix GSSAPI option names, that I somehow screwed
+ up while
+
+refactoring servconf.c bz3974 patch from Colin Watson
+
+OpenBSD-Commit-ID: be39ad3dbe36d9ecdb86f3811da5dfbdc9bcb1e6
+---
+ servconf.c | 18 +++++++++---------
+ servconf.h | 18 +++++++++---------
+ 2 files changed, 18 insertions(+), 18 deletions(-)
+
+diff --git a/servconf.c b/servconf.c
+index ce388f1dd..9b443bea0 100644
+--- a/servconf.c
++++ b/servconf.c
+@@ -1,4 +1,4 @@
+-/* $OpenBSD: servconf.c,v 1.450 2026/06/29 08:59:31 djm Exp $ */
++/* $OpenBSD: servconf.c,v 1.451 2026/07/07 01:00:22 djm Exp $ */
+ /*
+  * Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>, Espoo, Finland
+  *                    All rights reserved
+@@ -1433,19 +1433,19 @@ process_server_config_line_depth(ServerOptions *options, char *line,
+ #endif /* KRB5 */
+ 
+ #ifdef GSSAPI
+-	case sGssAuthentication:
++	case sGSSAPIAuthentication:
+ 		intptr = &options->gss_authentication;
+ 		goto parse_flag;
+ 
+-	case sGssCleanupCreds:
++	case sGSSAPICleanupCredentials:
+ 		intptr = &options->gss_cleanup_creds;
+ 		goto parse_flag;
+ 
+-	case sGssDelegateCreds:
++	case sGSSAPIDelegateCredentials:
+ 		intptr = &options->gss_deleg_creds;
+ 		goto parse_flag;
+ 
+-	case sGssStrictAcceptor:
++	case sGSSAPIStrictAcceptorCheck:
+ 		intptr = &options->gss_strict_acceptor;
+ 		goto parse_flag;
+ #endif /* GSSAPI */
+@@ -4215,10 +4215,10 @@ dump_config(ServerOptions *o)
+ # endif
+ #endif
+ #ifdef GSSAPI
+-	dump_cfg_fmtint(sGssAuthentication, o->gss_authentication);
+-	dump_cfg_fmtint(sGssCleanupCreds, o->gss_cleanup_creds);
+-	dump_cfg_fmtint(sGssDelegateCreds, o->gss_deleg_creds);
+-	dump_cfg_fmtint(sGssStrictAcceptor, o->gss_strict_acceptor);
++	dump_cfg_fmtint(sGSSAPIAuthentication, o->gss_authentication);
++	dump_cfg_fmtint(sGSSAPICleanupCredentials, o->gss_cleanup_creds);
++	dump_cfg_fmtint(sGSSAPIDelegateCredentials, o->gss_deleg_creds);
++	dump_cfg_fmtint(sGSSAPIStrictAcceptorCheck, o->gss_strict_acceptor);
+ #endif
+ 	dump_cfg_fmtint(sPasswordAuthentication, o->password_authentication);
+ 	dump_cfg_fmtint(sKbdInteractiveAuthentication,
+diff --git a/servconf.h b/servconf.h
+index 9e64e4673..a2345e88a 100644
+--- a/servconf.h
++++ b/servconf.h
+@@ -1,4 +1,4 @@
+-/* $OpenBSD: servconf.h,v 1.177 2026/05/31 11:30:50 djm Exp $ */
++/* $OpenBSD: servconf.h,v 1.179 2026/07/07 01:00:22 djm Exp $ */
+ 
+ /*
+  * Author: Tatu Ylonen <ylo@cs.hut.fi>
+@@ -314,16 +314,16 @@ SSHCONF_UNSUPPORTED_INT(kerberos_get_afs_token, KerberosGetAFSToken, SSHCFG_GLOB
+ 
+ #ifdef GSSAPI
+ #define SSHD_CONFIG_ENTRIES_GSS \
+-SSHCONF_INTFLAG(gss_authentication, GssAuthentication, SSHCFG_ALL, 0, SSHCFG_COPY_MATCH) \
+-SSHCONF_INTFLAG(gss_cleanup_creds, GssCleanupCreds, SSHCFG_GLOBAL, 1, SSHCFG_COPY_NONE) \
+-SSHCONF_INTFLAG(gss_deleg_creds, GssDelegateCreds, SSHCFG_GLOBAL, 1, SSHCFG_COPY_NONE) \
+-SSHCONF_INTFLAG(gss_strict_acceptor, GssStrictAcceptor, SSHCFG_GLOBAL, 1, SSHCFG_COPY_NONE)
++SSHCONF_INTFLAG(gss_authentication, GSSAPIAuthentication, SSHCFG_ALL, 0, SSHCFG_COPY_MATCH) \
++SSHCONF_INTFLAG(gss_cleanup_creds, GSSAPICleanupCredentials, SSHCFG_GLOBAL, 1, SSHCFG_COPY_NONE) \
++SSHCONF_INTFLAG(gss_deleg_creds, GSSAPIDelegateCredentials, SSHCFG_GLOBAL, 1, SSHCFG_COPY_NONE) \
++SSHCONF_INTFLAG(gss_strict_acceptor, GSSAPIStrictAcceptorCheck, SSHCFG_GLOBAL, 1, SSHCFG_COPY_NONE)
+ #else /* GSSAPI */
+ #define SSHD_CONFIG_ENTRIES_GSS \
+-SSHCONF_UNSUPPORTED_INT(gss_authentication, GssAuthentication, SSHCFG_ALL) \
+-SSHCONF_UNSUPPORTED_INT(gss_cleanup_creds, GssCleanupCreds, SSHCFG_GLOBAL) \
+-SSHCONF_UNSUPPORTED_INT(gss_deleg_creds, GssDelegateCreds, SSHCFG_GLOBAL) \
+-SSHCONF_UNSUPPORTED_INT(gss_strict_acceptor, GssStrictAcceptor, SSHCFG_GLOBAL)
++SSHCONF_UNSUPPORTED_INT(gss_authentication, GSSAPIAuthentication, SSHCFG_ALL) \
++SSHCONF_UNSUPPORTED_INT(gss_cleanup_creds, GSSAPICleanupCredentials, SSHCFG_GLOBAL) \
++SSHCONF_UNSUPPORTED_INT(gss_deleg_creds, GSSAPIDelegateCredentials, SSHCFG_GLOBAL) \
++SSHCONF_UNSUPPORTED_INT(gss_strict_acceptor, GSSAPIStrictAcceptorCheck, SSHCFG_GLOBAL)
+ #endif /* GSSAPI */
+ 
+ #define SSHD_CONFIG_ENTRIES \
+-- 
+2.47.3
+
+
+From c10e04980300eab089f71aaada8b28fd878ee729 Mon Sep 17 00:00:00 2001
+From: "djm@openbsd.org" <djm@openbsd.org>
+Date: Tue, 7 Jul 2026 02:17:18 +0000
+Subject: [PATCH 2/2] upstream: unused variables
+
+OpenBSD-Commit-ID: 03fc22fb427b7547ee7844907cf3257bce7fdc3c
+---
+ auth2-gss.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/auth2-gss.c b/auth2-gss.c
+index 85251b7d0..9e9496e53 100644
+--- a/auth2-gss.c
++++ b/auth2-gss.c
+@@ -1,4 +1,4 @@
+-/* $OpenBSD: auth2-gss.c,v 1.41 2026/07/06 07:53:30 djm Exp $ */
++/* $OpenBSD: auth2-gss.c,v 1.42 2026/07/07 02:17:18 djm Exp $ */
+ 
+ /*
+  * Copyright (c) 2001-2003 Simon Wilkinson. All rights reserved.
+@@ -215,8 +215,6 @@ input_gssapi_errtok(int type, uint32_t plen, struct ssh *ssh)
+ {
+ 	Authctxt *authctxt = ssh->authctxt;
+ 	int r;
+-	u_char *p;
+-	size_t len;
+ 
+ 	if (authctxt == NULL)
+ 		fatal("No authentication or GSSAPI context");
+-- 
+2.47.3
+

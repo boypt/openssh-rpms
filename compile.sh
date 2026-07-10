@@ -146,9 +146,6 @@ BUILD_RPM() {
         export CFLAGS="${CFLAGS:-} -m32" LDFLAGS="${LDFLAGS:-} -m32"
     fi
 
-    # Hack: force to enable GSSAPI linking 
-    # configure script fail to link openssl3 with gssapi
-    export ac_cv_header_gssapi_h=yes ac_cv_header_gssapi_gssapi_h=yes ac_cv_header_gssapi_gssapi_krb5_h=yes ac_cv_lib_gssapi_krb5_gss_init_sec_context=yes
     ${SETARCH:-} \
     rpmbuild -bb ./SPECS/${SPECFILE:-openssh.spec} "${RPMBUILDOPTS[@]}"
     

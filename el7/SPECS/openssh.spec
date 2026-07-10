@@ -105,6 +105,9 @@ BuildRequires: pkgconfig
 %if %{kerberos5}
 BuildRequires: krb5-devel
 BuildRequires: krb5-libs
+%if "%{opensshver}" == "10.4p1"
+Patch100: 10.4-fix-gssapi.patch
+%endif
 %endif
 
 %package clients
