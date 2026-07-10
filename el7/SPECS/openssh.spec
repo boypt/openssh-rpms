@@ -105,10 +105,8 @@ BuildRequires: pkgconfig
 %if %{kerberos5}
 BuildRequires: krb5-devel
 BuildRequires: krb5-libs
-%if "%{opensshver}" == "10.4p1"
+%endif
 Patch100: 10.4-fix-gssapi.patch
-%endif
-%endif
 
 %package clients
 Summary: OpenSSH clients.
@@ -184,6 +182,11 @@ environment.
 %setup -q -a 1
 %else
 %setup -q
+%endif
+
+# Apply GSSAPI option path for 10.4p1
+%if "%{opensshver}" == "10.4p1"
+%patch100 -p1
 %endif
 
 %if %{with_openssl} == 2

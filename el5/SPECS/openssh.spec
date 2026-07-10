@@ -105,8 +105,6 @@ Source3: https://www.openssl.org/source/openssl-%{opensslver}.tar.gz
 Source4: https://www.cpan.org/src/5.0/perl-%{perlver}.tar.gz
 %endif
 
-# glibc-headers-2.5 have endian.h but didn't define htole64
-Patch0: have_endian.patch
 License: BSD
 Group: Applications/Internet
 BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
@@ -143,10 +141,9 @@ BuildRequires: pkgconfig
 %if %{kerberos5}
 BuildRequires: krb5-devel
 BuildRequires: krb5-libs
-%if "%{opensshver}" == "10.4p1"
+%endif
+Patch0: have_endian.patch
 Patch100: 10.4-fix-gssapi.patch
-%endif
-%endif
 
 
 %package clients
@@ -227,8 +224,15 @@ environment.
 # Applay a patch if glibc version is 2.5, not sure about other versions
 %global glibc_version %(ldd --version 2>&1 | head -n1 | grep -oP '[0-9.]+')
 echo "GLIBC version: %{glibc_version}"
+
 %if "%{glibc_version}" <= "2.5" && "%{opensshver}" == "9.9p2"
+# glibc-headers-2.5 have endian.h but didn't define htole64
 %patch0 -p0
+%endif
+
+# Apply GSSAPI option path for 10.4p1
+%if "%{opensshver}" == "10.4p1"
+%patch100 -p1
 %endif
 
 %if %{with_openssl} == 2
