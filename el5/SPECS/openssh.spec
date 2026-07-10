@@ -270,10 +270,32 @@ popd
 CFLAGS="$RPM_OPT_FLAGS -Os"; export CFLAGS
 %endif
 
+# ==============================================================================
+# HACK: Fix conflicting 'krb5_free_error_message' macros under older distros (EL5)
+# When statically building against OpenSSL 3.x with Kerberos enabled, the ancient 
+# krb5 headers conflict with OpenSSL 3's new/deprecated APIs. This causes the 
+# './configure' compiler test to fail linking, making it mistakenly believe that 
+# the system lacks 'krb5_free_error_message'. 
+#
+# Consequently, OpenSSH injects a fallback macro:
+#   #define krb5_free_error_message(a,b) do { } while(0)
+# which directly results in syntax compilation errors later inside krb5.h.
+#
+# By forcing these autoconf cache variables to 'yes', we bypass the broken 
+# configure test and prevent the conflicting macro injection, as the functions 
+# are indeed natively present in the system's krb5-devel library.
+# ==============================================================================
+%global openssl_major %(echo "%{opensslver}" | cut -d. -f1)
+%if %{kerberos5} && %{openssl_major} >= 3
+    export ac_cv_func_krb5_free_error_message=yes
+    export ac_cv_func_krb5_get_error_message=yes
+%endif
+
 %if %{with_openssl} == 2
 # Add OpenSSL library
 export LD_LIBRARY_PATH="%{openssl_dir}"
 %endif
+
 %configure \
 %ifarch %{ix86}
 	--host=i686-linux-gnu \
