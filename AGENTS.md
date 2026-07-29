@@ -53,3 +53,31 @@ docker run --rm -v .:/data elssh:el8
 ## Gitignore
 
 `*-local*` is gitignored — version-local.env, editor swap files, etc. `*.tar.gz` is gitignored everywhere, including `downloads/`. Generated RPMs go to `output/` (also gitignored).
+
+## Release workflow
+
+When a new upstream OpenSSH version is available:
+
+```bash
+# 1. Check latest version
+./pullsrc.sh --latest
+
+# 2. Update version.env: OPENSSHSRC and OPENSSHVER
+#    Update README.md: "Current Version" section
+
+# 3. Determine build number for this version
+TAG_PREFIX="v${NEW_VERSION}_b"
+BUILD_NUM=$(git tag | grep "^${TAG_PREFIX}" | sed "s/^${TAG_PREFIX}//" | sort -n | tail -1)
+BUILD_NUM=$(( ${BUILD_NUM:-0} + 1 ))
+
+# 4. Commit and tag
+git add version.env README.md
+git commit -m "bump: OpenSSH ${NEW_VERSION}_b${BUILD_NUM}"
+git tag "v${NEW_VERSION}_b${BUILD_NUM}"
+
+# 5. Push
+git push origin main
+git push origin "v${NEW_VERSION}_b${BUILD_NUM}"
+```
+
+Pushing the tag triggers `.github/workflows/build-rpm.yml` which builds RPMs for all EL versions and creates a GitHub release.

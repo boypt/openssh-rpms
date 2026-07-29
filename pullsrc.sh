@@ -29,6 +29,26 @@ OPENSSLMIR=${GH_PROXY:-}https://github.com/openssl/openssl/releases/download/ope
 ASKPASSMIR=https://src.fedoraproject.org/repo/pkgs/openssh/x11-ssh-askpass-1.2.4.1.tar.gz/8f2e41f3f7eaa8543a2440454637f3c3
 PERLMIR=https://www.cpan.org/src/5.0
 
+LATEST_OPENSSH() {
+    curl -s "$OPENSSHMIR/" 2>/dev/null | \
+        grep -o 'openssh-[0-9.]*p[0-9]*\.tar\.gz' | \
+        sed 's/openssh-//; s/\.tar\.gz//' | \
+        sort -Vu | tail -1 || true
+}
+
+if [[ $arg1 == "--latest" ]]; then
+    latest=$(LATEST_OPENSSH)
+    current="${OPENSSHVER}"
+    echo "Current version: $current"
+    echo "Latest  version: $latest"
+    if [[ "$latest" == "$current" ]]; then
+        echo "Already up to date."
+    else
+        echo "NEW VERSION AVAILABLE: $latest"
+    fi
+    exit 0
+fi
+
 mkdir -p downloads
 pushd downloads
 if [[ ! -f $OPENSSLSRC && ${DOCKERBUILD:-0} == 0 ]]; then
