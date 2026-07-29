@@ -40,11 +40,11 @@ GUESS_DIST() {
     local dist=$(rpm --eval '%{?dist}' | tr -d '.')
 
     # fallback to el7
-    [[ $dist == "el9" ]] && dist="el8"
-    [[ $dist == "el8" ]] && dist="el8"
-    [[ $dist == "an8" ]] && dist="el8" # Anolis 8
+    [[ $dist == "el9" ]] && dist="el7"
+    [[ $dist == "el8" ]] && dist="el7"
+    [[ $dist == "an8" ]] && dist="el7" # Anolis 8
     [[ $dist == "an7" ]] && dist="el7" # Anolis 7
-    [[ $dist == uel* ]] && dist="el8"  # UOS20+
+    [[ $dist == uel* ]] && dist="el7"  # UOS20+
 
     [[ -n $dist ]] && echo $dist && return 0
 
@@ -59,23 +59,22 @@ GUESS_DIST() {
     # centos 7 uses glibc 2.17
     [[ $glibcver -eq 217 ]] && echo 'el7' && return 0
 
-    # centos 8 uses glibc 2.28, not yet to be in a seprate dir
-    [[ $glibcver -eq 228 ]] && echo 'el8' && return 0
+    # centos 8 uses glibc 2.28, also map to el7
+    [[ $glibcver -eq 228 ]] && echo 'el7' && return 0
 
     # some centos-like dists ships higher version of glibc, fallback to el7
-    [[ $glibcver -gt 217 ]] && echo 'el8' && return 0
+    [[ $glibcver -gt 217 ]] && echo 'el7' && return 0
 }
 
 TOPDIR_SELECT() {
     local DISTVER=$(GUESS_DIST)
     case $DISTVER in
-        el8)
-            rpmtopdir=el7
-            WITH_OPENSSL=${WITH_OPENSSL:-1}
-            ;;
         el7)
             rpmtopdir=el7
-            WITH_OPENSSL=${WITH_OPENSSL:-2}
+            if [[ -z ${WITH_OPENSSL+x} ]]; then
+                local opensslver=$(rpm -q openssl --qf "%{VERSION}" 2>/dev/null | cut -d. -f1)
+                [[ $opensslver -ge 3 ]] && WITH_OPENSSL=1 || WITH_OPENSSL=2
+            fi
             ;;
         el6)
             rpmtopdir=el6

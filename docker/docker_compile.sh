@@ -16,6 +16,5 @@ if [[ ${WITH_OPENSSL+x} == "" ]]; then
   fi
 fi
 
-[[ $ELDIR == el8 ]] && ELDIR=el7
 cp -r $ELDIR $DOCKER_BUILD_DIR
 ./compile.sh $DOCKER_BUILD_DIR/$ELDIR
