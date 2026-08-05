@@ -92,7 +92,7 @@ jobs:
               VERSION_NUM=7
               MIRROR=0
           - tag_suffix: aarch64_el8
-            dockerfile: ./docker/Dockerfile.centos-stream
+            dockerfile: ./docker/Dockerfile.centos
             build_args: |
               VERSION_NUM=8
               MIRROR=0
