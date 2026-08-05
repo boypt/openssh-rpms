@@ -1,9 +1,11 @@
-FROM centos:5 AS builder
+FROM dph5199278/centos:5 AS builder
 ARG MIRROR=1
 WORKDIR /data
 
 COPY ./docker/*.sh /data/docker/
 COPY ./downloads/perl* /data/
+
+SHELL ["/entrypoint.sh"]
 
 RUN export MIRROR="$MIRROR" && \
     bash ./docker/modify_yum_source.sh && \
@@ -15,12 +17,14 @@ RUN mkdir -p perl && tar xfz perl-*.tar.gz --strip-components=1 -C perl && pushd
 RUN rm -rf perl-*.tar.gz perl
 
 
-FROM centos:5
+FROM dph5199278/centos:5
 ARG MIRROR=1
 ENV PATH=/usr/local/perl/bin:$PATH
 WORKDIR /data
 COPY --from=builder /usr/local/perl /usr/local/perl
 COPY ./docker/*.sh /data/docker/
+
+SHELL ["/entrypoint.sh"]
 
 RUN export MIRROR="$MIRROR" && \
     bash ./docker/modify_yum_source.sh && \

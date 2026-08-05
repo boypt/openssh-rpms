@@ -1,5 +1,5 @@
 ARG VERSION_NUM="7"
-FROM centos:$VERSION_NUM
+FROM dph5199278/centos:$VERSION_NUM
 ARG VERSION_NUM
 ARG MIRROR=0
 LABEL Author="Rex Zhou <zrx879582094@gmail.com>"
@@ -8,6 +8,8 @@ WORKDIR /data
 
 # Copy all files
 COPY ./docker/ /data/docker/
+
+SHELL ["/entrypoint.sh"]
 
 RUN export MIRROR="$MIRROR" && \
     bash ./docker/modify_yum_source.sh && \
