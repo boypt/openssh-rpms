@@ -15,8 +15,7 @@ RUN export MIRROR="$MIRROR" && \
     bash ./docker/modify_yum_source.sh && \
     if [ "$VERSION_NUM" = "8" ]; then \
         yum install -y perl perl-IPC-Cmd perl-Time-Piece systemd-devel openssl-devel && \
-        yum install -y 'dnf-command(config-manager)' && \
-        yum config-manager --set-enabled powertools; \
+        yum install -y 'dnf-command(config-manager)'; \
     elif [ "$VERSION_NUM" = "7" ]; then \
         yum install -y systemd-devel perl perl-IPC-Cmd perl-Time-Piece ;\
     elif [ "$VERSION_NUM" = "6" ]; then \
