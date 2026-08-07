@@ -19,7 +19,7 @@ Similar Project: [Backport OpenSSH for Debian / Ubuntu distros](https://github.c
 | Amazon Linux   | 1              | EL 6                        |
 | Amazon Linux   | 2              | EL 7                        |
 | Amazon Linux   | 2023           | EL 9                        |
-| UnionTech UOS  | V20            | EL 8                        |
+| UnionTech UOS  | V20            | **UOS20**                   |
 | openEuler      | 20.03          | EL 8                        |
 | openEuler      | 22.03          | EL 8                        |
 | openEuler      | 24.03          | EL 9                        |
