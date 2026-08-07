@@ -57,6 +57,15 @@ docker build -t elssh:el7 -f ./docker/Dockerfile.centos --build-arg VERSION_NUM=
 docker run --rm -v .:/data elssh:el7
 ```
 
+#### UOS 20 Variant (EL7-family)
+
+Reuse the EL7 image and pass `UOS20=1` to enable the kernel-panic fix in `sshd.c` and prefix `PKGREL` with `uos20` (so the resulting RPMs are distinguishable from the standard build).
+
+```bash
+docker build -t elssh:el7 -f ./docker/Dockerfile.centos --build-arg VERSION_NUM=7 --build-arg MIRROR=0 .
+docker run --rm -v .:/data -e "UOS20=1" elssh:el7
+```
+
 #### For EL8 (CentOS 8 / RHEL 8 / Rocky 8 / AlmaLinux 8)
 
 ```bash
@@ -104,6 +113,7 @@ docker run --rm -v .:/data --platform linux/arm64 elssh_aarch64:el9
 | `MIRROR`    | 0 or 1 | Set to `1` if you are in China and want to use faster domestic mirrors |
 | `VERSION_NUM`     | 6,7,8,9| Specifies the target EL version (used in most Dockerfiles) |
 | `M32` (EL5 only)  | 0 or 1 | `0` = 64-bit, `1` = 32-bit |
+| `UOS20`           | 0 or 1 | `1` = build the UOS 20 variant (EL7 image); enables the kernel-panic patch and prefixes `PKGREL` with `uos20` |
 
 **Example for users in China:**
 
