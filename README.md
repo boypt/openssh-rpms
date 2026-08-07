@@ -66,15 +66,24 @@ yum install -y gcc44
 
 ### Download RPMs
 
-You can download the needed RPMs from the Release, or use a simple script to download.
-
-The following example filters out files with `contains("el7") and contains("x86_64")` to download.
+You can download the needed RPMs from the GitHub Release using the GitHub
+API. The script below auto-detects your architecture and EL version from
+the running system, then fetches the matching asset from the latest
+release.
 
 ```bash
-curl -s https://api.github.com/repos/boypt/openssh-rpms/releases/latest \
-| jq -r '.assets[] | select(.name | ascii_downcase | contains("el7") and contains("x86_64")) | .browser_download_url' \
-| wget -i - --show-progress -c
+ARCH=$(uname -m)
+# Read the system's own rpm dist tag (.el8 -> el8, .el7 -> el7, ...).
+# Override for non-elN dists (e.g. UOS 20) or when auto-detect fails.
+# If unsure which EL value to use, see the "Supported (tested) Distro"
+# table at the top of this README.
+EL=$(rpm --eval '%{?dist}' 2>/dev/null | grep -oE 'el[0-9]+' | head -1)
+[[ -z "$EL" ]] && EL=el7
 
+curl -s https://api.github.com/repos/boypt/openssh-rpms/releases/latest \
+| jq -r --arg el "$EL" --arg arch "$ARCH" \
+    '.assets[] | select(.name | ascii_downcase | contains($el) and contains($arch)) | .browser_download_url' \
+| wget -i - --show-progress -c
 ```
 
 ### Build RPMs
