@@ -27,6 +27,10 @@ jobs:
           - tag: aarch64_el9
             el: "9"
             arch: aarch64
+          - tag: aarch64_el8
+            el: "uos20"
+            arch: aarch64
+            uos20: "1"
 
     steps:
       - name: Checkout repository
@@ -63,6 +67,7 @@ jobs:
         run: |
           docker run --rm \
             -v $(pwd):/data \
+            -e "UOS20=${{ matrix.uos20 }}" \
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.tag }}
 
       - name: Upload RPM artifacts
@@ -92,6 +97,10 @@ jobs:
           - tag: el6
             el: "6"
             arch: x86_64
+          - tag: el8
+            el: "uos20"
+            arch: x86_64
+            uos20: "1"
 
     steps:
       - name: Checkout repository
@@ -125,6 +134,7 @@ jobs:
         run: |
           docker run --rm \
             -v $(pwd):/data \
+            -e "UOS20=${{ matrix.uos20 }}" \
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.tag }}
 
       - name: Upload RPM artifacts
