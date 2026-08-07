@@ -107,6 +107,25 @@ BuildRequires: krb5-devel
 BuildRequires: krb5-libs
 %endif
 Patch100: 10.4-fix-gssapi.patch
+# Patch999: fix for kernel NULL pointer dereference panic in do_dup2() that
+# affects all UOS 20 systems (not just aarch64) when sshd performs a re-exec
+# with stdin/stdout/config fd dup2() before closing the existing descriptor.
+# Without this patch, certain UOS 20 kernels crash with:
+#
+#   BUG: unable to handle kernel NULL pointer dereference at 000000000000003f
+#   IP: filp_close+0x9/0x70
+#   Call Trace: do_dup2+xxx sys_dup2 entry_SYSCALL_64
+#   PID: xxx Comm: sshd
+#
+#   [<Txxxx>] Kernel panic - not syncing: Fatal exception
+#   [<Txxxx>] Kernel Offset: 0x13000000 from 0xffffffff81000000
+#   [<Txxxx>] kexec: Bye!
+#
+# The fix closes STDIN/STDOUT/REEXEC_CONFIG_PASS_FD before the corresponding
+# dup2() calls in sshd.c, so the kernel's filp_close() always operates on a
+# valid file pointer. Only applied when `uos20 1` is passed to rpmbuild
+# (compile.sh sets this from the UOS20=1 env var).
+%{?uos20:Patch999: openssh-uos20-kernel-panic-fix.patch}
 
 %package clients
 Summary: OpenSSH clients.
@@ -188,6 +207,9 @@ environment.
 %if "%{opensshver}" == "10.4p1"
 %patch100 -p1
 %endif
+
+# Apply UOS 20 kernel NULL pointer dereference fix (see Patch999 above)
+%{?uos20:%patch999 -p0}
 
 %if %{with_openssl} == 2
 # Add content below to use source code of OpenSSL

@@ -34,6 +34,7 @@ docker run --rm -v .:/data elssh:el8
 - `M32=1`: build 32-bit RPMs (EL5 only)
 - `DOCKERBUILD=1`: when set, `pullsrc.sh` skips downloading (assumes Docker image has the sources)
 - `GH_PROXY`: GitHub proxy URL for Chinese users (e.g. `https://gh-proxy.com/`)
+- `UOS20=1`: build the UOS 20 variant — enables the kernel-panic patch (`openssh-uos20-kernel-panic-fix.patch`) and prefixes `PKGREL` with `uos20` so resulting RPMs are distinguishable.
 
 ## Architecture notes
 
@@ -42,7 +43,7 @@ docker run --rm -v .:/data elssh:el8
 - EL5 uses `el5/` (SysVinit, requires Perl bootstrap for building OpenSSL).
 - `WITH_OPENSSL` auto-detection: for `el7` (which covers EL7/8/9), if system OpenSSL >= 3, defaults to `1` (system), otherwise `2` (static).
 - `compile.sh` has subcommands: `GETEL` (print detected distro), `GETRPM` (list RPM paths), `RPMDIR` (print RPM output dir).
-- `el7/SPECS/` has three spec files: `openssh.spec` (default), `openssh.initv.spec`, `openssh.uos20.spec`. The default spec is selected via `SPECFILE` env var.
+- `el7/SPECS/` has two spec files: `openssh.spec` (default, systemd) and `openssh.initv.spec` (SysVinit). The default spec is selected via `SPECFILE` env var. The UOS 20 build uses the default spec with `UOS20=1`.
 - `docker/docker_compile.sh` is the entrypoint inside Docker images — it copies the appropriate `el*` dir to `/BUILD` and runs `compile.sh` against it.
 
 ## CI

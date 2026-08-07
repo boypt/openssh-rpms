@@ -105,16 +105,24 @@ BUILD_RPM() {
           $OPENSSLSRC \
           $ASKPASSSRC \
         )
+    # UOS20 build: prefix PKGREL with "uos20" so the resulting RPMs are
+    # distinguishable from the standard build, and pass `uos20 1` to the
+    # spec to enable the kernel-panic patch.
+    local _pkgrel="${PKGREL:-1}"
+    if [[ ${UOS20:-0} == 1 ]]; then
+        _pkgrel="uos20${_pkgrel}"
+    fi
     local RPMBUILDOPTS=( \
         --define "with_openssl ${WITH_OPENSSL:-2}" \
         --define "opensslver ${OPENSSLVER}" \
         --define "opensshver ${OPENSSHVER}" \
-        --define "opensshpkgrel ${PKGREL:-1}" \
+        --define "opensshpkgrel ${_pkgrel}" \
         --define 'debug_package %{nil}' \
         --define 'no_gtk2 1' \
         --define 'skip_gnome_askpass 1' \
         --define 'skip_x11_askpass 1' \
         )
+    [[ ${UOS20:-0} == 1 ]] && RPMBUILDOPTS+=('--define' 'uos20 1')
 
     # EL5 dist fixes
     if [[ $rpmtopdir == *el5 ]]; then
