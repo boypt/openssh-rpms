@@ -34,7 +34,7 @@ docker run --rm -v .:/data elssh:el8
 - `M32=1`: build 32-bit RPMs (EL5 only)
 - `DOCKERBUILD=1`: when set, `pullsrc.sh` skips downloading (assumes Docker image has the sources)
 - `GH_PROXY`: GitHub proxy URL for Chinese users (e.g. `https://gh-proxy.com/`)
-- `UOS20=1`: build the UOS 20 variant — enables the kernel-panic patch (`openssh-uos20-kernel-panic-fix.patch`) and prefixes `PKGREL` with `uos20` so resulting RPMs are distinguishable.
+- `UOS20=1`: build the UOS 20 variant — enables the kernel-panic patch (`openssh-uos20-kernel-panic-fix.patch`) and prefixes `PKGREL` with `uos20-` so resulting RPMs are distinguishable.
 
 ## Architecture notes
 

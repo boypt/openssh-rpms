@@ -105,12 +105,13 @@ BUILD_RPM() {
           $OPENSSLSRC \
           $ASKPASSSRC \
         )
-    # UOS20 build: prefix PKGREL with "uos20" so the resulting RPMs are
-    # distinguishable from the standard build, and pass `uos20 1` to the
-    # spec to enable the kernel-panic patch.
+    # UOS20 build: prefix PKGREL with "uos20-" so the resulting RPMs are
+    # distinguishable from the standard build (e.g. PKGREL `1` becomes
+    # `uos20-1`, not `uos201`), and pass `uos20 1` to the spec to enable
+    # the kernel-panic patch.
     local _pkgrel="${PKGREL:-1}"
     if [[ ${UOS20:-0} == 1 ]]; then
-        _pkgrel="uos20${_pkgrel}"
+        _pkgrel="uos20-${_pkgrel}"
     fi
     local RPMBUILDOPTS=( \
         --define "with_openssl ${WITH_OPENSSL:-2}" \
