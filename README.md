@@ -145,6 +145,33 @@ For more details, see [docker/README.md](docker/README.md)
 
 When built with `WITH_OPENSSL=0`, `ssh-rsa` keys are not supported. But the RPMs are much smaller, and the built process is much faster.
 
+### Build for uniontech UOS 20
+
+UOS 20 kernels have a `do_dup2()` bug that triggers a kernel NULL pointer
+dereference panic when `sshd` re-execs:
+
+```
+BUG: unable to handle kernel NULL pointer dereference at 000000000000003f
+IP: filp_close+0x9/0x70
+Call Trace: do_dup2+xxx sys_dup2 entry_SYSCALL_64
+PID: xxx Comm: sshd
+```
+
+To apply the workaround (`el7/SOURCES/openssh-uos20-kernel-panic-fix.patch`,
+which closes the target fd before each `dup2()` in `sshd.c`), set
+`UOS20=1`:
+
+```bash
+UOS20=1 ./compile.sh el7
+```
+
+The flag also prefixes `PKGREL` with `uos20` so the resulting RPMs are
+distinguishable from the standard build (e.g. PKGREL `1` becomes `uos201`,
+producing `openssh-10.4p1-1.uos201.el7.x86_64.rpm`). The patch is only
+applied when the `uos20` macro is set, so ordinary EL7/8/9 builds are
+unaffected. For the Docker-based build, see
+[docker/README.md](docker/README.md#uos-20-variant-el7-family).
+
 ### Install on uniontech UOS 20
 
 UOS's `openssh-help` subpackage has files that confilict with the package. It's must be removed before installing the compiled RPMs:
