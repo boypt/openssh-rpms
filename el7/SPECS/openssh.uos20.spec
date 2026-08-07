@@ -70,7 +70,24 @@ Source2: sshd.pam.el7
 %if %{with_openssl} == 2
 Source3: https://www.openssl.org/source/openssl-%{opensslver}.tar.gz
 %endif
-Patch100: openssh-aarch64-kernel-panic-fix.patch
+# Patch999: fix for kernel NULL pointer dereference panic in do_dup2() that
+# affects all UOS 20 systems (not just aarch64) when sshd performs a re-exec
+# with stdin/stdout/config fd dup2() before closing the existing descriptor.
+# Without this patch, certain UOS 20 kernels crash with:
+#
+#   BUG: unable to handle kernel NULL pointer dereference at 000000000000003f
+#   IP: filp_close+0x9/0x70
+#   Call Trace: do_dup2+xxx sys_dup2 entry_SYSCALL_64
+#   PID: xxx Comm: sshd
+#
+#   [<Txxxx>] Kernel panic - not syncing: Fatal exception
+#   [<Txxxx>] Kernel Offset: 0x13000000 from 0xffffffff81000000
+#   [<Txxxx>] kexec: Bye!
+#
+# The fix closes STDIN/STDOUT/REEXEC_CONFIG_PASS_FD before the corresponding
+# dup2() calls in sshd.c, so the kernel's filp_close() always operates on a
+# valid file pointer.
+Patch999: openssh-uos20-kernel-panic-fix.patch
 # systemd support
 Source7: sshd.sysconfig
 Source9: sshd@.service
@@ -183,7 +200,7 @@ environment.
 %else
 %setup -q
 %endif
-%patch100 -p0
+%patch999 -p0
 
 %if %{with_openssl} == 2
 # Add content below to use source code of OpenSSL
