@@ -113,7 +113,7 @@ docker run --rm -v .:/data --platform linux/arm64 elssh_aarch64:el9
 | `MIRROR`    | 0 or 1 | Set to `1` if you are in China and want to use faster domestic mirrors |
 | `VERSION_NUM`     | 6,7,8,9| Specifies the target EL version (used in most Dockerfiles) |
 | `M32` (EL5 only)  | 0 or 1 | `0` = 64-bit, `1` = 32-bit |
-| `UOS20`           | 0 or 1 | `1` = build the UOS 20 variant (EL7 image); enables the kernel-panic patch and prefixes `PKGREL` with `uos20-` |
+| `UOS20`           | 0 or 1 | `1` = build the UOS 20 variant (EL7 image); enables the kernel-panic patch and prefixes `PKGREL` with `uos20.` |
 
 **Example for users in China:**
 

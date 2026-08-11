@@ -174,9 +174,7 @@ which closes the target fd before each `dup2()` in `sshd.c`), set
 UOS20=1 ./compile.sh el7
 ```
 
-The flag also prefixes `PKGREL` with `uos20-` so the resulting RPMs are
-distinguishable from the standard build (e.g. PKGREL `1` becomes `uos20-1`,
-producing `openssh-XXXXX-1.uos20-1.el7.x86_64.rpm`). The patch is only
+The flag also prefixes `PKGREL` with `uos20.` so the resulting RPMs are distinguishable from the standard build (e.g. PKGREL `1` becomes `uos20.1`, producing `openssh-XXXXX-uos20.1.el7.x86_64.rpm`). The patch is only
 applied when the `uos20` macro is set, so ordinary EL7/8/9 builds are
 unaffected. For the Docker-based build, see
 [docker/README.md](docker/README.md#uos-20-variant-el7-family).
