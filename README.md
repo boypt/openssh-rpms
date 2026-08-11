@@ -43,7 +43,7 @@ The directory (`el5`, `el6`, `el7`) serve as functional templates for different 
 
 ## Current Version:
 
-- OpenSSH 10.4p1 (see: [OpenSSH Official](https://www.openssh.com/))
+- OpenSSH 10.5p1 (see: [OpenSSH Official](https://www.openssh.com/))
 - OpenSSL 3.5.7 (see: [OpenSSL Official](https://openssl-library.org/source/))
 
 The build script reads `version.env` for version definitions.
@@ -176,7 +176,7 @@ UOS20=1 ./compile.sh el7
 
 The flag also prefixes `PKGREL` with `uos20-` so the resulting RPMs are
 distinguishable from the standard build (e.g. PKGREL `1` becomes `uos20-1`,
-producing `openssh-10.4p1-1.uos20-1.el7.x86_64.rpm`). The patch is only
+producing `openssh-XXXXX-1.uos20-1.el7.x86_64.rpm`). The patch is only
 applied when the `uos20` macro is set, so ordinary EL7/8/9 builds are
 unaffected. For the Docker-based build, see
 [docker/README.md](docker/README.md#uos-20-variant-el7-family).
