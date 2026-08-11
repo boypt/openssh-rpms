@@ -55,30 +55,34 @@ docker run --rm -v .:/data elssh:el8
 
 `*-local*` is gitignored — version-local.env, editor swap files, etc. `*.tar.gz` is gitignored everywhere, including `downloads/`. Generated RPMs go to `output/` (also gitignored).
 
-## Release workflow
+## Version bump workflow
 
-When a new upstream OpenSSH version is available:
+When the user says "update to &lt;version&gt;" (e.g. "update to 10.5", "update to 10.6p1"), perform the following steps autonomously. Only update `README.md` and `version.env` — do not touch other files unless explicitly asked.
 
-```bash
-# 1. Check latest version
-./pullsrc.sh --latest
+1. **Normalize the version**: append `p1` if not already present (all portable releases use `p1`). E.g. `10.5` → `10.5p1`.
 
-# 2. Update version.env: OPENSSHSRC and OPENSSHVER
-#    Update README.md: "Current Version" section
+2. **Update `version.env`**: change the `OPENSSHSRC` line to `openssh-<version>.tar.gz`. `OPENSSHVER` is derived automatically from `OPENSSHSRC`. Do NOT change `OPENSSLSRC`/`OPENSSLVER` or any other line unless the user explicitly asks.
 
-# 3. Determine build number for this version
-TAG_PREFIX="v${NEW_VERSION}_b"
-BUILD_NUM=$(git tag | grep "^${TAG_PREFIX}" | sed "s/^${TAG_PREFIX}//" | sort -n | tail -1)
-BUILD_NUM=$(( ${BUILD_NUM:-0} + 1 ))
+3. **Update `README.md`**: in the "Current Version" section, update only the OpenSSH version line. Leave the OpenSSL line unchanged.
 
-# 4. Commit and tag
-git add version.env README.md
-git commit -m "bump: OpenSSH ${NEW_VERSION}_b${BUILD_NUM}"
-git tag "v${NEW_VERSION}_b${BUILD_NUM}"
+4. **Determine the next build number**:
+   ```bash
+   TAG_PREFIX="v${NEW_VERSION}_b"
+   BUILD_NUM=$(git tag | grep "^${TAG_PREFIX}" | sed "s/^${TAG_PREFIX}//" | sort -n | tail -1)
+   BUILD_NUM=$(( ${BUILD_NUM:-0} + 1 ))
+   ```
 
-# 5. Push
-git push origin main
-git push origin "v${NEW_VERSION}_b${BUILD_NUM}"
-```
+5. **Commit and tag** (do not push yet):
+   ```bash
+   git add version.env README.md
+   git commit -m "bump: OpenSSH ${NEW_VERSION}_b${BUILD_NUM}"
+   git tag "v${NEW_VERSION}_b${BUILD_NUM}"
+   ```
 
-Pushing the tag triggers `.github/workflows/build-rpm.yml` which builds RPMs for all EL versions and creates a GitHub release.
+6. **Ask the user for confirmation to push** to remote. This is the only confirmation needed — do not ask about file changes, commit message, tag name, or anything else.
+
+7. **After pushing**, the tag triggers `.github/workflows/build-rpm.yml` which builds RPMs for all EL versions and creates a GitHub release. Monitor CI using `gh` commands and report the status:
+   ```bash
+   gh run list --limit 5
+   gh run watch    # watch the latest run to completion
+   ```
