@@ -23,9 +23,6 @@
 # Do we want to disable building of gnome-askpass? (1=yes 0=no)
 %global no_gnome_askpass 0
 
-# Do we want smartcard support (1=yes 0=no)
-%global scard 0
-
 # Use GTK2 instead of GNOME in gnome-ssh-askpass
 %global gtk2 1
 
@@ -57,10 +54,6 @@
 %if %{build6x}
 %global _sysconfdir /etc
 %endif
-
-# Options for Smartcard support: (needs libsectok and openssl-engine)
-# rpm -ba|--rebuild --define "smartcard 1"
-%{?smartcard:%global scard 1}
 
 # Is this a build for the rescue CD (without PAM)? (1=yes 0=no)
 %global rescue 0
@@ -223,7 +216,6 @@ export LD_LIBRARY_PATH="%{openssl_dir}"
 	--with-default-path=/usr/local/bin:/bin:/usr/bin \
 	--with-superuser-path=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin \
 	--with-privsep-path=%{_var}/empty/sshd \
-	--with-md5-passwords \
 	--mandir=%{_mandir} \
 	--with-mantype=man \
 	--disable-strip \
@@ -236,16 +228,13 @@ export LD_LIBRARY_PATH="%{openssl_dir}"
 	--with-ssl-engine \
 %endif
 	--with-zlib \
-%if %{scard}
-	--with-smartcard \
-%endif
 %if %{rescue}
 	--without-pam \
 %else
 	--with-pam \
 %endif
 %if %{kerberos5}
-	 --with-kerberos5=$K5DIR \
+	 --with-kerberos5 \
 %endif
 
 
@@ -332,9 +321,6 @@ ln -s x11-ssh-askpass $RPM_BUILD_ROOT%{_libexecdir}/openssh/ssh-askpass
 install contrib/gnome-ssh-askpass $RPM_BUILD_ROOT%{_libexecdir}/openssh/gnome-ssh-askpass
 %endif
 
-%if ! %{scard}
-	 rm -f $RPM_BUILD_ROOT/usr/share/openssh/Ssh.bin
-%endif
 
 %if ! %{no_gnome_askpass}
 install -m 755 -d $RPM_BUILD_ROOT%{_sysconfdir}/profile.d/
@@ -410,10 +396,6 @@ fi
 %attr(0644,root,root) %{_mandir}/man8/ssh-keysign.8*
 %attr(0644,root,root) %{_mandir}/man8/ssh-pkcs11-helper.8*
 %attr(0644,root,root) %{_mandir}/man8/ssh-sk-helper.8*
-%endif
-%if %{scard}
-%attr(0755,root,root) %dir %{_datadir}/openssh
-%attr(0644,root,root) %{_datadir}/openssh/Ssh.bin
 %endif
 
 %files clients
