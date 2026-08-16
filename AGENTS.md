@@ -51,6 +51,25 @@ docker run --rm -v .:/data elssh:el8
 - `.github/workflows/build-images.yml` — manually triggered (`workflow_dispatch`), builds Docker images for each EL version and pushes to `ghcr.io`.
 - `.github/workflows/build-rpm.yml` — runs on `v*` tags, builds RPMs inside Docker containers and creates a GitHub release.
 
+## Linting & formatting
+
+All shell scripts (`*.sh`) must pass `shellcheck` and `shfmt` before committing:
+
+```bash
+# Lint (warnings are errors)
+shellcheck -S warning compile.sh pullsrc.sh
+
+# Format check (must produce no diff)
+shfmt -d -i 0 -bn -ci compile.sh pullsrc.sh
+
+# Auto-fix formatting in-place
+shfmt -w -i 0 -bn -ci compile.sh pullsrc.sh
+```
+
+- **shellcheck** `-S warning`: treat warnings as failures; informational/style notes may be suppressed inline with `# shellcheck disable=SCxxxx`.
+- **shfmt** `-i 0 -bn -ci`: tabs for indentation (no extra indent), binary operators (`&&`, `||`, `|`) at start of next line, case body indented.
+- Both tools must exit 0 before any commit touching `*.sh` files.
+
 ## Gitignore
 
 `*-local*` is gitignored — version-local.env, editor swap files, etc. `*.tar.gz` is gitignored everywhere, including `downloads/`. Generated RPMs go to `output/` (also gitignored).

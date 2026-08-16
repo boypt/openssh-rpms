@@ -11,7 +11,7 @@ trap 'echo -e "Aborted, error $? in command: $BASH_COMMAND"; trap ERR; exit 1' E
 # Set magic variables for current file & dir
 __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 __file="${__dir}/$(basename "${BASH_SOURCE[0]}")"
-__base="$(basename ${__file} .sh)"
+__base="$(basename "${__file}" .sh)"
 __root="$(cd "$(dirname "${__dir}")" && pwd)" # <-- change this as it depends on your app
 
 arg1="${1:-}"
@@ -20,57 +20,61 @@ arg1="${1:-}"
 # allow command fail:
 # fail_command || true
 
+# shellcheck disable=SC1091
 source version.env
+# shellcheck disable=SC1091
 [[ -f version-local.env ]] && source version-local.env
 
 OPENSSHMIR=https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable
 OPENSSLMIR=https://www.openssl.org/source/
+# shellcheck disable=SC2153
 OPENSSLMIR=${GH_PROXY:-}https://github.com/openssl/openssl/releases/download/openssl-${OPENSSLVER}/
 ASKPASSMIR=https://src.fedoraproject.org/repo/pkgs/openssh/x11-ssh-askpass-1.2.4.1.tar.gz/8f2e41f3f7eaa8543a2440454637f3c3
 PERLMIR=https://www.cpan.org/src/5.0
 
 LATEST_OPENSSH() {
-    curl -s "$OPENSSHMIR/" 2>/dev/null | \
-        grep -o 'openssh-[0-9.]*p[0-9]*\.tar\.gz' | \
-        sed 's/openssh-//; s/\.tar\.gz//' | \
-        sort -Vu | tail -1 || true
+	curl -s "$OPENSSHMIR/" 2>/dev/null \
+		| grep -o 'openssh-[0-9.]*p[0-9]*\.tar\.gz' \
+		| sed 's/openssh-//; s/\.tar\.gz//' \
+		| sort -Vu | tail -1 || true
 }
 
 if [[ $arg1 == "--latest" ]]; then
-    latest=$(LATEST_OPENSSH)
-    current="${OPENSSHVER}"
-    echo "Current version: $current"
-    echo "Latest  version: $latest"
-    if [[ "$latest" == "$current" ]]; then
-        echo "Already up to date."
-    else
-        echo "NEW VERSION AVAILABLE: $latest"
-    fi
-    exit 0
+	latest=$(LATEST_OPENSSH)
+	# shellcheck disable=SC2153
+	current="${OPENSSHVER}"
+	echo "Current version: $current"
+	echo "Latest  version: $latest"
+	if [[ "$latest" == "$current" ]]; then
+		echo "Already up to date."
+	else
+		echo "NEW VERSION AVAILABLE: $latest"
+	fi
+	exit 0
 fi
 
 mkdir -p downloads
 pushd downloads
 if [[ ! -f $OPENSSLSRC && ${DOCKERBUILD:-0} == 0 ]]; then
-  echo "Get:" $OPENSSLMIR/$OPENSSLSRC
-  wget --no-check-certificate $OPENSSLMIR/$OPENSSLSRC || \
-	  echo "!!! Please download $OPENSSLSRC in $PWD by yourself."
+	echo "Get:" "$OPENSSLMIR"/"$OPENSSLSRC"
+	wget --no-check-certificate "$OPENSSLMIR"/"$OPENSSLSRC" \
+		|| echo "!!! Please download $OPENSSLSRC in $PWD by yourself."
 fi
 
 if [[ ! -f $OPENSSHSRC && ${DOCKERBUILD:-0} == 0 ]]; then
-  echo Get: $OPENSSHMIR/$OPENSSHSRC
-  wget --no-check-certificate $OPENSSHMIR/$OPENSSHSRC || \
-	  echo "!!! Please download $OPENSSHSRC in $PWD by yourself."
+	echo Get: "$OPENSSHMIR"/"$OPENSSHSRC"
+	wget --no-check-certificate "$OPENSSHMIR"/"$OPENSSHSRC" \
+		|| echo "!!! Please download $OPENSSHSRC in $PWD by yourself."
 fi
 
 if [[ ! -f $ASKPASSSRC && ${DOCKERBUILD:-0} == 0 ]]; then
-  echo Get: $ASKPASSMIR/$ASKPASSSRC
-  wget --no-check-certificate $ASKPASSMIR/$ASKPASSSRC || \
-	  echo "!!! Please download $ASKPASSSRC in $PWD by yourself."
+	echo Get: "$ASKPASSMIR"/"$ASKPASSSRC"
+	wget --no-check-certificate "$ASKPASSMIR"/"$ASKPASSSRC" \
+		|| echo "!!! Please download $ASKPASSSRC in $PWD by yourself."
 fi
 
-if [[ $($__dir/compile.sh GETEL) == "el5" && ${DOCKERBUILD:-0} == 1 && ! -f $PERLSRC ]]; then
-  echo Get: $PERLMIR/$PERLSRC
-  wget --no-check-certificate $PERLMIR/$PERLSRC || \
-	  echo "!!! Please download $PERLSRC in $PWD by yourself."
+if [[ $("$__dir"/compile.sh GETEL) == "el5" && ${DOCKERBUILD:-0} == 1 && ! -f $PERLSRC ]]; then
+	echo Get: "$PERLMIR"/"$PERLSRC"
+	wget --no-check-certificate "$PERLMIR"/"$PERLSRC" \
+		|| echo "!!! Please download $PERLSRC in $PWD by yourself."
 fi
