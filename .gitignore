@@ -1,5 +1,6 @@
 BUILD/
 output/
+.*
 *-local*
 *.orig
 *.swp
