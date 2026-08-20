@@ -19,12 +19,13 @@ if [ "$RELEASE_VER" != ".el5" ]; then
         EPEL_MIRROR="http://archives.fedoraproject.org/pub/archive/epel"
     fi
 else
+    # EL5 Python 2.4 cannot handle HTTPS redirects, use HTTP mirrors only
     if [ "$MIRROR" != "0" ]; then
         CENTOS_MIRROR="http://archive.kernel.org/centos-vault"
         EPEL_MIRROR="http://mirrors.aliyun.com/epel-archive"
     else
         CENTOS_MIRROR="http://archive.kernel.org/centos-vault"
-        EPEL_MIRROR="http://archives.fedoraproject.org/pub/archive/epel"
+        EPEL_MIRROR="http://mirrors.aliyun.com/epel-archive"
     fi
 fi
 
