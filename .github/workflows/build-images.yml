@@ -31,7 +31,7 @@ jobs:
               VERSION_NUM=7
               MIRROR=0
           - tag_suffix: el8
-            dockerfile: ./docker/Dockerfile.centos
+            dockerfile: ./docker/Dockerfile.centos-stream
             build_args: |
               VERSION_NUM=8
               MIRROR=0
@@ -55,7 +55,7 @@ jobs:
 
       - name: Replace Mirror URL
         run: |
-          sed -i 's|mirrors.\+\.cn|mirror.centos.org|g' ./docker/*
+          sed -i -E 's|mirrors\.[^/]+|mirror.centos.org|g' ./docker/*
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -111,7 +111,7 @@ jobs:
 
       - name: Replace Mirror URL
         run: |
-          sed -i 's|mirrors.\+\.cn|mirror.centos.org|g' ./docker/*
+          sed -i -E 's|mirrors\.[^/]+|mirror.centos.org|g' ./docker/*
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4

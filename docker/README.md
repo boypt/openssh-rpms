@@ -69,7 +69,7 @@ docker run --rm -v .:/data -e "UOS20=1" elssh:el7
 #### For EL8 (CentOS 8 / RHEL 8 / Rocky 8 / AlmaLinux 8)
 
 ```bash
-docker build -t elssh:el8 -f ./docker/Dockerfile.centos --build-arg VERSION_NUM=8 --build-arg MIRROR=0 .
+docker build -t elssh:el8 -f ./docker/Dockerfile.centos-stream --build-arg VERSION_NUM=8 --build-arg MIRROR=0 .
 docker run --rm -v .:/data elssh:el8
 ```
 
@@ -115,6 +115,8 @@ docker run --rm -v .:/data --platform linux/arm64 elssh_aarch64:el9
 | `M32` (EL5 only)  | 0 or 1 | `0` = 64-bit, `1` = 32-bit |
 | `UOS20`           | 0 or 1 | `1` = build the UOS 20 variant (EL7 image); enables the kernel-panic patch and prefixes `PKGREL` with `uos20.` |
 
+> Note: Amazon Linux / openEuler / Rocky Linux 的独立 Dockerfile 已合并至通用 EL 镜像（通过 glibc 兼容复用 EL8/EL9），不再单独维护。
+
 **Example for users in China:**
 
 Add `--build-arg MIRROR=1` to the `docker build` command.
@@ -151,7 +153,7 @@ Each subdirectory contains the generated `.rpm` files (including debuginfo if av
 ```bash
 env ALL=1 ./pullsrc.sh
 
-docker build -t elssh:el8 -f ./docker/Dockerfile.centos --build-arg VERSION_NUM=8 --build-arg MIRROR=0 .
+docker build -t elssh:el8 -f ./docker/Dockerfile.centos-stream --build-arg VERSION_NUM=8 --build-arg MIRROR=0 .
 docker run --rm -v .:/data elssh:el8
 
 docker build -t elssh:el9 -f ./docker/Dockerfile.centos-stream --build-arg VERSION_NUM=9 --build-arg MIRROR=0 .

@@ -11,16 +11,10 @@ COPY ./docker/ /data/docker/
 
 RUN export MIRROR="$MIRROR" && \
     bash ./docker/modify_yum_source.sh && \
-    if [ "$VERSION_NUM" = "8" ]; then \
-        yum install -y perl perl-IPC-Cmd perl-Time-Piece systemd-devel openssl-devel && \
-        yum install -y 'dnf-command(config-manager)' && \
-        yum config-manager --set-enabled powertools; \
-    elif [ "$VERSION_NUM" = "7" ]; then \
+    if [ "$VERSION_NUM" = "7" ]; then \
         yum install -y systemd-devel perl perl-IPC-Cmd perl-Time-Piece ;\
     elif [ "$VERSION_NUM" = "6" ]; then \
         yum install -y util-linux-ng perl perl-IPC-Cmd perl-Time-Piece ;\
-    elif [ "$VERSION_NUM" = "5" ]; then \
-        yum install -y gcc44; \
     fi && \
     yum install -y wget autoconf automake gcc make rpm-build pam-devel krb5-devel zlib-devel libXt-devel libX11-devel gtk2-devel e2fsprogs-devel && \
     yum clean all && \
