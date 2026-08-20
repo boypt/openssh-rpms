@@ -41,15 +41,17 @@ docker run --rm -v .:/data elssh:el8
 - **EL8 and EL9 both use `el7/`** as the spec directory, since they share systemd. `compile.sh` GUESS_DIST returns `el7` for all versions >= EL7.
 - EL6 uses `el6/` (SysVinit).
 - EL5 uses `el5/` (SysVinit, requires Perl bootstrap for building OpenSSL).
+- **Supported architectures**: `x86_64` for all EL versions; `aarch64` for EL7/8/9 and UOS20 via per-arch tags (`aarch64_el7`, `aarch64_el8`, `aarch64_el9`). Docker tags are per-arch (e.g. `ghcr.io/boypt/openssh-rpms:aarch64_el7`), not multi-arch manifests.
 - `WITH_OPENSSL` auto-detection: for `el7` (which covers EL7/8/9), if system OpenSSL >= 3, defaults to `1` (system), otherwise `2` (static).
 - `compile.sh` has subcommands: `GETEL` (print detected distro), `GETRPM` (list RPM paths), `RPMDIR` (print RPM output dir).
 - `el7/SPECS/` has two spec files: `openssh.spec` (default, systemd) and `openssh.initv.spec` (SysVinit). The default spec is selected via `SPECFILE` env var. The UOS 20 build uses the default spec with `UOS20=1`.
 - `docker/docker_compile.sh` is the entrypoint inside Docker images — it copies the appropriate `el*` dir to `/BUILD` and runs `compile.sh` against it.
+- `docker/modify_yum_source.sh` handles vault mirrors; for `aarch64` it appends `/altarch` (CentOS AltArch vault, e.g. `.../centos-vault/altarch/7.9.2009/`). For EL5 `EPEL` always uses `http://mirrors.aliyun.com/epel-archive` (avoids Python 2.4 TLS 1.0 → 302 → https failure on `archives.fedoraproject.org`).
 
 ## CI
 
-- `.github/workflows/build-images.yml` — manually triggered (`workflow_dispatch`), builds Docker images for each EL version and pushes to `ghcr.io`.
-- `.github/workflows/build-rpm.yml` — runs on `v*` tags, builds RPMs inside Docker containers and creates a GitHub release.
+- `.github/workflows/build-images.yml` — manually triggered (`workflow_dispatch`), builds Docker images and pushes to `ghcr.io`. Matrix: `build-amd64` (5 images: `el5`, `el6`, `el7`, `el8`, `el9` on `ubuntu-latest`) + `build-arm64` (3 images: `aarch64_el7`, `aarch64_el8`, `aarch64_el9` on `ubuntu-latest` with `setup-qemu-action` + `platforms: linux/arm64`). Cache: `type=gha`.
+- `.github/workflows/build-rpm.yml` — runs on `v*` tags, builds RPMs inside Docker containers and creates a GitHub release. Jobs: `build-arm64` (`ubuntu-24.04-arm`, natively runs `aarch64_*` images), `build-amd64` (`ubuntu-latest`), `build-el5` (`ubuntu-latest`, handles `m32` for i686). Final `release` needs all three and zips artifacts as `openssh_<tag>_<artifact>.zip`.
 
 ## Linting & formatting
 

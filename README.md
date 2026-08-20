@@ -6,26 +6,28 @@ Similar Project: [Backport OpenSSH for Debian / Ubuntu distros](https://github.c
 
 ## Supported (tested) Distro:
 
-| Distro         | Version        | Recommanded EL RPMs         |
-|----------------|----------------|-----------------------------|
-| CentOS         | 5              | EL 5                        |
-| CentOS         | 6              | EL 6                        |
-| CentOS         | 7              | EL 7                        |
-| CentOS         | 8              | EL 8                        |
-| CentOS Stream  | 8              | EL 8                        |
-| CentOS Stream  | 9              | EL 9                        |
-| Rocky Linux    | 8              | EL 8                        |
-| Rocky Linux    | 9              | EL 9                        |
-| Amazon Linux   | 1              | EL 6                        |
-| Amazon Linux   | 2              | EL 7                        |
-| Amazon Linux   | 2023           | EL 9                        |
-| UnionTech UOS  | V20            | **UOS20**                   |
-| openEuler      | 20.03          | EL 8                        |
-| openEuler      | 22.03          | EL 8                        |
-| openEuler      | 24.03          | EL 9                        |
-| AnolisOS       | 7              | EL 7                        |
-| AnolisOS       | 8              | EL 8                        |
-| AnolisOS       | 2023           | EL 9                        |
+| Distro         | Version        | Arch                | Recommanded EL RPMs               |
+|----------------|----------------|---------------------|-----------------------------------|
+| CentOS         | 5              | x86_64 / i686       | EL 5                              |
+| CentOS         | 6              | x86_64              | EL 6                              |
+| CentOS         | 7              | x86_64 / aarch64    | EL 7 (`aarch64_el7`)              |
+| CentOS         | 8              | x86_64 / aarch64    | EL 8 (`aarch64_el8`)              |
+| CentOS Stream  | 8              | x86_64 / aarch64    | EL 8 (`aarch64_el8`)              |
+| CentOS Stream  | 9              | x86_64 / aarch64    | EL 9 (`aarch64_el9`)              |
+| Rocky Linux    | 8              | x86_64 / aarch64    | EL 8 (`aarch64_el8`)              |
+| Rocky Linux    | 9              | x86_64 / aarch64    | EL 9 (`aarch64_el9`)              |
+| Amazon Linux   | 1              | x86_64              | EL 6                              |
+| Amazon Linux   | 2              | x86_64 / aarch64    | EL 7 (`aarch64_el7`)              |
+| Amazon Linux   | 2023           | x86_64 / aarch64    | EL 9 (`aarch64_el9`)              |
+| UnionTech UOS  | V20            | x86_64 / aarch64    | **UOS20** (`aarch64_el7`)         |
+| openEuler      | 20.03          | x86_64 / aarch64    | EL 8 (`aarch64_el8`)              |
+| openEuler      | 22.03          | x86_64 / aarch64    | EL 8 (`aarch64_el8`)              |
+| openEuler      | 24.03          | x86_64 / aarch64    | EL 9 (`aarch64_el9`)              |
+| AnolisOS       | 7              | x86_64 / aarch64    | EL 7 (`aarch64_el7`)              |
+| AnolisOS       | 8              | x86_64 / aarch64    | EL 8 (`aarch64_el8`)              |
+| AnolisOS       | 2023           | x86_64 / aarch64    | EL 9 (`aarch64_el9`)              |
+
+> `aarch64` RPMs are built from the same `el7/` spec via `aarch64_el7/8/9` Docker tags (`ghcr.io/boypt/openssh-rpms:aarch64_el7` etc., QEMU-built, per-arch tags — not multi-arch manifests).
 
 ## Project Structure 
 
