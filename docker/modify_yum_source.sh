@@ -37,12 +37,13 @@ modify_el7() {
     disable_fastestmirror
     sed -e '/^mirrorlist=/s|^|#|g' \
         -e "s|^#baseurl=http://mirror.centos.org/centos/\$releasever/|baseurl=${CENTOS_MIRROR}${ALTARCH}/7.9.2009/|g" \
+        -e "s|^#baseurl=http://mirror.centos.org/altarch/\$releasever/|baseurl=${CENTOS_MIRROR}/altarch/7.9.2009/|g" \
         -i.bak /etc/yum.repos.d/CentOS-*.repo
     yum install -y epel-release
     sed -e '/^mirrorlist=/s|^|#|g' \
         -e 's|^metalink|#metalink|' \
         -e "s|^#baseurl=http://download.fedoraproject.org/pub/epel/7/|baseurl=${EPEL_MIRROR}/7/|g" \
-        -i.bak /etc/yum.repos.d/epel*.repo
+        -i.bak /etc/yum.repos.d/epel*.repo 2>/dev/null || true
     rm -rf /var/cache/yum/
     yum makecache fast
 }
@@ -58,7 +59,7 @@ modify_el6() {
         -e 's|^metalink|#metalink|' \
         -e "s|^# *baseurl=http://mirror.centos.org/centos/6/sclo|baseurl=${CENTOS_MIRROR}/6.10/sclo|g" \
         -e "s|^#baseurl=http://download.fedoraproject.org/pub/epel/6/|baseurl=${EPEL_MIRROR}/6/|g" \
-        -i.bak /etc/yum.repos.d/epel*.repo /etc/yum.repos.d/*scl*.repo
+        -i.bak /etc/yum.repos.d/epel*.repo /etc/yum.repos.d/*scl*.repo 2>/dev/null || true
     rm -rf /var/cache/yum/
     yum makecache fast
 }
@@ -73,7 +74,7 @@ modify_el5() {
     sed -e "/^mirrorlist/s|^|#|g" \
         -e 's|^metalink|#metalink|' \
         -e "s|^#baseurl=.\+\$|baseurl=${EPEL_MIRROR}/5/\$basearch|g" \
-        -i.bak /etc/yum.repos.d/epel*.repo
+        -i.bak /etc/yum.repos.d/epel*.repo 2>/dev/null || true
     rm -rf /var/cache/yum/
     yum makecache
 }
