@@ -84,15 +84,16 @@ join_baseurls() {
 	printf '%s' "$out"
 }
 
-# Rewrite "#baseurl=<prefix>..." lines into a SINGLE baseurl= line with
-# space-separated URLs (DNF 4.x requires one `baseurl=` with a `list` of URLs;
-# repeated `baseurl=` keys overwrite — only the last survives — see
-# dnf.readthedocs.io/en/stable/conf_ref.html `baseurl` is `list` type:
-# "List of URLs ... URLs are tried in the listed order" and
-# "list ... separated by space or comma". YUM (el5/el6) also accepts this form,
-# so we use it uniformly. Each URL keeps the remainder after <prefix>; <suffix>
-# is inserted between mirror and remainder (e.g. the vault version). Works on
-# bash 3.2 (el5).
+# For every "baseurl=<prefix>..." line (whatever its content or comment
+# format): comment the original line out by prepending "#", then add our own
+# SINGLE active "baseurl=<url1> <url2> ..." line right below it. This makes
+# the rewrite independent of how the repo file wrote the line ("#baseurl=",
+# "# baseurl=", or an active "baseurl="). DNF 4.x `baseurl` is `list` type:
+# space-separated URLs on ONE line; repeated `baseurl=` keys overwrite — only
+# the last survives — so our added line wins (see dnf.readthedocs.io/
+# conf_ref.html. YUM also accepts this form). Each added URL keeps the
+# remainder after <prefix>; <suffix> is inserted between mirror and remainder
+# (e.g. the vault version). Works on bash 3.2 (el5).
 # Usage: rewrite_baseurls <glob> <prefix> <suffix> <array_name>
 #   e.g. rewrite_baseurls "/etc/yum.repos.d/CentOS-*.repo" \
 #        "http://mirror.centos.org/\$contentdir" "" VAULT
@@ -103,16 +104,15 @@ rewrite_baseurls() {
 	for file in $glob; do
 		out=""
 		while IFS= read -r line || [ -n "$line" ]; do
-			if [[ $line == "#baseurl=$prefix"* || $line == "# baseurl=$prefix"* ]]; then
-				rest="${line#"# baseurl=$prefix"}"
-				rest="${rest#"#baseurl=$prefix"}"
+			if [[ $line == *"baseurl=$prefix"* ]]; then
+				rest="${line##*"$prefix"}"
 				urls=""
 				sep=""
 				for m in "${arr[@]}"; do
 					urls+="${sep}${m}${suffix}${rest}"
 					sep=" "
 				done
-				out+="baseurl=${urls}\n"
+				out+="#${line}\nbaseurl=${urls}\n"
 			else
 				out+="$line\n"
 			fi
@@ -135,19 +135,16 @@ modify_el8() {
 
 modify_el7() {
 	disable_fastestmirror
-	local baseurl alturl epelurl
-	baseurl=$(join_baseurls "${ALTARCH}/7.9.2009/" VAULT)
-	alturl=$(join_baseurls "/altarch/7.9.2009/" VAULT)
-	epelurl=$(join_baseurls "/7/" EPEL)
 	sed -e '/^mirrorlist=/s|^|#|g' \
-		-e "s|^#baseurl=http://mirror.centos.org/centos/\$releasever/|${baseurl}|g" \
-		-e "s|^#baseurl=http://mirror.centos.org/altarch/\$releasever/|${alturl}|g" \
+		-e 's|^metalink|#metalink|' \
 		-i.bak /etc/yum.repos.d/CentOS-*.repo
+	rewrite_baseurls "/etc/yum.repos.d/CentOS-*.repo" "http://mirror.centos.org/centos/\$releasever" "${ALTARCH}/7.9.2009" VAULT
+	rewrite_baseurls "/etc/yum.repos.d/CentOS-*.repo" "http://mirror.centos.org/altarch/\$releasever" "/altarch/7.9.2009" VAULT
 	yum install -y epel-release
 	sed -e '/^mirrorlist=/s|^|#|g' \
 		-e 's|^metalink|#metalink|' \
-		-e "s|^#baseurl=http://download.fedoraproject.org/pub/epel/7/|${epelurl}|g" \
 		-i.bak /etc/yum.repos.d/epel*.repo 2>/dev/null || true
+	rewrite_baseurls "/etc/yum.repos.d/epel*.repo" "http://download.fedoraproject.org/pub/epel/7" "/7" EPEL
 	rm -rf /var/cache/yum/
 	yum makecache fast
 }
@@ -171,8 +168,6 @@ modify_el6() {
 
 modify_el5() {
 	disable_fastestmirror
-	local epel
-	epel=$(join_baseurls "/5/\$basearch" EPEL)
 	sed -e "s|^mirrorlist=|#mirrorlist=|g" \
 		-e 's|^metalink|#metalink|' \
 		-i.bak /etc/yum.repos.d/*.repo
@@ -181,8 +176,8 @@ modify_el5() {
 	yum install -y epel-release
 	sed -e "/^mirrorlist/s|^|#|g" \
 		-e 's|^metalink|#metalink|' \
-		-e "s|^#baseurl=.\+\$|${epel}|g" \
 		-i.bak /etc/yum.repos.d/epel*.repo 2>/dev/null || true
+	rewrite_baseurls "/etc/yum.repos.d/epel*.repo" "http://download.fedoraproject.org/pub/epel/5" "/5" EPEL
 	rm -rf /var/cache/yum/
 	yum makecache
 }
