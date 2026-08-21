@@ -46,7 +46,7 @@ docker run --rm -v .:/data elssh:el8
 - `compile.sh` has subcommands: `GETEL` (print detected distro), `GETRPM` (list RPM paths), `RPMDIR` (print RPM output dir).
 - `el7/SPECS/` has two spec files: `openssh.spec` (default, systemd) and `openssh.initv.spec` (SysVinit). The default spec is selected via `SPECFILE` env var. The UOS 20 build uses the default spec with `UOS20=1`.
 - `docker/docker_compile.sh` is the entrypoint inside Docker images — it copies the appropriate `el*` dir to `/BUILD` and runs `compile.sh` against it.
-- `docker/modify_yum_source.sh` handles vault mirrors; for `aarch64` it appends `/altarch` (CentOS AltArch vault, e.g. `.../centos-vault/altarch/7.9.2009/`). For EL5 `EPEL` always uses `http://mirrors.aliyun.com/epel-archive` (avoids Python 2.4 TLS 1.0 → 302 → https failure on `archives.fedoraproject.org`).
+- `docker/modify_vault_source.sh` handles vault mirrors; for `aarch64` it appends `/altarch` (CentOS AltArch vault, e.g. `.../centos-vault/altarch/7.9.2009/`). For EL5 `EPEL` always uses `http://mirrors.aliyun.com/epel-archive` (avoids Python 2.4 TLS 1.0 → 302 → https failure on `archives.fedoraproject.org`).
 
 ## CI
 

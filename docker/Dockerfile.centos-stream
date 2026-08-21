@@ -9,15 +9,14 @@ WORKDIR /data
 # Copy all files
 COPY ./docker/ /data/docker/
 
-# CentOS 8 stream had NO valid mirrors; modify_yum_source.sh rewrites the
+# CentOS 8 stream had NO valid mirrors; modify_vault_source.sh rewrites the
 # repo baseurls for .el8 (auto-detected via rpm --eval '%{?dist}').
 RUN if [ "$VERSION_NUM" = "8" ]; then \
-        bash ./docker/modify_yum_source.sh && \
+        bash ./docker/modify_vault_source.sh && \
         yum install -y perl 'dnf-command(config-manager)' && \
         yum config-manager --set-enabled powertools; \
     else \
-        yum install -y perl && \
-        perl /data/docker/modify_dnf_source.pl /etc/yum.repos.d/*.repo; \
+        bash /data/docker/modify_live_source.sh /etc/yum.repos.d/*.repo; \
     fi && \
     yum clean all && yum makecache && \
     yum install -y wget autoconf automake gcc make perl rpm-build pam-devel krb5-devel zlib-devel openssl-devel systemd-devel e2fsprogs-devel && \

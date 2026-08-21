@@ -8,7 +8,7 @@ WORKDIR /data
 # Copy all files
 COPY ./docker/ /data/docker/
 
-RUN bash ./docker/modify_yum_source.sh && \
+RUN bash ./docker/modify_vault_source.sh && \
     if [ "$VERSION_NUM" = "7" ]; then \
         yum install -y systemd-devel perl perl-IPC-Cmd perl-Time-Piece ;\
     elif [ "$VERSION_NUM" = "6" ]; then \
