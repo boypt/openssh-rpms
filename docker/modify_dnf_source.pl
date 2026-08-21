@@ -5,9 +5,10 @@ use warnings;
 use autodie;
 
 my @mirrors = (
-	'https://vault.centos.org/centos-stream',
-	'https://mirrors.ustc.edu.cn/centos-stream',
 	'https://mirrors.aliyun.com/centos-stream',
+	'https://mirrors.ustc.edu.cn/centos-stream',
+	'https://ftp.iij.ad.jp/pub/linux/centos-stream',
+	'https://ftp.yandex.ru/centos-stream',
 );
 
 if (@ARGV < 1) {
