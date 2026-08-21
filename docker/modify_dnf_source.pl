@@ -1,10 +1,22 @@
 #!/usr/bin/perl
 
+# Rewrite DNF repository baseurls for still-supported CentOS Stream EL
+# (e.g. 9-stream). Uses multiple failover baseurls; vault handling for
+# EOL 8-stream lives in docker/modify_yum_source.sh.
+#
+# Note on mirror base paths: each entry is a prefix; the script appends
+# "/${path}" (e.g. "9-stream/BaseOS/x86_64/os") to build the final URL.
+# We use https://mirrors.kernel.org/centos (kernel.org official mirror) as
+# the second entry; https://mirrors.kernel.org/centos-stream is an equally
+# valid alternative that also resolves to the same kernel.org edge mirror.
+
 use strict;
 use warnings;
 use autodie;
 
 my @mirrors = (
+	'https://mirror.stream.centos.org',
+	'https://mirrors.kernel.org/centos',
 	'https://mirrors.aliyun.com/centos-stream',
 	'https://mirrors.ustc.edu.cn/centos-stream',
 	'https://ftp.iij.ad.jp/pub/linux/centos-stream',
