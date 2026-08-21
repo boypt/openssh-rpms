@@ -16,5 +16,5 @@ if [[ ${WITH_OPENSSL+x} == "" ]]; then
 	fi
 fi
 
-cp -r $ELDIR $DOCKER_BUILD_DIR
-./compile.sh $DOCKER_BUILD_DIR/$ELDIR
+cp -r "$ELDIR" $DOCKER_BUILD_DIR
+./compile.sh "$DOCKER_BUILD_DIR/$ELDIR"

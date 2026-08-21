@@ -13,8 +13,11 @@
 #
 # Mirror base URLs are kept in the arrays below (no version suffix, no trailing
 # slash) so they are easy to add/remove when a mirror goes stale. Use the
-# join_baseurls helper to turn an array + suffix into the "baseurl=..." lines
-# that the sed substitutions expect.
+# join_baseurls / rewrite_baseurls helpers to turn an array + suffix into a
+# SINGLE "baseurl=<url1> <url2> ..." line (DNF 4.x `baseurl` is `list` type:
+# space-separated URLs on ONE line; repeated `baseurl=` keys overwrite — only
+# the last survives — see dnf.readthedocs.io/conf_ref.html. YUM also accepts
+# this form.)
 
 RELEASE_VER=$(rpm --eval '%{?dist}')
 [ -z "$RELEASE_VER" ] && RELEASE_VER=".el5"
@@ -58,8 +61,10 @@ disable_fastestmirror() {
 	sed -e 's|enabled=1|enabled=0|' -i /etc/yum/pluginconf.d/fastestmirror.conf 2>/dev/null || true
 }
 
-# Join array elements into "baseurl=<mirror><suffix>" lines separated by \n
-# (the literal \n is interpreted as a newline by GNU sed in the replacement).
+# Join array elements into a SINGLE "baseurl=<url1> <url2> ..." line
+# (DNF 4.x `baseurl` is `list` type: space-or-comma-separated on ONE line;
+# repeated `baseurl=` keys overwrite — only the last survives — see
+# dnf.readthedocs.io/conf_ref.html. YUM also accepts this form.)
 # Usage: join_baseurls <suffix> <array_name>
 #   e.g. join_baseurls "/7.9.2009" VAULT
 # Uses eval instead of a nameref so it works on bash 4.2 (CentOS 7).
@@ -68,22 +73,61 @@ join_baseurls() {
 	local arr_name="$2"
 	local arr
 	eval "arr=(\"\${${arr_name}[@]}\")"
-	local out=""
+	local out="baseurl="
 	local sep=""
 	for m in "${arr[@]}"; do
-		out+="${sep}baseurl=${m}${suffix}"
-		sep="\n"
+		out+="${sep}${m}${suffix}"
+		sep=" "
 	done
 	printf '%s' "$out"
 }
 
+# Rewrite "#baseurl=<prefix>..." lines into a SINGLE baseurl= line with
+# space-separated URLs (DNF 4.x requires one `baseurl=` with a `list` of URLs;
+# repeated `baseurl=` keys overwrite — only the last survives — see
+# dnf.readthedocs.io/en/stable/conf_ref.html `baseurl` is `list` type:
+# "List of URLs ... URLs are tried in the listed order" and
+# "list ... separated by space or comma". YUM (el5/el6) also accepts this form,
+# so we use it uniformly. Each URL keeps the remainder after <prefix>; <suffix>
+# is inserted between mirror and remainder (e.g. the vault version). Works on
+# bash 3.2 (el5).
+# Usage: rewrite_baseurls <glob> <prefix> <suffix> <array_name>
+#   e.g. rewrite_baseurls "/etc/yum.repos.d/CentOS-*.repo" \
+#        "http://mirror.centos.org/\$contentdir" "" VAULT
+rewrite_baseurls() {
+	local glob="$1" prefix="$2" suffix="$3" arr_name="$4"
+	local arr out line rest m file urls sep
+	eval "arr=(\"\${${arr_name}[@]}\")"
+	for file in $glob; do
+		out=""
+		while IFS= read -r line || [ -n "$line" ]; do
+			if [[ $line == "#baseurl=$prefix"* ]]; then
+				rest="${line#"#baseurl=$prefix"}"
+				urls=""
+				sep=""
+				for m in "${arr[@]}"; do
+					urls+="${sep}${m}${suffix}${rest}"
+					sep=" "
+				done
+				out+="baseurl=${urls}\n"
+			else
+				out+="$line\n"
+			fi
+		done <"$file"
+		printf '%b' "$out" >"$file"
+	done
+}
+
 modify_el8() {
 	disable_fastestmirror
-	local vault
-	vault=$(join_baseurls "" VAULT)
 	sed -e 's|^mirrorlist=|#mirrorlist=|g' \
-		-e "s|^#baseurl=http://mirror.centos.org/\$contentdir|${vault}|g" \
+		-e 's|^metalink|#metalink|' \
 		-i.bak /etc/yum.repos.d/CentOS-*.repo
+	# EL8 GA repos use "$contentdir/$releasever" and EL8-stream repos use
+	# "$contentdir/$stream"; the remainder after the prefix (which contains
+	# $releasever or $stream) is preserved, so one rewrite covers both. Emits a
+	# single baseurl= line with space-separated URLs (DNF `list` type).
+	rewrite_baseurls "/etc/yum.repos.d/CentOS-*.repo" "http://mirror.centos.org/\$contentdir" "" VAULT
 }
 
 modify_el7() {
@@ -107,33 +151,30 @@ modify_el7() {
 
 modify_el6() {
 	disable_fastestmirror
-	local baseurl sclo epel
-	baseurl=$(join_baseurls "/6.10" VAULT_HTTP)
-	sclo=$(join_baseurls "/6.10/sclo" VAULT_HTTP)
-	epel=$(join_baseurls "/6/" EPEL)
 	sed -e "s|^mirrorlist=|#mirrorlist=|g" \
-		-e "s|^#baseurl=http://mirror.centos.org/centos/\$releasever|${baseurl}|g" \
-		-e "s|^#baseurl=http://mirror.centos.org/\$contentdir/\$releasever|${baseurl}|g" \
+		-e 's|^metalink|#metalink|' \
 		-i.bak /etc/yum.repos.d/CentOS-*.repo
+	rewrite_baseurls "/etc/yum.repos.d/CentOS-*.repo" "http://mirror.centos.org/centos/\$releasever" "/6.10" VAULT_HTTP
+	rewrite_baseurls "/etc/yum.repos.d/CentOS-*.repo" "http://mirror.centos.org/\$contentdir/\$releasever" "/6.10" VAULT_HTTP
 	yum install -y epel-release centos-release-scl-rh centos-release-scl
 	sed -e "s|^mirrorlist=|#mirrorlist=|g" \
 		-e 's|^metalink|#metalink|' \
-		-e "s|^# *baseurl=http://mirror.centos.org/centos/6/sclo|${sclo}|g" \
-		-e "s|^#baseurl=http://download.fedoraproject.org/pub/epel/6/|${epel}|g" \
 		-i.bak /etc/yum.repos.d/epel*.repo /etc/yum.repos.d/*scl*.repo 2>/dev/null || true
+	rewrite_baseurls "/etc/yum.repos.d/*scl*.repo" "http://mirror.centos.org/centos/6/sclo" "/6.10/sclo" VAULT_HTTP
+	rewrite_baseurls "/etc/yum.repos.d/epel*.repo" "http://download.fedoraproject.org/pub/epel/6" "/6" EPEL
 	rm -rf /var/cache/yum/
 	yum makecache fast
 }
 
 modify_el5() {
 	disable_fastestmirror
-	local baseurl epel
-	baseurl=$(join_baseurls "/5.11" VAULT_HTTP)
+	local epel
 	epel=$(join_baseurls "/5/\$basearch" EPEL)
 	sed -e "s|^mirrorlist=|#mirrorlist=|g" \
-		-e "s|^#baseurl=http://mirror.centos.org/centos/\$releasever|${baseurl}|g" \
-		-e "s|^#baseurl=http://mirror.centos.org/\$contentdir/\$releasever|${baseurl}|g" \
+		-e 's|^metalink|#metalink|' \
 		-i.bak /etc/yum.repos.d/*.repo
+	rewrite_baseurls "/etc/yum.repos.d/*.repo" "http://mirror.centos.org/centos/\$releasever" "/5.11" VAULT_HTTP
+	rewrite_baseurls "/etc/yum.repos.d/*.repo" "http://mirror.centos.org/\$contentdir/\$releasever" "/5.11" VAULT_HTTP
 	yum install -y epel-release
 	sed -e "/^mirrorlist/s|^|#|g" \
 		-e 's|^metalink|#metalink|' \
@@ -144,20 +185,20 @@ modify_el5() {
 }
 
 case $RELEASE_VER in
-	.el7)
-		modify_el7
-		;;
-	.el6)
-		modify_el6
-		;;
-	.el5)
-		modify_el5
-		;;
-	.el8)
-		modify_el8
-		;;
-	*)
-		echo "Unsupported dist: $RELEASE_VER, expected el5/el6/el7/el8"
-		exit 1
-		;;
+.el7)
+	modify_el7
+	;;
+.el6)
+	modify_el6
+	;;
+.el5)
+	modify_el5
+	;;
+.el8)
+	modify_el8
+	;;
+*)
+	echo "Unsupported dist: $RELEASE_VER, expected el5/el6/el7/el8"
+	exit 1
+	;;
 esac

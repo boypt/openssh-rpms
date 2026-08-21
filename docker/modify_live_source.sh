@@ -3,6 +3,10 @@
 # (e.g. 9-stream). Uses multiple failover baseurls; vault handling for
 # EOL 8-stream lives in docker/modify_vault_source.sh.
 #
+# DNF 4.x `baseurl` is `list` type: space-or-comma-separated URLs on ONE line;
+# repeated `baseurl=` keys overwrite (only the last survives) — see
+# dnf.readthedocs.io/conf_ref.html — so all mirrors go on a single baseurl= line.
+#
 # Note on mirror base paths: each entry is a prefix; the script appends
 # "/${path}" (e.g. "9-stream/BaseOS/x86_64/os") to build the final URL.
 # We use https://mirrors.kernel.org/centos (kernel.org official mirror) as
@@ -66,9 +70,15 @@ while [[ $# -gt 0 ]]; do
 				fi
 			fi
 			printf '%s\n' "$line"
+			# Single baseurl= line with all mirrors space-separated (DNF `list`
+			# type: repeated `baseurl=` keys overwrite, so one line is required).
+			urls=""
+			sep=""
 			for mirror in "${LIVE_MIRRORS[@]}"; do
-				printf 'baseurl=%s/%s\n' "$mirror" "$path"
+				urls+="${sep}${mirror}/${path}"
+				sep=" "
 			done
+			printf 'baseurl=%s\n' "$urls"
 		else
 			printf '%s\n' "$line"
 		fi
