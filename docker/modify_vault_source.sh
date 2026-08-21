@@ -123,6 +123,12 @@ rewrite_baseurls() {
 
 modify_el8() {
 	disable_fastestmirror
+	# Rewrite the repos BEFORE any dnf operation: the stream8/GA8 repo files
+	# still carry an active mirrorlist=http://mirrorlist.centos.org/... line,
+	# and that host is decommissioned (NXDOMAIN), so any dnf metadata refresh
+	# before the fixup aborts with "Couldn't resolve host name". (The
+	# dnf-plugins-core install for `dnf config-manager` lives in
+	# Dockerfile.centos-stream, AFTER this script.)
 	sed -e 's|^mirrorlist=|#mirrorlist=|g' \
 		-e 's|^metalink|#metalink|' \
 		-i.bak /etc/yum.repos.d/CentOS-*.repo
