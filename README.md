@@ -33,7 +33,7 @@ Similar Project: [Backport OpenSSH for Debian / Ubuntu distros](https://github.c
 
 - `pullsrc.sh`: Script to download source packages.
 - `compile.sh`: Script to build RPMs.
-- `version.env`: config file for variables (versions, release number, OPENSSL MODE, proxy ...)
+- `version.env`: config file for variables (versions, release number, OPENSSL MODE ...)
 
 The directory (`el5`, `el6`, `el7`) serve as functional templates for different environment types. The `openssh.spec` are modified based on the shipped spec file from OpenSSH project.
 
