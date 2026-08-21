@@ -112,7 +112,7 @@ docker run --rm -v .:/data --platform linux/arm64 elssh_aarch64:el9
 | `M32` (EL5 only)  | 0 or 1 | `0` = 64-bit, `1` = 32-bit |
 | `UOS20`           | 0 or 1 | `1` = build the UOS 20 variant (EL7 image); enables the kernel-panic patch and prefixes `PKGREL` with `uos20.` |
 
-> Note: Amazon Linux / openEuler / Rocky Linux 的独立 Dockerfile 已合并至通用 EL 镜像（通过 glibc 兼容复用 EL8/EL9），不再单独维护。
+> Note: Standalone Dockerfiles for Amazon Linux / openEuler / Rocky Linux have been consolidated into the generic EL images (reusing EL8/EL9 via glibc compatibility) and are no longer maintained separately.
 
 ## Output Location
 
