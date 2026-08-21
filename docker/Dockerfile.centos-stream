@@ -12,7 +12,7 @@ COPY ./docker/ /data/docker/
 # CentOS 8 stream had NO valid mirrors.
 RUN if [ "$VERSION_NUM" = "8" ]; then \
         sed -e 's|^mirrorlist=|#mirrorlist=|g' \
-            -e "s|^#baseurl=http://mirror.centos.org/\$contentdir|baseurl=https://mirrors.aliyun.com/centos-vault/8-stream/\nbaseurl=https://ftp.iij.ad.jp/pub/linux/centos-vault/8-stream/\nbaseurl=https://ftp.yandex.ru/centos/centos/8-stream/|g" \
+            -e "s|^#baseurl=http://mirror.centos.org/\$contentdir|baseurl=https://mirrors.aliyun.com/centos-vault\nbaseurl=https://ftp.iij.ad.jp/pub/linux/centos-vault\nbaseurl=https://ftp.yandex.ru/centos/centos|g" \
             -i.bak \
             /etc/yum.repos.d/CentOS-*.repo && \
         yum install -y perl 'dnf-command(config-manager)' && \
