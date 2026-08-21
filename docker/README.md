@@ -57,13 +57,13 @@ docker build -t elssh:el7 -f ./docker/Dockerfile.centos --build-arg VERSION_NUM=
 docker run --rm -v .:/data elssh:el7
 ```
 
-#### UOS 20 Variant (EL7-family)
+#### UOS 20 Variant (EL8)
 
-Reuse the EL7 image and pass `UOS20=1` to enable the kernel-panic fix in `sshd.c` and prefix `PKGREL` with `uos20-` (so the resulting RPMs are distinguishable from the standard build).
+Reuse the EL8 image (CentOS Stream 8, `el7/` spec via `GUESS_DIST` mapping) and pass `UOS20=1` to enable the kernel-panic fix in `sshd.c` and prefix `PKGREL` with `uos20.` (so the resulting RPMs are distinguishable from the standard build).
 
 ```bash
-docker build -t elssh:el7 -f ./docker/Dockerfile.centos --build-arg VERSION_NUM=7 .
-docker run --rm -v .:/data -e "UOS20=1" elssh:el7
+docker build -t elssh:el8 -f ./docker/Dockerfile.centos-stream --build-arg VERSION_NUM=8 .
+docker run --rm -v .:/data -e "UOS20=1" elssh:el8
 ```
 
 #### For EL8 (CentOS 8 / RHEL 8 / Rocky 8 / AlmaLinux 8)
@@ -110,7 +110,7 @@ docker run --rm -v .:/data --platform linux/arm64 elssh_aarch64:el9
 |-------------------|--------|-----------|
 | `VERSION_NUM`     | 6,7,8,9| Specifies the target EL version (used in most Dockerfiles) |
 | `M32` (EL5 only)  | 0 or 1 | `0` = 64-bit, `1` = 32-bit |
-| `UOS20`           | 0 or 1 | `1` = build the UOS 20 variant (EL7 image); enables the kernel-panic patch and prefixes `PKGREL` with `uos20.` |
+| `UOS20`           | 0 or 1 | `1` = build the UOS 20 variant (EL8 image); enables the kernel-panic patch and prefixes `PKGREL` with `uos20.` |
 
 > Note: Standalone Dockerfiles for Amazon Linux / openEuler / Rocky Linux have been consolidated into the generic EL images (reusing EL8/EL9 via glibc compatibility) and are no longer maintained separately.
 

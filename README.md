@@ -6,26 +6,26 @@ Similar Project: [Backport OpenSSH for Debian / Ubuntu distros](https://github.c
 
 ## Supported (tested) Distro:
 
-| Distro         | Version        | Arch                | Recommanded EL RPMs               |
-|----------------|----------------|---------------------|-----------------------------------|
-| CentOS         | 5              | x86_64 / i686       | EL 5                              |
-| CentOS         | 6              | x86_64              | EL 6                              |
-| CentOS         | 7              | x86_64 / aarch64    | EL 7 (`aarch64_el7`)              |
-| CentOS         | 8              | x86_64 / aarch64    | EL 8 (`aarch64_el8`)              |
-| CentOS Stream  | 8              | x86_64 / aarch64    | EL 8 (`aarch64_el8`)              |
-| CentOS Stream  | 9              | x86_64 / aarch64    | EL 9 (`aarch64_el9`)              |
-| Rocky Linux    | 8              | x86_64 / aarch64    | EL 8 (`aarch64_el8`)              |
-| Rocky Linux    | 9              | x86_64 / aarch64    | EL 9 (`aarch64_el9`)              |
-| Amazon Linux   | 1              | x86_64              | EL 6                              |
-| Amazon Linux   | 2              | x86_64 / aarch64    | EL 7 (`aarch64_el7`)              |
-| Amazon Linux   | 2023           | x86_64 / aarch64    | EL 9 (`aarch64_el9`)              |
-| UnionTech UOS  | V20            | x86_64 / aarch64    | **UOS20** (`aarch64_el7`)         |
-| openEuler      | 20.03          | x86_64 / aarch64    | EL 8 (`aarch64_el8`)              |
-| openEuler      | 22.03          | x86_64 / aarch64    | EL 8 (`aarch64_el8`)              |
-| openEuler      | 24.03          | x86_64 / aarch64    | EL 9 (`aarch64_el9`)              |
-| AnolisOS       | 7              | x86_64 / aarch64    | EL 7 (`aarch64_el7`)              |
-| AnolisOS       | 8              | x86_64 / aarch64    | EL 8 (`aarch64_el8`)              |
-| AnolisOS       | 2023           | x86_64 / aarch64    | EL 9 (`aarch64_el9`)              |
+| Distro         | Version        | Arch                | Recommanded EL RPMs                                                  |
+|================|================|=====================|======================================================================|
+| CentOS          | 5               | x86_64 / i686        | EL 5 (`rpm-el5-x86_64`, `rpm-el5-i686`)              |
+| CentOS          | 6               | x86_64               | EL 6 (`rpm-el6-x86_64`)                              |
+| CentOS          | 7               | x86_64 / aarch64     | EL 7 (`rpm-el7-x86_64`, `rpm-el7-aarch64`)           |
+| CentOS          | 8               | x86_64 / aarch64     | EL 8 (`rpm-el8-x86_64`, `rpm-el8-aarch64`)           |
+| CentOS Stream   | 8               | x86_64 / aarch64     | EL 8 (`rpm-el8-x86_64`, `rpm-el8-aarch64`)           |
+| CentOS Stream   | 9               | x86_64 / aarch64     | EL 9 (`rpm-el9-x86_64`, `rpm-el9-aarch64`)           |
+| Rocky Linux     | 8               | x86_64 / aarch64     | EL 8 (`rpm-el8-x86_64`, `rpm-el8-aarch64`)           |
+| Rocky Linux     | 9               | x86_64 / aarch64     | EL 9 (`rpm-el9-x86_64`, `rpm-el9-aarch64`)           |
+| Amazon Linux    | 1               | x86_64               | EL 6 (`rpm-el6-x86_64`)                              |
+| Amazon Linux    | 2               | x86_64 / aarch64     | EL 7 (`rpm-el7-x86_64`, `rpm-el7-aarch64`)           |
+| Amazon Linux    | 2023            | x86_64 / aarch64     | EL 9 (`rpm-el9-x86_64`, `rpm-el9-aarch64`)           |
+| UnionTech UOS   | V20             | x86_64 / aarch64     | **UOS20** (`rpm-uos20-x86_64`, `rpm-uos20-aarch64`)  |
+| openEuler       | 20.03           | x86_64 / aarch64     | EL 8 (`rpm-el8-x86_64`, `rpm-el8-aarch64`)           |
+| openEuler       | 22.03           | x86_64 / aarch64     | EL 8 (`rpm-el8-x86_64`, `rpm-el8-aarch64`)           |
+| openEuler       | 24.03           | x86_64 / aarch64     | EL 9 (`rpm-el9-x86_64`, `rpm-el9-aarch64`)           |
+| AnolisOS        | 7               | x86_64 / aarch64     | EL 7 (`rpm-el7-x86_64`, `rpm-el7-aarch64`)           |
+| AnolisOS        | 8               | x86_64 / aarch64     | EL 8 (`rpm-el8-x86_64`, `rpm-el8-aarch64`)           |
+| AnolisOS        | 2023            | x86_64 / aarch64     | EL 9 (`rpm-el9-x86_64`, `rpm-el9-aarch64`)           |
 
 > `aarch64` RPMs are built from the same `el7/` spec via `aarch64_el7/8/9` Docker tags (`ghcr.io/boypt/openssh-rpms:aarch64_el7` etc., QEMU-built, per-arch tags — not multi-arch manifests).
 
@@ -173,13 +173,13 @@ which closes the target fd before each `dup2()` in `sshd.c`), set
 `UOS20=1`:
 
 ```bash
-UOS20=1 ./compile.sh el7
+UOS20=1 ./compile.sh el8
 ```
 
 The flag also prefixes `PKGREL` with `uos20.` so the resulting RPMs are distinguishable from the standard build (e.g. PKGREL `1` becomes `uos20.1`, producing `openssh-XXXXX-uos20.1.el7.x86_64.rpm`). The patch is only
 applied when the `uos20` macro is set, so ordinary EL7/8/9 builds are
 unaffected. For the Docker-based build, see
-[docker/README.md](docker/README.md#uos-20-variant-el7-family).
+[docker/README.md](docker/README.md#uos-20-variant-el8).
 
 ### Install on uniontech UOS 20
 
