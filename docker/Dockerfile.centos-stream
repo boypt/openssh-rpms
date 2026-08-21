@@ -2,7 +2,6 @@
 ARG VERSION_NUM="9"
 FROM quay.io/centos/centos:stream$VERSION_NUM
 ARG VERSION_NUM
-ARG MIRROR=0
 LABEL Author="Rex Zhou <zrx879582094@gmail.com>"
 
 WORKDIR /data
@@ -12,20 +11,15 @@ COPY ./docker/ /data/docker/
 
 # CentOS 8 stream had NO valid mirrors.
 RUN if [ "$VERSION_NUM" = "8" ]; then \
-        MIRROR_URL="https://vault.centos.org" && \
         sed -e 's|^mirrorlist=|#mirrorlist=|g' \
-            -e "s|^#baseurl=http://mirror.centos.org/\$contentdir|baseurl=$MIRROR_URL|g" \
+            -e "s|^#baseurl=http://mirror.centos.org/\$contentdir|baseurl=https://vault.centos.org|g" \
             -i.bak \
             /etc/yum.repos.d/CentOS-*.repo && \
         yum install -y perl 'dnf-command(config-manager)' && \
         yum config-manager --set-enabled powertools; \
     else \
-        if [ "$MIRROR" != "0" ]; then \
-            MIRROR_URL="https://mirrors.ustc.edu.cn" && \
-            sed -i "s|MIRROR_HOLDER|$MIRROR_URL/centos-stream|" /data/docker/modify_dnf_source.pl && \
-            yum install -y perl && \
-            perl /data/docker/modify_dnf_source.pl /etc/yum.repos.d/*.repo; \
-        fi; \
+        yum install -y perl && \
+        perl /data/docker/modify_dnf_source.pl /etc/yum.repos.d/*.repo; \
     fi && \
     yum clean all && yum makecache && \
     yum install -y wget autoconf automake gcc make perl rpm-build pam-devel krb5-devel zlib-devel openssl-devel systemd-devel e2fsprogs-devel && \

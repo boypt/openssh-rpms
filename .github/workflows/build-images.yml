@@ -19,27 +19,22 @@ jobs:
           - tag_suffix: el5
             dockerfile: ./docker/Dockerfile.centos5
             build_args: |
-              MIRROR=0
           - tag_suffix: el6
             dockerfile: ./docker/Dockerfile.centos
             build_args: |
               VERSION_NUM=6
-              MIRROR=0
           - tag_suffix: el7
             dockerfile: ./docker/Dockerfile.centos
             build_args: |
               VERSION_NUM=7
-              MIRROR=0
           - tag_suffix: el8
             dockerfile: ./docker/Dockerfile.centos-stream
             build_args: |
               VERSION_NUM=8
-              MIRROR=0
           - tag_suffix: el9
             dockerfile: ./docker/Dockerfile.centos-stream
             build_args: |
               VERSION_NUM=9
-              MIRROR=0
 
     steps:
       - name: Checkout repository
@@ -86,17 +81,14 @@ jobs:
             dockerfile: ./docker/Dockerfile.centos
             build_args: |
               VERSION_NUM=7
-              MIRROR=0
           - tag_suffix: aarch64_el8
             dockerfile: ./docker/Dockerfile.centos-stream
             build_args: |
               VERSION_NUM=8
-              MIRROR=0
           - tag_suffix: aarch64_el9
             dockerfile: ./docker/Dockerfile.centos-stream
             build_args: |
               VERSION_NUM=9
-              MIRROR=0
 
     steps:
       - name: Checkout repository

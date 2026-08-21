@@ -4,16 +4,16 @@ mkdir -p $DOCKER_BUILD_DIR
 ELDIR=$(./compile.sh GETEL)
 
 if ! rpm -q openssl-devel; then
-  WITH_OPENSSL=2
+	WITH_OPENSSL=2
 fi
 
 OPENSSLVER=$(rpm -q openssl --qf "%{VERSION}" | cut -d. -f1)
 if [[ ${WITH_OPENSSL+x} == "" ]]; then
-  if [[ $OPENSSLVER -ge 3 ]]; then
-    export WITH_OPENSSL=1
-  else
-    export WITH_OPENSSL=2
-  fi
+	if [[ $OPENSSLVER -ge 3 ]]; then
+		export WITH_OPENSSL=1
+	else
+		export WITH_OPENSSL=2
+	fi
 fi
 
 cp -r $ELDIR $DOCKER_BUILD_DIR
