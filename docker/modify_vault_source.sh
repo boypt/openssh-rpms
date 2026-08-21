@@ -103,8 +103,9 @@ rewrite_baseurls() {
 	for file in $glob; do
 		out=""
 		while IFS= read -r line || [ -n "$line" ]; do
-			if [[ $line == "#baseurl=$prefix"* ]]; then
-				rest="${line#"#baseurl=$prefix"}"
+			if [[ $line == "#baseurl=$prefix"* || $line == "# baseurl=$prefix"* ]]; then
+				rest="${line#"# baseurl=$prefix"}"
+				rest="${rest#"#baseurl=$prefix"}"
 				urls=""
 				sep=""
 				for m in "${arr[@]}"; do
