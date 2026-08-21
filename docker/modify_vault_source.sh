@@ -46,10 +46,12 @@ VAULT_HTTP=(
 	"http://ftp.yandex.ru/centos"
 	"http://ftp.pasteur.fr/mirrors/centos-vault"
 )
-# EPEL archive mirrors (plain HTTP for all EL, 7/6/5 share)
+# EPEL archive mirrors (plain HTTP for all EL, 7/6/5 share).
+# archives.fedoraproject.org is excluded: it 302-redirects http->https, which
+# EL5 Python 2.4 / M2Crypto cannot follow (uncaught SSLError aborts yum before
+# mirror failover). All remaining mirrors serve plain HTTP without redirect.
 # shellcheck disable=SC2034
 EPEL=(
-	"http://archives.fedoraproject.org/pub/archive/epel"
 	"http://mirrors.aliyun.com/epel-archive"
 	"http://ftp.iij.ad.jp/pub/linux/Fedora/archive/epel"
 	"http://mirrors.sindad.cloud/epel-archive"
@@ -185,20 +187,20 @@ modify_el5() {
 }
 
 case $RELEASE_VER in
-.el7)
-	modify_el7
-	;;
-.el6)
-	modify_el6
-	;;
-.el5)
-	modify_el5
-	;;
-.el8)
-	modify_el8
-	;;
-*)
-	echo "Unsupported dist: $RELEASE_VER, expected el5/el6/el7/el8"
-	exit 1
-	;;
+	.el7)
+		modify_el7
+		;;
+	.el6)
+		modify_el6
+		;;
+	.el5)
+		modify_el5
+		;;
+	.el8)
+		modify_el8
+		;;
+	*)
+		echo "Unsupported dist: $RELEASE_VER, expected el5/el6/el7/el8"
+		exit 1
+		;;
 esac
