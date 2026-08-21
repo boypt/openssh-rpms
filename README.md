@@ -7,7 +7,7 @@ Similar Project: [Backport OpenSSH for Debian / Ubuntu distros](https://github.c
 ## Supported (tested) Distro:
 
 | Distro         | Version        | Arch                | Recommanded EL RPMs                                                  |
-|================|================|=====================|======================================================================|
+|----------------|----------------|---------------------|----------------------------------------------------------------------|
 | CentOS          | 5               | x86_64 / i686        | EL 5 (`rpm-el5-x86_64`, `rpm-el5-i686`)              |
 | CentOS          | 6               | x86_64               | EL 6 (`rpm-el6-x86_64`)                              |
 | CentOS          | 7               | x86_64 / aarch64     | EL 7 (`rpm-el7-x86_64`, `rpm-el7-aarch64`)           |
