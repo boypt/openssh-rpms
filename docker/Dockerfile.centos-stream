@@ -9,12 +9,10 @@ WORKDIR /data
 # Copy all files
 COPY ./docker/ /data/docker/
 
-# CentOS 8 stream had NO valid mirrors.
+# CentOS 8 stream had NO valid mirrors; modify_yum_source.sh rewrites the
+# repo baseurls for .el8 (auto-detected via rpm --eval '%{?dist}').
 RUN if [ "$VERSION_NUM" = "8" ]; then \
-        sed -e 's|^mirrorlist=|#mirrorlist=|g' \
-            -e "s|^#baseurl=http://mirror.centos.org/\$contentdir|baseurl=https://mirrors.aliyun.com/centos-vault\nbaseurl=https://ftp.iij.ad.jp/pub/linux/centos-vault\nbaseurl=https://ftp.yandex.ru/centos/centos|g" \
-            -i.bak \
-            /etc/yum.repos.d/CentOS-*.repo && \
+        bash ./docker/modify_yum_source.sh && \
         yum install -y perl 'dnf-command(config-manager)' && \
         yum config-manager --set-enabled powertools; \
     else \
