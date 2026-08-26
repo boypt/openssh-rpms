@@ -38,7 +38,10 @@ GUESS_DIST() {
 	fi
 
 	local dist
-	dist=$(rpm --eval '%{?dist}' | tr -d '.')
+	if ! dist=$(rpm --eval '%{?dist}' 2>/dev/null); then
+		dist=
+	fi
+	dist=${dist//./}
 
 	# Only el5/el6 have dedicated spec dirs; EL7+ (incl. EL-like rebuilds)
 	# all share the el7 systemd layout.
@@ -50,11 +53,17 @@ GUESS_DIST() {
 
 	# fallback via glibc version when %{?dist} is undefined:
 	# el5 uses glibc 2.5, el6 uses 2.12, anything newer maps to el7
-	local glibcver
-	glibcver=$(ldd --version | head -n1 | grep -Eo '[0-9]+' | tr -d '\n')
+	local glibcver ldd_version
+	ldd_version=$(ldd --version 2>&1) || true
+	ldd_version=${ldd_version%%$'\n'*}
+	if [[ $ldd_version =~ ([0-9]+\.[0-9]+) ]]; then
+		glibcver=${BASH_REMATCH[1]}
+	else
+		glibcver=
+	fi
 	case $glibcver in
-		25) echo 'el5' ;;
-		212) echo 'el6' ;;
+		2.5) echo 'el5' ;;
+		2.12) echo 'el6' ;;
 		*) echo 'el7' ;;
 	esac
 }
