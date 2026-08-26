@@ -123,7 +123,10 @@ BUILD_RPM() {
 		[[ $(perl -e 'print $] >= 5.010 ? 1 : 0') -eq 1 ]] \
 			&& touch ./downloads/"$PERLSRC"
 
-		RPMBUILDOPTS+=('--define' "perlver ${PERLVER}" '--define' 'dist .el5')
+		RPMBUILDOPTS+=('--define' "perlver ${PERLVER}")
+		local dist
+		dist=$(rpm --eval '%{?dist}')
+		[[ -n $dist ]] || RPMBUILDOPTS+=('--define' 'dist .el5')
 		export CC=gcc44
 	fi
 
