@@ -124,7 +124,9 @@ ls output
 # you will find multiple RPM files in this directory.
 # you may copy them to other machines, and continue following steps there.
 
-# Backup current SSH config
+# Backup current SSH config by moving it away — the new package then
+# lays down a fresh stock config, which also avoids breakage from old
+# directives (notably the GSSAPI* series) removed upstream.
 [[ -f /etc/ssh/sshd_config ]] && mv /etc/ssh/sshd_config /etc/ssh/sshd_config.$(date +%Y%m%d)
 
 # Install rpm packages (`dnf` works the same on EL8/EL9).
@@ -133,13 +135,14 @@ sudo yum --disablerepo=* localinstall -y ./openssh*.rpm
 # Check Installed version:
 ssh -V && /usr/sbin/sshd -V
 
-# Test the current sshd_config against the new binary FIRST — old
-# directives (notably the GSSAPI* series) were removed upstream and
-# will keep the new sshd from starting. If it fails, either fix the
-# offending directives, or fall back to the package defaults shipped
-# as .rpmnew (your old config is already backed up above):
+# If you skipped the backup step above, rpm kept your old config and
+# saved the package defaults as sshd_config.rpmnew (the spec marks it
+# %config(noreplace)). An old config can keep the new sshd from
+# starting, so test it — on failure either fix the offending
+# directives, or swap in the .rpmnew defaults, then re-test until it
+# passes silently:
+ls /etc/ssh/sshd_config.rpmnew
 sudo /usr/sbin/sshd -t -f /etc/ssh/sshd_config || sudo mv /etc/ssh/sshd_config{.rpmnew,}
-# Re-test until it passes silently before restarting:
 sudo /usr/sbin/sshd -t -f /etc/ssh/sshd_config
 
 # Restart service
