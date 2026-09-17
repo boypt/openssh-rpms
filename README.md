@@ -113,6 +113,10 @@ Note: It is unnecessary to build on each system, as most RPM-based Linux distrib
     ```
 5. The generated RPM files will be copied to the `output` directory.
 
+#### Use Docker
+
+For more details, see [docker/README.md](docker/README.md)
+
 ### Install RPMs
 
 ```bash
@@ -128,6 +132,15 @@ sudo yum --disablerepo=* localinstall -y ./openssh*.rpm
 
 # Check Installed version:
 ssh -V && /usr/sbin/sshd -V
+
+# Test the current sshd_config against the new binary FIRST — old
+# directives (notably the GSSAPI* series) were removed upstream and
+# will keep the new sshd from starting. If it fails, either fix the
+# offending directives, or fall back to the package defaults shipped
+# as .rpmnew (your old config is already backed up above):
+sudo /usr/sbin/sshd -t -f /etc/ssh/sshd_config || sudo mv /etc/ssh/sshd_config{.rpmnew,}
+# Re-test until it passes silently before restarting:
+sudo /usr/sbin/sshd -t -f /etc/ssh/sshd_config
 
 # Restart service
 sudo systemctl restart sshd   # (`service sshd restart` also works)
@@ -190,10 +203,6 @@ Notes:
   first.
 - Same rule as install: **DO NOT** close your current shell, open a
   **NEW** shell to verify that login works before disconnecting.
-
-## Use Docker
-
-For more details, see [docker/README.md](docker/README.md)
 
 ## Other Notes
 
