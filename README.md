@@ -93,7 +93,7 @@ e.g. `openssh_v10.5p1_b1_rpm-el8-x86_64.zip`.
 3. Unzip it and install:
 
 ```bash
-unzip openssh_*_rpm-el8-x86_64.zip
+unzip openssh*.zip
 ```
 
 ### Build RPMs
@@ -161,22 +161,21 @@ version shipped by your distro. Keep your current SSH session open until
 the rollback is verified.
 
 ```bash
-# 1. Remove the custom-built packages
-sudo rpm -e openssh openssh-clients openssh-server
-# If it complains about dependencies, erase the subpackages too
-# (same list as in Troubleshooting above), or add --nodeps.
-
-# 2. Reinstall the distro's own packages from its repos
-# (re-enable the repos if you disabled them during install)
-sudo yum install -y openssh openssh-clients openssh-server
+# 1. Downgrade back to the distro's own versions in one yum transaction.
+# (Single yum transaction -> dependencies are handled properly and there
+# is no "RPMDB altered outside of yum" warning afterwards. If you
+# installed extra subpackages, list them here too.)
+sudo yum downgrade openssh openssh-clients openssh-server
 # On EL8/EL9, `dnf` works the same.
 
-# 3. Restore the sshd_config backed up before installing
-# (`ls /etc/ssh/sshd_config.*` to find the actual dated name)
-sudo cp /etc/ssh/sshd_config.YYYYMMDD /etc/ssh/sshd_config
+# Fallback if downgrade is unavailable: erase first, then reinstall
+# from the distro repos (re-enable the repos if you disabled them).
+sudo rpm -e --nodeps openssh openssh-clients openssh-server
+sudo yum install -y openssh openssh-clients openssh-server
 
-# 4. Restart and verify
-sudo systemctl restart sshd
+# 2. Restart and verify
+sudo systemctl restart sshd   # EL7 and above (systemd)
+# sudo service sshd restart   # EL5/EL6 (SysVinit)
 ssh -V && /usr/sbin/sshd -V
 ssh localhost
 ```
@@ -186,7 +185,7 @@ Notes:
 - The default build bundles OpenSSL statically (`WITH_OPENSSL=2`), so
   the system OpenSSL is untouched — only the `openssh` packages need
   rolling back.
-- If step 2 can't find the packages, your base repos may be disabled or
+- If the downgrade/install step can't find the packages, your base repos may be disabled or
   (on EOL releases like EL5/EL6) moved to vault — fix the repo config
   first.
 - Same rule as install: **DO NOT** close your current shell, open a
