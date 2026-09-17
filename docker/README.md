@@ -18,11 +18,11 @@ All built RPM packages will be automatically placed in the `./output/` directory
 You must download the source code and tarballs before building:
 
 ```bash
-# Download all required sources
-env ALL=1 ./pullsrc.sh
+# Download the pinned sources from version.env
+./pullsrc.sh
 ```
 
-> **Note**: Run this command only once before starting any builds. It prepares all necessary files for every supported platform.
+> **Note**: Run this command only once before starting any builds. It downloads the single pinned set of sources defined in `version.env`. With `DOCKERBUILD=1 ./pullsrc.sh` only the Perl tarball is fetched (used for EL5 image builds).
 
 ## Step 2: Building RPMs for Specific Platforms
 
@@ -66,6 +66,8 @@ docker build -t elssh:el8 -f ./docker/Dockerfile.centos-stream --build-arg VERSI
 docker run --rm -v .:/data -e "UOS20=1" elssh:el8
 ```
 
+The aarch64 UOS20 build (CI artifact `rpm-uos20-aarch64`) uses the aarch64 EL8 image with `-e "UOS20=1"`.
+
 #### For EL8 (CentOS 8 / RHEL 8 / Rocky 8 / AlmaLinux 8)
 
 ```bash
@@ -81,6 +83,17 @@ docker run --rm -v .:/data elssh:el9
 ```
 
 ### aarch64 (ARM64) Builds
+
+#### For EL7 aarch64
+
+```bash
+docker build -t elssh_aarch64:el7 \
+  --platform linux/arm64 \
+  -f ./docker/Dockerfile.centos \
+  --build-arg VERSION_NUM=7 .
+
+docker run --rm -v .:/data --platform linux/arm64 elssh_aarch64:el7
+```
 
 #### For EL8 aarch64
 
@@ -116,35 +129,23 @@ docker run --rm -v .:/data --platform linux/arm64 elssh_aarch64:el9
 
 ## Output Location
 
-After each successful build, the RPM packages are copied to:
-
-```
-./output/
-```
-
-Typical output structure:
+After each successful build, all built `.rpm` files land directly in `./output/` (flat, no per-version subdirs):
 
 ```
 output/
-├── el5/
-│   ├── x86_64/
-│   └── i686/          # only if M32=1
-├── el6/
-├── el7/
-├── el8/
-├── el9/
-├── el8-aarch64/
-└── el9-aarch64/
+├── openssh-*.rpm
+├── openssh-clients-*.rpm
+└── ...
 ```
 
-Each subdirectory contains the generated `.rpm` files (including debuginfo if available).
+Every build (native `./compile.sh` or Docker via `docker/docker_compile.sh`) funnels through the same copy step, so building another EL version adds to / overwrites the same flat directory — copy the files out first if you need to keep versions separate.
 
 ## Quick Start Examples
 
 ### Build only for modern systems (EL8 + EL9)
 
 ```bash
-env ALL=1 ./pullsrc.sh
+./pullsrc.sh
 
 docker build -t elssh:el8 -f ./docker/Dockerfile.centos-stream --build-arg VERSION_NUM=8 .
 docker run --rm -v .:/data elssh:el8
@@ -156,7 +157,7 @@ docker run --rm -v .:/data elssh:el9
 ### Build only for ARM64
 
 ```bash
-env ALL=1 ./pullsrc.sh
+./pullsrc.sh
 
 docker build -t elssh_aarch64:el9 --platform linux/arm64 -f ./docker/Dockerfile.centos-stream --build-arg VERSION_NUM=9 .
 docker run --rm -v .:/data --platform linux/arm64 elssh_aarch64:el9

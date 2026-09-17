@@ -17,7 +17,7 @@ Shell scripts to backport and build OpenSSH RPMs for CentOS/RHEL-like distros (E
 ./compile.sh el7
 
 # Docker-based build (see docker/README.md for per-version commands)
-docker build -t elssh:el8 -f ./docker/Dockerfile.centos --build-arg VERSION_NUM=8 --build-arg MIRROR=0 .
+docker build -t elssh:el8 -f ./docker/Dockerfile.centos-stream --build-arg VERSION_NUM=8 .
 docker run --rm -v .:/data elssh:el8
 ```
 
@@ -29,10 +29,10 @@ docker run --rm -v .:/data elssh:el8
 
 ## Key variables
 
-- `WITH_OPENSSL`: `0` = no OpenSSL (no ssh-rsa keys), `1` = system OpenSSL, `2` = static OpenSSL (default for EL5/6/7, EL8 defaults to `1`)
+- `WITH_OPENSSL`: `0` = no OpenSSL (no ssh-rsa keys), `1` = system OpenSSL, `2` = static OpenSSL. Only the `el7` spec dir (covering EL7/8/9) auto-detects in `compile.sh` TOPDIR_SELECT: system OpenSSL >= 3 -> `1`, else `2`. EL5/EL6 leave it unset and rpmbuild falls back to `2` via `${WITH_OPENSSL:-2}`. Note `docker/docker_compile.sh` has its own overlapping auto-detect (checks openssl-devel presence + version), so behavior inside Docker may differ from a direct `./compile.sh` run.
 - `PKGREL`: package release number (defaults to `1`)
 - `M32=1`: build 32-bit RPMs (EL5 only)
-- `DOCKERBUILD=1`: when set, `pullsrc.sh` skips downloading (assumes Docker image has the sources)
+- `DOCKERBUILD=1`: when set, `pullsrc.sh` skips the openssh/openssl/askpass downloads but still fetches PERLSRC
 - `UOS20=1`: build the UOS 20 variant — enables the kernel-panic patch (`openssh-uos20-kernel-panic-fix.patch`) and prefixes `PKGREL` with `uos20.` so resulting RPMs are distinguishable.
 
 ## Architecture notes
