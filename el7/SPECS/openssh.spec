@@ -99,7 +99,6 @@ BuildRequires: pkgconfig
 BuildRequires: krb5-devel
 BuildRequires: krb5-libs
 %endif
-Patch100: 10.4-fix-gssapi.patch
 # Patch999: fix for kernel NULL pointer dereference panic in do_dup2() that
 # affects all UOS 20 systems (not just aarch64) when sshd performs a re-exec
 # with stdin/stdout/config fd dup2() before closing the existing descriptor.
@@ -194,11 +193,6 @@ environment.
 %setup -q -a 1
 %else
 %setup -q
-%endif
-
-# Apply GSSAPI option path for 10.4p1
-%if "%{opensshver}" == "10.4p1"
-%patch100 -p1
 %endif
 
 # Apply UOS 20 kernel NULL pointer dereference fix (see Patch999 above)

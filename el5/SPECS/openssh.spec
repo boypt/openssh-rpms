@@ -136,7 +136,6 @@ BuildRequires: krb5-devel
 BuildRequires: krb5-libs
 %endif
 Patch0: have_endian.patch
-Patch100: 10.4-fix-gssapi.patch
 
 
 %package clients
@@ -221,11 +220,6 @@ echo "GLIBC version: %{glibc_version}"
 %if "%{glibc_version}" <= "2.5" && "%{opensshver}" == "9.9p2"
 # glibc-headers-2.5 have endian.h but didn't define htole64
 %patch0 -p0
-%endif
-
-# Apply GSSAPI option path for 10.4p1
-%if "%{opensshver}" == "10.4p1"
-%patch100 -p1
 %endif
 
 %if %{with_openssl} == 2
