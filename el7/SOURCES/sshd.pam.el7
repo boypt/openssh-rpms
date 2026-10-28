@@ -1,4 +1,5 @@
 #%PAM-1.0
+auth       required     pam_sepermit.so
 auth       substack     password-auth
 auth       include      postlogin
 account    required     pam_sepermit.so

@@ -400,6 +400,11 @@ for keyfile in \
         chown root:root "$keyfile"
     fi
 done
+# Restore SELinux contexts (no-op if SELinux is disabled) so sshd can
+# read /etc/shadow and PAM config under enforcing mode.
+if command -v restorecon >/dev/null 2>&1; then
+    restorecon -R /etc/ssh /etc/pam.d/sshd /usr/sbin/sshd /var/empty/sshd 2>/dev/null || :
+fi
 %systemd_post sshd.service sshd.socket
 
 %preun server

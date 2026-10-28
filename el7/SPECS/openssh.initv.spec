@@ -367,6 +367,9 @@ fi
 	-g sshd -M -r sshd 2>/dev/null || :
 
 %post server
+if command -v restorecon >/dev/null 2>&1; then
+    restorecon -R /etc/ssh /etc/pam.d/sshd /usr/sbin/sshd /var/empty/sshd 2>/dev/null || :
+fi
 /sbin/chkconfig --add sshd
 
 %postun server

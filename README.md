@@ -170,6 +170,31 @@ If still not satisfied, you may try the final weapon: FORCED INSTALL.
 rpm -ivh --force --nodeps --replacepkgs --replacefiles openssh-*.rpm
 ```
 
+#### Root login blocked by PAM `uid >= 1000` rules
+
+Some distros' `password-auth`/`system-auth` carry `pam_succeed_if.so uid >= 1000`
+rules that can prevent `root` (uid 0) from logging in via SSH. The package's
+`/etc/pam.d/sshd` exempts root from those rules. Because the file is shipped as
+`%config(noreplace)`, an **upgrade** keeps your existing `/etc/pam.d/sshd`; to
+apply the fix, back it up and let the package install its version, then
+restart sshd:
+
+```bash
+[[ -f /etc/pam.d/sshd ]] && cp /etc/pam.d/sshd /etc/pam.d/sshd.bak.$(date +%Y%m%d)
+sudo yum --disablerepo=* localinstall -y ./openssh*.rpm
+# if rpm saved the new file as sshd.rpmnew instead:
+[[ -f /etc/pam.d/sshd.rpmnew ]] && mv /etc/pam.d/sshd.rpmnew /etc/pam.d/sshd
+sudo systemctl restart sshd
+```
+
+If SELinux is in `enforcing` mode and password login still fails (sshd cannot read
+`/etc/shadow`), relabel the installed files:
+
+```bash
+sudo restorecon -Rv /etc/ssh /etc/pam.d/sshd /usr/sbin/sshd /var/empty/sshd
+sudo systemctl restart sshd
+```
+
 ### Rollback to distro stock OpenSSH
 
 If the custom build doesn't work for you, remove it and reinstall the
