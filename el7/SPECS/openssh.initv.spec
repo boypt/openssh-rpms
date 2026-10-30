@@ -276,6 +276,7 @@ popd
 %install
 rm -rf $RPM_BUILD_ROOT
 mkdir -p -m755 $RPM_BUILD_ROOT%{_sysconfdir}/ssh
+mkdir -p -m755 $RPM_BUILD_ROOT%{_sysconfdir}/ssh/sshd_config.d
 mkdir -p -m755 $RPM_BUILD_ROOT%{_libexecdir}/openssh
 mkdir -p -m755 $RPM_BUILD_ROOT%{_var}/empty/sshd
 
@@ -284,6 +285,7 @@ make install DESTDIR=$RPM_BUILD_ROOT
 sed -E -i 's/^#?( ?)*GSSAPIAuthentication.*$/GSSAPIAuthentication yes/' $RPM_BUILD_ROOT/etc/ssh/sshd_config
 sed -E -i 's/^#?( ?)*GSSAPICleanupCredentials.*$/GSSAPICleanupCredentials no/' $RPM_BUILD_ROOT/etc/ssh/sshd_config
 cat << EOF >> $RPM_BUILD_ROOT/etc/ssh/sshd_config
+Include /etc/ssh/sshd_config.d/*.conf
 %if %{with_openssl} > 0
 PubkeyAcceptedAlgorithms +ssh-rsa
 %endif
@@ -367,8 +369,20 @@ fi
 	-g sshd -M -r sshd 2>/dev/null || :
 
 %post server
-if command -v restorecon >/dev/null 2>&1; then
-    restorecon -R /etc/ssh /etc/pam.d/sshd /usr/sbin/sshd /var/empty/sshd 2>/dev/null || :
+mkdir -p -m 0755 /etc/ssh/sshd_config.d
+if [ -f /etc/ssh/sshd_config ]; then
+    if ! grep -qiE '^[[:space:]]*Include[[:space:]].*/etc/ssh/sshd_config\.d/' /etc/ssh/sshd_config 2>/dev/null; then
+        sed -i '1i\Include /etc/ssh/sshd_config.d/*.conf' /etc/ssh/sshd_config
+    fi
+    dropin=/etc/ssh/sshd_config.d/99-elssh-defaults.conf
+    for pair in "PermitRootLogin:yes" "PasswordAuthentication:yes" "UsePAM:yes"; do
+        key=${pair%%:*}
+        val=${pair#*:}
+        if ! grep -qiE "^[[:space:]]*${key}[[:space:]]+" /etc/ssh/sshd_config /etc/ssh/sshd_config.d/*.conf 2>/dev/null; then
+            echo "${key} ${val}" >> "$dropin"
+        fi
+    done
+    [ -f "$dropin" ] && chmod 0600 "$dropin"
 fi
 /sbin/chkconfig --add sshd
 
@@ -433,6 +447,7 @@ fi
 %attr(0644,root,root) %{_mandir}/man5/sshd_config.5*
 %attr(0644,root,root) %{_mandir}/man8/sftp-server.8*
 %attr(0755,root,root) %dir %{_sysconfdir}/ssh
+%attr(0755,root,root) %dir %{_sysconfdir}/ssh/sshd_config.d
 %attr(0600,root,root) %config(noreplace) %{_sysconfdir}/ssh/sshd_config
 %attr(0600,root,root) %config(noreplace) /etc/pam.d/sshd
 %attr(0755,root,root) %config /etc/rc.d/init.d/sshd
