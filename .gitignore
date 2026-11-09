@@ -1,12 +1,38 @@
-BUILD/
-output/
-.*
-*-local*
+# Local configuration
+version-local.env
+
+# Build outputs
+/output/
+/BUILD/
+**/BUILD/
+**/BUILDROOT/
+**/RPMS/
+**/SRPMS/
+
+# Downloaded source archives
+*.tar.gz
+downloads/*.tar.gz
+
+# RPM packages
+*.rpm
+*.src.rpm
+
+# Go binaries
+/webui/main
+/webui/openssh-webui
+
+# Local backups
+*.bak
+*.before-*
+
+# Temporary files
 *.orig
 *.swp
-*.tar.gz
-*/RPMS/*
-*/SRPMS/*
-*/BUILD/*
-*/BUILDROOT/*
-downloads/*.tar.gz
+*~
+*.log
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
