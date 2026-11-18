@@ -5,7 +5,6 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build-amd64:
@@ -43,6 +42,12 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Set normalized GHCR image name
+        id: image-name
+        run: |
+          image_name=$(printf '%s' "$GITHUB_REPOSITORY" | tr '[:upper:]' '[:lower:]')
+          echo "value=$image_name" >> "$GITHUB_OUTPUT"
+
       - name: Pull Sources for CentOS 5
         if: matrix.tag_suffix == 'el5'
         run: |
@@ -65,7 +70,7 @@ jobs:
           file: ${{ matrix.dockerfile }}
           build-args: ${{ matrix.build_args }}
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.tag_suffix }}
+          tags: ${{ env.REGISTRY }}/${{ steps.image-name.outputs.value }}:${{ matrix.tag_suffix }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -97,6 +102,12 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Set normalized GHCR image name
+        id: image-name
+        run: |
+          image_name=$(printf '%s' "$GITHUB_REPOSITORY" | tr '[:upper:]' '[:lower:]')
+          echo "value=$image_name" >> "$GITHUB_OUTPUT"
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
 
@@ -118,7 +129,7 @@ jobs:
           file: ${{ matrix.dockerfile }}
           build-args: ${{ matrix.build_args }}
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.tag_suffix }}
+          tags: ${{ env.REGISTRY }}/${{ steps.image-name.outputs.value }}:${{ matrix.tag_suffix }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
