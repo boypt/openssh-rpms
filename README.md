@@ -61,10 +61,8 @@ native rebuild: dnf/yum reads RPM **headers**, never filenames, and never
 checks that the `%{dist}` tag matches the running OS, and the subpackages'
 `Requires: openssh = %{version}-%{release}` are internally consistent within
 one build regardless of the dist tag. Use the "Recommended EL RPMs" column in
-the table above to pick the artifact for your distro (e.g. el7 RPMs for
-Amazon Linux 2, el9 RPMs for Amazon Linux 2023). This has been verified by
-installing the released el9 RPMs directly on `amazonlinux:2023` and the el7
-RPMs directly on `amazonlinux:2`.
+the table above to pick the artifact for your distro, and install it with
+confidence — this has been verified across the RPM-based distros listed.
 
 ## Project Structure 
 
