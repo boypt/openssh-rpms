@@ -34,6 +34,38 @@ Similar Project: [Backport OpenSSH for Debian / Ubuntu distros](https://github.c
 
 > `aarch64` RPMs are built from the same `el7/` spec via `aarch64_el7/8/9` Docker tags (`ghcr.io/boypt/openssh-rpms:aarch64_el7` etc., QEMU-built, per-arch tags — not multi-arch manifests).
 
+## Why build on CentOS?
+
+This project deliberately builds all RPMs on a CentOS base — one spec tree per
+EL generation (`el5`/`el6`/`el7`), no per-distro native builds. The reason is
+the shape of the RPM ecosystem itself:
+
+- **RHEL is the de-facto origin of RPM-based distributions.** The mainstream
+  RPM distros in the table above — Rocky, AlmaLinux, Oracle Linux, Amazon
+  Linux, openEuler, AnolisOS, UOS — are downstream derivatives or rebuilds of
+  RHEL (or of the CentOS of the same era), and they all maintain **binary
+  compatibility** with it.
+- **CentOS is the open-source rebuild of RHEL** (bug-for-bug compatible; for
+  EL8/EL9 this project builds on CentOS Stream, the closest public branch).
+  Whatever links against the glibc / systemd / base library ABI of a CentOS
+  release also runs on every derivative of that same era.
+- Therefore an RPM built on the CentOS of a given generation runs in a
+  **binary-compatible** way on all RPM-compatible distros of that generation.
+  Building natively on each distro would only change the `%{dist}` tag inside
+  the `Release` string — a cosmetic difference — while multiplying the build
+  matrix, Dockerfiles, and repo-mirror workarounds.
+
+In practice, this means the artifacts can be installed **directly, under
+their original filenames**, on the matching derivative — no renaming, no
+native rebuild: dnf/yum reads RPM **headers**, never filenames, and never
+checks that the `%{dist}` tag matches the running OS, and the subpackages'
+`Requires: openssh = %{version}-%{release}` are internally consistent within
+one build regardless of the dist tag. Use the "Recommended EL RPMs" column in
+the table above to pick the artifact for your distro (e.g. el7 RPMs for
+Amazon Linux 2, el9 RPMs for Amazon Linux 2023). This has been verified by
+installing the released el9 RPMs directly on `amazonlinux:2023` and the el7
+RPMs directly on `amazonlinux:2`.
+
 ## Project Structure 
 
 - `pullsrc.sh`: Script to download source packages.
@@ -98,7 +130,9 @@ unzip openssh*.zip
 
 ### Build RPMs
 
-Note: It is unnecessary to build on each system, as most RPM-based Linux distributions are glibc compatible. That is, RPMs built on `CentOS 8` can be installed and run on `Rocky Linux 8`/`AlmaLinux 8`/`Oracle Linux 8`, etc.
+Note: It is unnecessary to build on each system — see
+[Why build on CentOS?](#why-build-on-centos) above. RPMs built on `CentOS 8`
+can be installed and run on `Rocky Linux 8`/`AlmaLinux 8`/`Oracle Linux 8`, etc.
 
 1. Install build requirements listed above.
 2. Edit `version.env` file if necessary.
