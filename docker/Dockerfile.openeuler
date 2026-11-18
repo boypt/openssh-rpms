@@ -1,0 +1,24 @@
+ARG VERSION_NUM="24.03-lts-sp2"
+FROM openeuler/openeuler:${VERSION_NUM}
+
+ARG BUILD_TOPDIR="el7"
+ARG EXPECTED_RPM_DIST="oe2403sp2"
+
+ENV BUILD_TOPDIR="${BUILD_TOPDIR}"
+ENV EXPECTED_RPM_DIST="${EXPECTED_RPM_DIST}"
+ENV RPM_DIST_OVERRIDE="${EXPECTED_RPM_DIST}"
+
+WORKDIR /data
+
+COPY ./docker/ /data/docker/
+
+RUN set -eux; \
+	yum clean all; \
+	yum makecache; \
+	yum install -y \
+		autoconf automake e2fsprogs-devel gcc krb5-devel make openssl-devel \
+		pam-devel perl perl-IPC-Cmd perl-Time-Piece rpm-build systemd-devel \
+		wget zlib-devel; \
+	yum clean all
+
+CMD ["./docker/docker_compile.sh"]

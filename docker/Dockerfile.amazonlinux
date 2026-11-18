@@ -1,0 +1,28 @@
+ARG VERSION_NUM="2023"
+FROM amazonlinux:${VERSION_NUM}
+
+ARG VERSION_NUM
+ARG BUILD_TOPDIR="el7"
+ARG EXPECTED_RPM_DIST="amzn2023"
+
+ENV BUILD_TOPDIR="${BUILD_TOPDIR}"
+ENV EXPECTED_RPM_DIST="${EXPECTED_RPM_DIST}"
+ENV RPM_DIST_OVERRIDE="${EXPECTED_RPM_DIST}"
+
+WORKDIR /data
+
+COPY ./docker/ /data/docker/
+
+RUN set -eux; \
+	yum install -y \
+		autoconf automake e2fsprogs-devel gcc krb5-devel make openssl-devel \
+		pam-devel perl perl-IPC-Cmd perl-Time-Piece rpm-build wget zlib-devel; \
+	case "$VERSION_NUM" in \
+		1) ;; \
+		2) yum install -y systemd-devel ;; \
+		2023) yum install -y libnsl systemd-devel ;; \
+		*) echo "Unsupported Amazon Linux version: $VERSION_NUM" >&2; exit 1 ;; \
+	esac; \
+	yum clean all
+
+CMD ["./docker/docker_compile.sh"]

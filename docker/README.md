@@ -82,6 +82,55 @@ docker build -t elssh:el9 -f ./docker/Dockerfile.centos-stream --build-arg VERSI
 docker run --rm -v .:/data elssh:el9
 ```
 
+#### Amazon Linux native builds
+
+Use the native Amazon Linux image when the RPM Release must retain its Amazon
+identity (`.amzn1`, `.amzn2`, or `.amzn2023`). The container checks the RPM
+`%{?dist}` macro before building, so it fails rather than producing an RPM with
+the wrong internal release.
+
+| Target | Docker tag | Build arguments |
+|--------|------------|-----------------|
+| Amazon Linux 1 x86_64 | `amzn1` | `VERSION_NUM=1 BUILD_TOPDIR=el6 EXPECTED_RPM_DIST=amzn1` |
+| Amazon Linux 2 x86_64/aarch64 | `amzn2` | `VERSION_NUM=2 BUILD_TOPDIR=el7 EXPECTED_RPM_DIST=amzn2` |
+| Amazon Linux 2023 x86_64/aarch64 | `amzn2023` | `VERSION_NUM=2023 BUILD_TOPDIR=el7 EXPECTED_RPM_DIST=amzn2023` |
+
+For example, build Amazon Linux 2023 for x86_64:
+
+```bash
+docker build -t elssh:amzn2023 -f ./docker/Dockerfile.amazonlinux \
+  --build-arg VERSION_NUM=2023 \
+  --build-arg BUILD_TOPDIR=el7 \
+  --build-arg EXPECTED_RPM_DIST=amzn2023 .
+docker run --rm -v .:/data elssh:amzn2023
+```
+
+Add `--platform linux/arm64` when building Amazon Linux 2 or 2023 for
+aarch64.
+
+#### openEuler native builds
+
+Use the native openEuler image when the RPM Release must retain its openEuler
+identity. The supported image tags map to the corresponding RPM dist macro:
+
+| Target | Docker tag | Build arguments |
+|--------|------------|-----------------|
+| openEuler 20.03 SP4 | `oe2003sp4` | `VERSION_NUM=20.03-lts-sp4 BUILD_TOPDIR=el7 EXPECTED_RPM_DIST=oe2003sp4` |
+| openEuler 22.03 SP4 | `oe2203sp4` | `VERSION_NUM=22.03-lts-sp4 BUILD_TOPDIR=el7 EXPECTED_RPM_DIST=oe2203sp4` |
+| openEuler 24.03 SP2 | `oe2403sp2` | `VERSION_NUM=24.03-lts-sp2 BUILD_TOPDIR=el7 EXPECTED_RPM_DIST=oe2403sp2` |
+
+For example, build openEuler 24.03 SP2 for x86_64:
+
+```bash
+docker build -t elssh:oe2403sp2 -f ./docker/Dockerfile.openeuler \
+  --build-arg VERSION_NUM=24.03-lts-sp2 \
+  --build-arg BUILD_TOPDIR=el7 \
+  --build-arg EXPECTED_RPM_DIST=oe2403sp2 .
+docker run --rm -v .:/data elssh:oe2403sp2
+```
+
+Add `--platform linux/arm64` for aarch64 builds.
+
 ### aarch64 (ARM64) Builds
 
 #### For EL7 aarch64
@@ -121,11 +170,13 @@ docker run --rm -v .:/data --platform linux/arm64 elssh_aarch64:el9
 
 | Argument          | Values | Description |
 |-------------------|--------|-----------|
-| `VERSION_NUM`     | 6,7,8,9| Specifies the target EL version (used in most Dockerfiles) |
+| `VERSION_NUM`     | EL: 6, 7, 8, 9; Amazon: 1, 2, 2023; openEuler: `20.03-lts-sp4`, `22.03-lts-sp4`, `24.03-lts-sp2` | Selects the target operating-system image |
+| `BUILD_TOPDIR`    | `el6`, `el7` | Selects the compatible RPM spec tree; Amazon Linux 1 uses `el6`, all restored native targets use `el7` |
+| `EXPECTED_RPM_DIST` | e.g. `amzn2023`, `oe2403sp2` | Fails the native build if the target image reports an unexpected RPM `%{?dist}` value |
 | `M32` (EL5 only)  | 0 or 1 | `0` = 64-bit, `1` = 32-bit |
 | `UOS20`           | 0 or 1 | `1` = build the UOS 20 variant (EL8 image); enables the kernel-panic patch and prefixes `PKGREL` with `uos20.` |
 
-> Note: Standalone Dockerfiles for Amazon Linux / openEuler / Rocky Linux have been consolidated into the generic EL images (reusing EL8/EL9 via glibc compatibility) and are no longer maintained separately.
+> Native Amazon Linux and openEuler Dockerfiles are maintained because Yum dependency resolution uses the RPM's internal Name-Version-Release-Architecture fields. Renaming an EL RPM file after its build does not change those fields.
 
 ## Output Location
 

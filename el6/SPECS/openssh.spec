@@ -97,7 +97,8 @@ BuildRequires: perl
 %if %{with_openssl} == 1
 BuildRequires: openssl-devel
 %endif
-BuildRequires: /bin/login
+# /bin/login is not a build-time dependency. Requiring that exact legacy path
+# rejects minimal Amazon Linux 1 build images.
 %if ! %{build6x}
 BuildRequires: glibc-devel, pam
 %else

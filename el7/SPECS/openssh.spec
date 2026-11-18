@@ -81,7 +81,8 @@ BuildRequires: perl
 %if %{with_openssl} == 1
 BuildRequires: openssl-devel
 %endif
-BuildRequires: /bin/login
+# /bin/login is not a build-time dependency. Requiring that exact legacy path
+# rejects openEuler, where the minimal build image does not ship it.
 BuildRequires: glibc-devel, pam
 %if ! %{no_x11_askpass}
 BuildRequires: /usr/include/X11/Xlib.h

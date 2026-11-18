@@ -139,9 +139,30 @@ BUILD_RPM() {
 		export CC=gcc44
 	fi
 
-	# add dist variable if not defined
-	[[ $rpmtopdir == *el7 ]] && [[ -z $(rpm --eval '%{?dist}') ]] \
-		&& RPMBUILDOPTS+=('--define' "dist .$(rpm -q glibc | rev | cut -d. -f2 | rev)")
+	# Define dist explicitly if the host RPM configuration has none. Native
+	# openEuler images deliberately use RPM_DIST_OVERRIDE because they do not
+	# define %{?dist}, while their package Release still needs .oe<release>.
+	if [[ $rpmtopdir == *el7 ]] && [[ -z $(rpm --eval '%{?dist}') ]]; then
+		local fallback_dist rpm_release
+		fallback_dist=${RPM_DIST_OVERRIDE:-}
+		if [[ -z $fallback_dist ]]; then
+			rpm_release=$(rpm -q glibc --qf '%{RELEASE}')
+			case $rpm_release in
+				*.*.*)
+					fallback_dist=${rpm_release%.*}
+					fallback_dist=${fallback_dist##*.}
+					;;
+				*.*)
+					fallback_dist=${rpm_release#*.}
+					;;
+			esac
+		fi
+		if [[ -z $fallback_dist ]]; then
+			echo 'Unable to determine RPM dist; set RPM_DIST_OVERRIDE explicitly.' >&2
+			exit 1
+		fi
+		RPMBUILDOPTS+=('--define' "dist .${fallback_dist}")
+	fi
 
 	pushd $rpmtopdir
 	# ensure the rpmbuild _topdir tree exists (fresh clone has no empty dirs)

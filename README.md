@@ -21,13 +21,13 @@ Similar Project: [Backport OpenSSH for Debian / Ubuntu distros](https://github.c
 | Oracle Linux    | 7               | x86_64 / aarch64     | EL 7 (`rpm-el7-x86_64`, `rpm-el7-aarch64`)           |
 | Oracle Linux    | 8               | x86_64 / aarch64     | EL 8 (`rpm-el8-x86_64`, `rpm-el8-aarch64`)           |
 | Oracle Linux    | 9               | x86_64 / aarch64     | EL 9 (`rpm-el9-x86_64`, `rpm-el9-aarch64`)           |
-| Amazon Linux    | 1               | x86_64               | EL 6 (`rpm-el6-x86_64`)                              |
-| Amazon Linux    | 2               | x86_64 / aarch64     | EL 7 (`rpm-el7-x86_64`, `rpm-el7-aarch64`)           |
-| Amazon Linux    | 2023            | x86_64 / aarch64     | EL 9 (`rpm-el9-x86_64`, `rpm-el9-aarch64`)           |
+| Amazon Linux    | 1               | x86_64               | Amazon Linux 1 (`rpm-amzn1-x86_64`)                |
+| Amazon Linux    | 2               | x86_64 / aarch64     | Amazon Linux 2 (`rpm-amzn2-x86_64`, `rpm-amzn2-aarch64`) |
+| Amazon Linux    | 2023            | x86_64 / aarch64     | Amazon Linux 2023 (`rpm-amzn2023-x86_64`, `rpm-amzn2023-aarch64`) |
 | UnionTech UOS   | V20             | x86_64 / aarch64     | **UOS20** (`rpm-uos20-x86_64`, `rpm-uos20-aarch64`)  |
-| openEuler       | 20.03           | x86_64 / aarch64     | EL 8 (`rpm-el8-x86_64`, `rpm-el8-aarch64`)           |
-| openEuler       | 22.03           | x86_64 / aarch64     | EL 8 (`rpm-el8-x86_64`, `rpm-el8-aarch64`)           |
-| openEuler       | 24.03           | x86_64 / aarch64     | EL 9 (`rpm-el9-x86_64`, `rpm-el9-aarch64`)           |
+| openEuler       | 20.03           | x86_64 / aarch64     | openEuler 20.03 SP4 (`rpm-oe2003sp4-x86_64`, `rpm-oe2003sp4-aarch64`) |
+| openEuler       | 22.03           | x86_64 / aarch64     | openEuler 22.03 SP4 (`rpm-oe2203sp4-x86_64`, `rpm-oe2203sp4-aarch64`) |
+| openEuler       | 24.03           | x86_64 / aarch64     | openEuler 24.03 SP2 (`rpm-oe2403sp2-x86_64`, `rpm-oe2403sp2-aarch64`) |
 | AnolisOS        | 7               | x86_64 / aarch64     | EL 7 (`rpm-el7-x86_64`, `rpm-el7-aarch64`)           |
 | AnolisOS        | 8               | x86_64 / aarch64     | EL 8 (`rpm-el8-x86_64`, `rpm-el8-aarch64`)           |
 | AnolisOS        | 2023            | x86_64 / aarch64     | EL 9 (`rpm-el9-x86_64`, `rpm-el9-aarch64`)           |

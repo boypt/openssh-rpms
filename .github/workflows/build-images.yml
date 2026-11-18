@@ -5,7 +5,6 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build-amd64:
@@ -35,6 +34,42 @@ jobs:
             dockerfile: ./docker/Dockerfile.centos-stream
             build_args: |
               VERSION_NUM=9
+          - tag_suffix: amzn1
+            dockerfile: ./docker/Dockerfile.amazonlinux
+            build_args: |
+              VERSION_NUM=1
+              BUILD_TOPDIR=el6
+              EXPECTED_RPM_DIST=amzn1
+          - tag_suffix: amzn2
+            dockerfile: ./docker/Dockerfile.amazonlinux
+            build_args: |
+              VERSION_NUM=2
+              BUILD_TOPDIR=el7
+              EXPECTED_RPM_DIST=amzn2
+          - tag_suffix: amzn2023
+            dockerfile: ./docker/Dockerfile.amazonlinux
+            build_args: |
+              VERSION_NUM=2023
+              BUILD_TOPDIR=el7
+              EXPECTED_RPM_DIST=amzn2023
+          - tag_suffix: oe2003sp4
+            dockerfile: ./docker/Dockerfile.openeuler
+            build_args: |
+              VERSION_NUM=20.03-lts-sp4
+              BUILD_TOPDIR=el7
+              EXPECTED_RPM_DIST=oe2003sp4
+          - tag_suffix: oe2203sp4
+            dockerfile: ./docker/Dockerfile.openeuler
+            build_args: |
+              VERSION_NUM=22.03-lts-sp4
+              BUILD_TOPDIR=el7
+              EXPECTED_RPM_DIST=oe2203sp4
+          - tag_suffix: oe2403sp2
+            dockerfile: ./docker/Dockerfile.openeuler
+            build_args: |
+              VERSION_NUM=24.03-lts-sp2
+              BUILD_TOPDIR=el7
+              EXPECTED_RPM_DIST=oe2403sp2
 
     steps:
       - name: Checkout repository
@@ -42,6 +77,12 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+
+      - name: Set normalized GHCR image name
+        id: image-name
+        run: |
+          image_name=$(printf '%s' "$GITHUB_REPOSITORY" | tr '[:upper:]' '[:lower:]')
+          echo "value=$image_name" >> "$GITHUB_OUTPUT"
 
       - name: Pull Sources for CentOS 5
         if: matrix.tag_suffix == 'el5'
@@ -65,7 +106,7 @@ jobs:
           file: ${{ matrix.dockerfile }}
           build-args: ${{ matrix.build_args }}
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.tag_suffix }}
+          tags: ${{ env.REGISTRY }}/${{ steps.image-name.outputs.value }}:${{ matrix.tag_suffix }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -89,6 +130,36 @@ jobs:
             dockerfile: ./docker/Dockerfile.centos-stream
             build_args: |
               VERSION_NUM=9
+          - tag_suffix: aarch64_amzn2
+            dockerfile: ./docker/Dockerfile.amazonlinux
+            build_args: |
+              VERSION_NUM=2
+              BUILD_TOPDIR=el7
+              EXPECTED_RPM_DIST=amzn2
+          - tag_suffix: aarch64_amzn2023
+            dockerfile: ./docker/Dockerfile.amazonlinux
+            build_args: |
+              VERSION_NUM=2023
+              BUILD_TOPDIR=el7
+              EXPECTED_RPM_DIST=amzn2023
+          - tag_suffix: aarch64_oe2003sp4
+            dockerfile: ./docker/Dockerfile.openeuler
+            build_args: |
+              VERSION_NUM=20.03-lts-sp4
+              BUILD_TOPDIR=el7
+              EXPECTED_RPM_DIST=oe2003sp4
+          - tag_suffix: aarch64_oe2203sp4
+            dockerfile: ./docker/Dockerfile.openeuler
+            build_args: |
+              VERSION_NUM=22.03-lts-sp4
+              BUILD_TOPDIR=el7
+              EXPECTED_RPM_DIST=oe2203sp4
+          - tag_suffix: aarch64_oe2403sp2
+            dockerfile: ./docker/Dockerfile.openeuler
+            build_args: |
+              VERSION_NUM=24.03-lts-sp2
+              BUILD_TOPDIR=el7
+              EXPECTED_RPM_DIST=oe2403sp2
 
     steps:
       - name: Checkout repository
@@ -96,6 +167,12 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+
+      - name: Set normalized GHCR image name
+        id: image-name
+        run: |
+          image_name=$(printf '%s' "$GITHUB_REPOSITORY" | tr '[:upper:]' '[:lower:]')
+          echo "value=$image_name" >> "$GITHUB_OUTPUT"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
@@ -118,7 +195,7 @@ jobs:
           file: ${{ matrix.dockerfile }}
           build-args: ${{ matrix.build_args }}
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.tag_suffix }}
+          tags: ${{ env.REGISTRY }}/${{ steps.image-name.outputs.value }}:${{ matrix.tag_suffix }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
